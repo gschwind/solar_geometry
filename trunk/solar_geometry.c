@@ -1952,6 +1952,11 @@ intervals_omega_tilted_plane(double phi_g, double delta, double omega_ss,
       *p_nb = 0;
     }
 
+  /* Patch pour faire fonctionner le code de Mireille */
+  v_om[0] = omega_sr;
+  v_om[1] = omega_ss;
+  *p_nb = 2;
+
   return (ierr);
 
 }
