@@ -1,7 +1,0 @@
-Compilation de solar_geometry
-
-* Sous WIN / MINGW
-Ajouter le symbole _MINGW_
-
-*  Sous WIN / VISUAL
-Ajouter le symbole _VISUAL_
