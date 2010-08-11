@@ -84,6 +84,15 @@ extern "C" {
  */
 
 /**
+ * Convert y-m-d date to julian day (number of day from -4713
+ * @param year
+ * @param month
+ * @param day_of_month
+ * @return julian day a 12h
+ */
+EXPORT double ymd_to_julian_day(int year, int month, int day_of_month);
+
+/**
  * The procedure converts a day given in year-month-day into a
  * day of year.
  * Source :

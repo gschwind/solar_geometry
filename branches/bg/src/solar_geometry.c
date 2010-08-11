@@ -34,6 +34,15 @@ static int tab_nbdays[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
  * --------------------
  */
 
+double ymd_to_julian_day(int year, int month, int day_of_month) {
+	if (month <= 2) {
+		month = month + 12;
+		year = year - 1;
+	}
+	return 1721028.0 + day_of_month + floor((153 * month - 2) / 5) + 365 * year + floor(year / 4)
+		    - floor(year / 100) + floor(year / 400) + 12.0 / 24.0 - 0.5;
+}
+
 int ymd_to_day_of_year(int year, int month, int day_of_month) {
 	int day_of_year = day_of_month + tab_day_of_year[month - 1];
 	if (IS_LEAP_YEAR(year) && (month > 2))
@@ -732,7 +741,7 @@ void intervals_omega_tilted_plane(double phi_g, double delta, double omega_ss,
 				}
 			} else {
 				/*
-				 * Solution soit [omega_sr wa] ou [wa omega_ss] ���d���inir Test au
+				 * Solution soit [omega_sr wa] ou [wa omega_ss] ���������d���������inir Test au
 				 * centre et au bord omega_sr ou omega_ss du plus grand intervalle
 				 */
 				if (omega_ss - wa > wa - omega_sr) {
