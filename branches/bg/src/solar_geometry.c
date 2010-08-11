@@ -23,15 +23,19 @@
 #define MAX(x,y) ((x)>(y) ? (x) : (y))
 #define IS_LEAP_YEAR(y) (((((y) % 4) == 0) && (((y) % 100) != 0)) || (((y) % 400) == 0))
 
+static int const tab_day_of_year[12] = { 0, 31, 59, 90, 120, 151, 181, 212,
+		243, 273, 304, 334 };
+static int const tab_day_of_leap_year[12] = { 0, 31, 60, 91, 121, 152, 182,
+		213, 244, 274, 305, 335 };
+static int tab_nbdays[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
 /*
  * 0. BASIC PARAMETERS
  * --------------------
  */
 
 int ymd_to_day_of_year(int year, int month, int day_of_month) {
-	static int const tab[12] = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273,
-			304, 334 };
-	int day_of_year = day_of_month + tab[month - 1];
+	int day_of_year = day_of_month + tab_day_of_year[month - 1];
 	if (IS_LEAP_YEAR(year) && (month > 2))
 		day_of_year = day_of_year + 1;
 	return day_of_year;
@@ -39,17 +43,13 @@ int ymd_to_day_of_year(int year, int month, int day_of_month) {
 
 void day_of_year_to_ymd(int year, int day_of_year, int * day_of_month,
 		int * month) {
-	static int const tab0[12] = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273,
-			304, 334 };
-	static int const tab1[12] = { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274,
-			305, 335 };
 	int const * tab;
 	int m;
 	/* leap year */
 	if (IS_LEAP_YEAR(year)) {
-		tab = tab1;
+		tab = tab_day_of_leap_year;
 	} else {
-		tab = tab0;
+		tab = tab_day_of_year;
 	}
 
 	for (m = 11; m >= 0; ++m) {
@@ -62,8 +62,6 @@ void day_of_year_to_ymd(int year, int day_of_year, int * day_of_month,
 }
 
 int nbdays_month(int year_number, int month_number) {
-	static int tab_nbdays[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30,
-			31 };
 	if (IS_LEAP_YEAR(year_number) && (month_number == 2))
 		return tab_nbdays[month_number - 1] + 1;
 	else
@@ -625,7 +623,6 @@ void solar_parameters_max(int month, double phi_g, double gamma_riset,
 	*G0d_max = G0_day(phi_g, *eccentricity_max, *delta_max);
 	G0_hours_profile(phi_g, *eccentricity_max, *delta_max, G0h_max);
 }
-
 
 void intervals_omega_tilted_plane(double phi_g, double delta, double omega_ss,
 		double beta, double alpha, double *v_om, int *p_nb) {
