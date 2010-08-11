@@ -14,7 +14,7 @@
 
 #define __C_solar_geometry
 
-#include "solar_geometry.h"
+#include "solargeo2.h"
 
 #include <math.h>
 #include <stdio.h>

@@ -12,8 +12,8 @@
 /*   modified 8 July 2004 L. Wald for geocentric - geographic lat          */
 /*-------------------------------------------------------------------------*/
 
-#ifndef __H_solar_geometry
-#define __H_solar_geometry
+#ifndef SOLARGEO2_H
+#define SOLARGEO2_H
 
 #ifdef _MINGW_
 #include <windows.h>

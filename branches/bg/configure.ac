@@ -1,6 +1,6 @@
-AC_INIT([solar_geometry], [1.0.0])
+AC_INIT([solargeo2], [2.0.0])
 AM_INIT_AUTOMAKE([-Wall -Werror])
-AC_CONFIG_SRCDIR([src/solar_geometry.c])
+AC_CONFIG_SRCDIR([src/solargeo2.c])
 
 #INTI_REQUIRED_VERSION=1.0.7
 #PKG_CHECK_MODULES(INTI, inti-1.0 >= $INTI_REQUIRED_VERSION)
@@ -13,6 +13,6 @@ AC_PROG_LIBTOOL
 AC_CONFIG_FILES([
   Makefile
   src/Makefile
-  solar_geometry.pc
+  solargeo2.pc
   ])
 AC_OUTPUT

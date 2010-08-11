@@ -4,8 +4,8 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: Something
-Description: Solar Geometry library
+Description: Solar Geometry library v2.0
 Requires: 
 Version: @PACKAGE_VERSION@
-Libs: -L${libdir} -lsolar_geometry
+Libs: -L${libdir} -lsolargeo2
 Cflags: -I${includedir}/

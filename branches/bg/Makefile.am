@@ -1,5 +1,5 @@
 SUBDIRS = src
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = solar_geometry.pc
+pkgconfig_DATA = solargeo2.pc
 
