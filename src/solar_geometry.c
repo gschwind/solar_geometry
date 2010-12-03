@@ -356,7 +356,7 @@ Day_Angle(int julian_day, double *day_angle)
  * The procedure "declination_sun" computes the solar declination at noon in solar time
  * (in radians). A single (average) value per day -at noon- is adequate for pratical
  * calculations. The noon declination depends on longitude, as noon occurs earlier if
- * longitude is East of Greenwi²ch, and later if it is West. The chosen algorithm uses
+ * longitude is East of Greenwich, and later if it is West. The chosen algorithm uses
  * 1957 as base year; it is basically a truncated Fourier series with six harmonics.
  * Returns 0 if OK, 1 otherwise.
  */
@@ -365,7 +365,7 @@ declination_sun(int year_number, int julian_day, double lambda, double *delta)
 {
   int ier;
   double b1, b2, b3, b4, b5, b6, b7;
-  double w0, n0, t1, wt;
+  double w0, n0, t1, wt=0;
 
   b1 = 0.0064979;
   b2 = 0.4059059;
@@ -426,7 +426,7 @@ declination_sun_month(int month_number, int type_use, double *delta_month)
     { 17, 46, 75, 105, 135, 162, 198, 228, 259, 289, 319, 345 };
   int tab_julian_day_max[12] =
     { 29, 57, 89, 119, 150, 173, 186, 217, 248, 278, 309, 339 };
-  int ier, julian_day;
+  int ier, julian_day = 0;
   double day_angle, jm, c1, c2, c3, c4;
 
   ier = 1;
@@ -599,7 +599,7 @@ sunrise_hour_angle(double phi_g, double delta, double gamma_riset,
 {
   PRIVATE double deg_rad = (Pi / 180.0); /* converts decimal degrees into radians */
   int ier;
-  double horizon, max_delta, cos_omegas, omegas;
+  double horizon, max_delta, cos_omegas = 1, omegas = 0;
   double phi;
 
   ier = 1;
@@ -1704,7 +1704,7 @@ intervals_omega_tilted_plane(double phi_g, double delta, double omega_ss,
         else
           {
             /*
-             * Solution soit [omega_sr wa] ou [wa omega_ss] �d�inir Test au
+             * Solution soit [omega_sr wa] ou [wa omega_ss] définir Test au
              * centre et au bord omega_sr ou omega_ss du plus grand intervalle
              */
             if (omega_ss - wa > wa - omega_sr)
