@@ -162,7 +162,7 @@ int
 make_julian_day(int day_of_month, int month_number, int year_number,
     int *julian_day)
 {
-  PRIVATE int tab[12] =
+  static int tab[12] =
     { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
   int ier, julien;
 
@@ -259,7 +259,7 @@ julian_to_date(int year_number, int julian_day, int *day_of_month,
 int
 nbdays_month(int year_number, int month_number, int *number_days_month)
 {
-  PRIVATE int tab_nbdays[12] =
+  static int tab_nbdays[12] =
     { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
   int ier;
 
@@ -294,7 +294,7 @@ nbdays_month(int year_number, int month_number, int *number_days_month)
 int
 number_to_name_month(int month_number, char *month_name)
 {
-  PRIVATE char tab_name[][4] =
+  static char tab_name[][4] =
     { "   ", "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep",
         "oct", "nov", "dec" };
   int ier;
@@ -597,7 +597,7 @@ int
 sunrise_hour_angle(double phi_g, double delta, double gamma_riset,
     double *omega_sr, double *omega_ss)
 {
-  PRIVATE double deg_rad = (Pi / 180.0); /* converts decimal degrees into radians */
+  static double deg_rad = (Pi / 180.0); /* converts decimal degrees into radians */
   int ier;
   double horizon, max_delta, cos_omegas = 1, omegas = 0;
   double phi;

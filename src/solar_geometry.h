@@ -16,27 +16,27 @@
 #ifdef _WIN32
 #pragma once
 
-// Modifiez les définitions suivantes si vous devez cibler une plate-forme avant celles spécifiées ci-dessous.
-// Reportez-vous à MSDN pour obtenir les dernières informations sur les valeurs correspondantes pour les différentes plates-formes.
-#ifndef WINVER				// Autorise l'utilisation des fonctionnalités spécifiques à Windows XP ou version ultérieure.
-#define WINVER 0x0501		// Attribuez la valeur appropriée à cet élément pour cibler d'autres versions de Windows.
+// Modifiez les dÃ©finitions suivantes si vous devez cibler une plate-forme avant celles spÃ©cifiÃ©es ci-dessous.
+// Reportez-vous Ã  MSDN pour obtenir les derniÃ¨res informations sur les valeurs correspondantes pour les diffÃ©rentes plates-formes.
+#ifndef WINVER				// Autorise l'utilisation des fonctionnalitÃ©s spÃ©cifiques Ã  WindowsÂ XP ou version ultÃ©rieure.
+#define WINVER 0x0501		// Attribuez la valeur appropriÃ©e Ã  cet Ã©lÃ©ment pour cibler d'autres versions de Windows.
 #endif
 
-#ifndef _WIN32_WINNT		// Autorise l'utilisation des fonctionnalités spécifiques à Windows XP ou version ultérieure.                   
-#define _WIN32_WINNT 0x0501	// Attribuez la valeur appropriée à cet élément pour cibler d'autres versions de Windows.
-#endif						
-
-#ifndef _WIN32_WINDOWS		// Autorise l'utilisation des fonctionnalités spécifiques à Windows 98 ou version ultérieure.
-#define _WIN32_WINDOWS 0x0410 // Attribuez la valeur appropriée à cet élément pour cibler Windows Me ou version ultérieure.
+#ifndef _WIN32_WINNT		// Autorise l'utilisation des fonctionnalitÃ©s spÃ©cifiques Ã  WindowsÂ XP ou version ultÃ©rieure.
+#define _WIN32_WINNT 0x0501	// Attribuez la valeur appropriÃ©e Ã  cet Ã©lÃ©ment pour cibler d'autres versions de Windows.
 #endif
 
-#ifndef _WIN32_IE			// Autorise l'utilisation des fonctionnalités spécifiques à Internet Explorer 6.0 ou version ultérieure.
-#define _WIN32_IE 0x0600	// Attribuez la valeur appropriée à cet élément pour cibler d'autres versions d'Internet Explorer.
+#ifndef _WIN32_WINDOWS		// Autorise l'utilisation des fonctionnalitÃ©s spÃ©cifiques Ã  WindowsÂ 98 ou version ultÃ©rieure.
+#define _WIN32_WINDOWS 0x0410 // Attribuez la valeur appropriÃ©e Ã  cet Ã©lÃ©ment pour cibler WindowsÂ Me ou version ultÃ©rieure.
 #endif
 
-#define WIN32_LEAN_AND_MEAN		// Exclure les en-têtes Windows rarement utilisés
+#ifndef _WIN32_IE			// Autorise l'utilisation des fonctionnalitÃ©s spÃ©cifiques Ã  Internet ExplorerÂ 6.0 ou version ultÃ©rieure.
+#define _WIN32_IE 0x0600	// Attribuez la valeur appropriÃ©e Ã  cet Ã©lÃ©ment pour cibler d'autres versions d'Internet Explorer.
+#endif
 
-// Fichiers d'en-tête Windows :
+#define WIN32_LEAN_AND_MEAN		// Exclure les en-tÃªtes Windows rarement utilisÃ©s
+
+// Fichiers d'en-tÃªte WindowsÂ :
 #include <windows.h>
 #endif
 
@@ -49,14 +49,12 @@ extern "C"
 #undef PUBLIC
 #endif
 
-#ifdef INIT
-#undef INIT
+#ifdef EXPORT
+#undef EXPORT
 #endif
 
 #ifdef __C_solar_geometry
 #define PUBLIC
-#define INIT
-#define PRIVATE static
 #else
 #define PUBLIC extern
 #endif
@@ -66,7 +64,7 @@ extern "C"
 #else
 #define EXPORT
 #endif
-  
+
 #define Pi  3.141592654
 #define I0  1367.0		/* solar constant in W/m2 */
 #define Dl  24.0		/* average value for the length of the day in decimal hours */
