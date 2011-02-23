@@ -7,6 +7,8 @@ AM_INIT_AUTOMAKE()
 AC_CONFIG_SRCDIR([src/solar_geometry.c])
 #AC_CONFIG_HEADER([config.h])
 
+AC_ARG_ENABLE(m64,[  --enable-m64            compile in 64 bits],[],[CFLAGS="$CFLAGS -m32";])
+
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_LIBTOOL
@@ -23,7 +25,7 @@ AC_PROG_LIBTOOL
 
 # Default gcc options
 if test "x$GCC" = "xyes"; then
-  CFLAGS="-fno-strict-aliasing -Wall -Wextra -Wno-unused -Wno-sign-compare -Wstrict-prototypes -Wformat -Wswitch-enum -Werror $CFLAGS"
+  CFLAGS="$CFLAGS -fno-strict-aliasing -Wall -Wextra -Wno-unused -Wno-sign-compare -Wstrict-prototypes -Wformat -Wswitch-enum -Werror $CFLAGS"
 fi
 
 # --enable-debug compiles with debugging info
