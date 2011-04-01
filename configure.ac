@@ -33,7 +33,7 @@ AC_PROG_LIBTOOL
 
 # Turn on gcc checks
 if test "x$GCC" = "xyes"; then
-  CFLAGS="-fno-strict-aliasing -Wall -Wextra -Wno-unused -Wno-sign-compare -Wstrict-prototypes -Wformat -Wswitch-enum -Werror $CFLAGS"
+  CFLAGS="-fno-strict-aliasing -Wall -Wextra -Wno-unused -Wno-sign-compare -Wstrict-prototypes -Wformat -Wswitch-enum $CFLAGS"
 fi
 
 AC_CONFIG_FILES([
