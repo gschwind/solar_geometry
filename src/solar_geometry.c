@@ -1599,20 +1599,31 @@ intervals_omega_tilted_plane(double phi_g, double delta, double omega_ss,
   int pa, pb;
   double phi;
 
-  phi = geogr_to_geoce(phi_g);
-
   v_om[0] = -999.0;
   v_om[1] = -999.0;
   v_om[2] = -999.0;
   v_om[3] = -999.0;
   *p_nb = 0;
 
+  omega_sr = -omega_ss;
+
+  /* Le code ci-dessous pour optimiser les plages de calcul effectif entre omega_sr et omega_ss
+   * semble marcher pour l'hémisphère Nord mais pas pour l'hémisphère Sud : en attendant, on shunte
+   * l'optimisation en forçant le calcul complet entre le lever et le coucher du soleil
+   *  */
+  v_om[0] = omega_sr;
+  v_om[1] = omega_ss;
+  *p_nb = 2;
+  return (ierr);
+
+  /* Fin du shunte */
+
   if (fabs(omega_ss) < precision)
     {
       return ierr;
     }
 
-  omega_sr = -omega_ss;
+  phi = geogr_to_geoce(phi_g);
 
   A = cos(delta) * (cos(phi) * cos(beta) + sin(phi) * sin(beta) * cos(alpha));
 
@@ -1951,11 +1962,6 @@ intervals_omega_tilted_plane(double phi_g, double delta, double omega_ss,
     {
       *p_nb = 0;
     }
-
-  /* Patch pour faire fonctionner le code de Mireille */
-  v_om[0] = omega_sr;
-  v_om[1] = omega_ss;
-  *p_nb = 2;
 
   return (ierr);
 
