@@ -10,9 +10,9 @@ AC_CONFIG_SRCDIR([src/solar_geometry.c])
 # --enable-m64 compiles in 64 bits. Default is 32 bits as Helioclim does not support 64 bits (yet).
 # Order is not arbitrary. Keep this block before AC_PROG_CC/AC_PROG_CXX.
 AC_ARG_ENABLE(m64,
-[  --enable-m64            compiles in 64 bits],[],[CFLAGS="$CFLAGS -m32";])
+[  --enable-m64            compiles in 64 bits],[CFLAGS="$CFLAGS -m64 -mfpmath=387";],[CFLAGS="$CFLAGS -m32";])
 
-# --enable-debug compiles with debugging info.
+# --enable-debug compiles with debugging info. Default is -O2 optimization.
 # Order is not arbitrary. Keep this block before AC_PROG_CC/AC_PROG_CXX.
 AC_ARG_ENABLE(debug,
 [  --enable-debug          compiles with debugging info],[CFLAGS="$CFLAGS -g";],[CFLAGS="$CFLAGS -O2";])
