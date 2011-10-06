@@ -4,7 +4,7 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: Something
-Description: Solar Geometry library v1.0.3
+Description: Solar Geometry library
 Requires:
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir} -lsolar_geometry
