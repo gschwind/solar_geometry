@@ -65,9 +65,10 @@ extern "C"
 #define EXPORT
 #endif
 
+
 #define Pi  3.141592654
-#define I0  1367.0		/* solar constant in W/m2 */
-#define Dl  24.0		/* average value for the length of the day in decimal hours */
+#define I0  1367.0			/* solar constant in W/m2 */
+#define DAY_LENGTH  24.0	/* average value for the length of the day in decimal hours */
 
 /*************/
 /* NOTATIONS */
@@ -200,8 +201,8 @@ EXPORT PUBLIC int Day_Angle (int julian_day, double *day_angle);
    later if it is West. The chosen algorithm uses 1957 as base year; it is 
    basically a truncated Fourier series with six harmonics. Returns 0 if OK, 1
    otherwise. */
-EXPORT PUBLIC int declination_sun (int year_number, int julian_day,
-		      double lambda, double *delta);
+EXPORT PUBLIC int declination_sun (int year_number, int julian_day, double lambda, 
+                double *delta);
 
 /* Source : Gruter (Ed.) (1984) */
 /* Inputs :

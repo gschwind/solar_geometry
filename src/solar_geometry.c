@@ -10,15 +10,33 @@
 /*   modified 8 July 2004 L. Wald for geocentric - geographic lat          */
 /*-------------------------------------------------------------------------*/
 
-#define __C_solar_geometry
-
 #include "solar_geometry.h"
 
 #include <math.h>
 #include <stdio.h>
+#include <assert.h>
+
+
+// #days of each month (0-based) for NON leap year
+static const int NB_DAYS_OF_MONTH[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+// #days of each month (0-based) for leap year
+static const int NB_DAYS_OF_MONTH_BISSEXTILE_YEAR[12] = {31,29,31,30,31,30,31,31,30,31,30,31};
+
+// 1-based index of the last day of each month (1-based) for NON leap year
+static const int FIRST_DAY_OF_MONTH[13]                 = {0,31,59,90,120,151,181,212,243,273,304,334,365};
+// 1-based index of the last day of each month (1-based) for leap year
+static const int FIRST_DAY_OF_MONTH_BISSEXTILE_YEAR[13] = {0,31,60,91,121,152,182,213,244,274,305,335,366};
+
+// name of each month (1-based)
+static const char NAME_OF_MONTH[][4] = { "", "jan", "feb", "mar", "apr", "may", "jun", 
+                                       "jul", "aug", "sep", "oct", "nov", "dec" };
+
+
+#define bissextile(yyyy) ((((yyyy)%4)==0&&((yyyy)%100)!=0)||((yyyy)%400)==0)
 
 #define MIN(x,y) ((x)<(y) ? (x) : (y))
 #define MAX(x,y) ((x)>(y) ? (x) : (y))
+
 
 /*************/
 /* NOTATIONS */
@@ -85,8 +103,6 @@ int
 make_julian_day(int day_of_month, int month_number, int year_number,
     int *julian_day)
 {
-  static int tab[12] =
-    { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
   int ier, julien;
 
   ier = 1;
@@ -94,11 +110,10 @@ make_julian_day(int day_of_month, int month_number, int year_number,
       && (month_number < 13) && (year_number > 0))
     {
       ier = 0;
-      julien = day_of_month + tab[month_number - 1];
-      if (((((year_number % 4) == 0) && ((year_number % 100) != 0))
-          || ((year_number % 400) == 0)) && (month_number > 2))
-        /* leap
-         * year
+      julien = day_of_month + FIRST_DAY_OF_MONTH[month_number - 1];
+      if (bissextile(year_number) && (month_number > 2))
+        /*
+         * February of leap year
          */
         julien = julien + 1;
       *julian_day = julien;
@@ -122,22 +137,18 @@ int
 julian_to_date(int year_number, int julian_day, int *day_of_month,
     int *month_number)
 {
-  static int tab0[12] =
-    { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
-  static int tab1[12] =
-    { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335 };
-  int *tab, ier, m, jmax = 365;
+  const int *tab;
+  int ier, m, jmax = 365;
 
   ier = 1;
-  if ((((year_number % 4) == 0) && ((year_number % 100) != 0)) || ((year_number
-      % 400) == 0))
+  if (bissextile(year_number))
     { /* leap year */
       jmax = jmax + 1;
-      tab = tab1;
+      tab = FIRST_DAY_OF_MONTH_BISSEXTILE_YEAR;
     }
   else
     {
-      tab = tab0;
+      tab = FIRST_DAY_OF_MONTH;
     }
 
   if ((julian_day > 0) && (julian_day <= jmax) && (year_number > 0))
@@ -174,22 +185,22 @@ julian_to_date(int year_number, int julian_day, int *day_of_month,
 int
 nbdays_month(int year_number, int month_number, int *number_days_month)
 {
-  static int tab_nbdays[12] =
-    { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-  int ier;
+    int ier;
 
-  ier = 1;
-  if ((year_number > 0) && (month_number > 0) && (month_number < 13))
+    assert((year_number >= 2000) && (month_number > 0) && (month_number < 13));
+    
+    ier = 1;
+    if ((year_number > 0) && (month_number > 0) && (month_number < 13))
     {
-      ier = 0;
-      *number_days_month = tab_nbdays[month_number - 1];
-      if (((((year_number % 4) == 0) && ((year_number % 100) != 0))
-          || ((year_number % 400) == 0)) && (month_number == 2)) /* leap
-       * year
-       */
+        ier = 0;
+        *number_days_month = NB_DAYS_OF_MONTH[month_number - 1];
+        if (bissextile(year_number) && (month_number == 2)) 
+        /* 
+         * February of leap year
+         */
         *number_days_month = *number_days_month + 1;
     }
-  return (ier);
+    return (ier);
 }
 
 /* Source : */
@@ -203,16 +214,13 @@ nbdays_month(int year_number, int month_number, int *number_days_month)
 int
 number_to_name_month(int month_number, char *month_name)
 {
-  static char tab_name[][4] =
-    { "   ", "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep",
-        "oct", "nov", "dec" };
   int ier;
 
   ier = 1;
   if ((month_number > 0) && (month_number < 13))
     {
       ier = 0;
-      sprintf(month_name, "%s", tab_name[month_number]);
+      sprintf(month_name, "%s", NAME_OF_MONTH[month_number]);
     }
 
   return (ier);
@@ -264,42 +272,42 @@ Day_Angle(int julian_day, double *day_angle)
 int
 declination_sun(int year_number, int julian_day, double lambda, double *delta)
 {
-  int ier;
-  double b1, b2, b3, b4, b5, b6, b7;
-  double w0, n0, t1, wt=0;
+    int ier;
+	double n0, t1, wt=0;
 
-  b1 = 0.0064979;
-  b2 = 0.4059059;
-  b3 = 0.0020054;
-  b4 = -0.0029880;
-  b5 = -0.0132296;
-  b6 = 0.0063809;
-  b7 = 0.0003508;
+	double const b1 = 0.0064979;
+	double const b2 = 0.4059059;
+	double const b3 = 0.0020054;
+	double const b4 = -0.0029880;
+	double const b5 = -0.0132296;
+	double const b6 = 0.0063809;
+	double const b7 = 0.0003508;
 
-  ier = 1;
-  /*
-   * n0 : spring-equinox time expressed in days from the beginning of the year i.e.
-   * the time in decimal days elapsing from 00:00 hours Jan 1st to the spring equinox
-   * at Greenwich in a given year
-   */
-  /*
-   * t1 : time in days, from the spring equinox
-   */
-  /*
-   * 0.5 represents the decimal day number at noon on Jan 1st at Greenwich
-   */
-  n0 = 78.8946 + 0.2422 * (year_number - 1957) - (int) (0.25 * (year_number - 1957));
-  t1 = -0.5 - lambda / (2 * Pi) - n0;
-  w0 = 2 * Pi / 365.2422;
-  if ((julian_day > 0) && (julian_day <= 366))
+    assert ((julian_day > 0) && (julian_day <= 366));
+
+    ier = 1;
+    /*
+    * n0 : spring-equinox time expressed in days from the beginning of the year i.e.
+    * the time in decimal days elapsing from 00:00 hours Jan 1st to the spring equinox
+    * at Greenwich in a given year.
+	* ((year_number - 1957) >> 2)  <=> INT[(year_number - 1957)/4] ou INT est la partie entière.
+    */
+    /*
+    * t1 : time in days, from the spring equinox.
+    * 0.5 represents the decimal day number at noon on Jan 1st at Greenwich.
+    */
+	n0 = 78.8946 + 0.2422 * (year_number - 1957) - ((year_number - 1957) >> 2);
+    t1 = -0.5 - lambda / (2 * Pi) - n0;
+	double const w0 = 2.0 * Pi / 365.2422;
+    if ((julian_day > 0) && (julian_day <= 366))
     {
       ier = 0;
       wt = w0 * (julian_day + t1);
     }
 
-  *delta = b1 + b2 * sin(wt) + b3 * sin(2 * wt) + b4 * sin(3 * wt) + b5 * cos(
-      wt) + b6 * cos(2 * wt) + b7 * cos(3 * wt);
-  return (ier);
+    *delta = b1 + b2 * sin(wt) + b3 * sin(2 * wt) + b4 * sin(3 * wt) 
+        + b5 * cos(wt) + b6 * cos(2 * wt) + b7 * cos(3 * wt);
+    return (ier);
 }
 
 /* Source : Gruter (Ed.) (1984) */
@@ -396,19 +404,17 @@ omega_to_LAT(double omega, double *t)
 double
 geogr_to_geoce(double phi_g)
 {
-  double phi;
-  double CC = 0.99330552; /* Correction factor for converting geographic */
-  /*
-   * into geocentric latitude. CC=(Rpole/Requator)**2
-   */
-  /*
-   * Rpole=6356.752, Requator=6378.137
-   */
-  if ((phi_g >= -(Pi / 2.0 - 0.0002)) || (phi_g <= (Pi / 2.0 - 0.0002)))
-    phi = atan(tan(phi_g) * CC);
-  else
-    phi = phi_g;
-  return (phi);
+    double phi;
+    double const CC = 0.99330552; /* Correction factor for converting geographic
+                                 * into geocentric latitude. 
+                                 * CC=(Rpole/Requator)**2
+                                 * Rpole=6356.752, Requator=6378.137
+                                 */
+    if ((phi_g >= -(Pi / 2.0 - 0.0002)) || (phi_g <= (Pi / 2.0 - 0.0002)))
+        phi = atan(tan(phi_g) * CC);
+    else
+        phi = phi_g;
+    return (phi);
 }
 
 /* Source : */
@@ -469,40 +475,39 @@ int
 sunrise_hour_angle(double phi_g, double delta, double gamma_riset,
     double *omega_sr, double *omega_ss)
 {
-  static double deg_rad = (Pi / 180.0); /* converts decimal degrees into radians */
-  int ier;
-  double horizon, max_delta, cos_omegas = 1, omegas = 0;
-  double phi;
+    static double deg_rad = (Pi / 180.0); /* converts decimal degrees into radians */
+    int ier;
+    double horizon, max_delta, cos_omega_sunset = 1, omega_sunset = 0;
+    double phi;
 
-  ier = 1;
-  if ((gamma_riset == 0.0) || (gamma_riset == -1.0))
-    ier = 0;
-  horizon = (-50.0 / 60.0) * deg_rad; /* horizon, -50' in radians */
-  if (gamma_riset >= horizon)
-    horizon = gamma_riset;
-
-  phi = geogr_to_geoce(phi_g);
-  max_delta = 23.45 * deg_rad;
-
-  if ((fabs(phi) < (Pi / 2.0)) && (fabs(delta) <= max_delta) && (ier == 0))
-    {
-      cos_omegas = (sin(horizon) - (sin(phi) * sin(delta))) / (cos(phi) * cos(
-          delta));
-      ier = 0;
-    }
-  else
     ier = 1;
+    if ((gamma_riset == 0.0) || (gamma_riset == -1.0))
+        ier = 0;
+    horizon = (-50.0 / 60.0) * deg_rad; /* horizon, -50' in radians */
+    if (gamma_riset >= horizon)
+        horizon = gamma_riset;
 
-  if (fabs(cos_omegas) < 1.0)
-    omegas = acos(cos_omegas);
-  if (cos_omegas >= 1.0) /* the sun is always below the horizon : polar night */
-    omegas = 0.0;
-  if (cos_omegas <= -1.0) /* the sun is always above the horizon : polar day */
-    omegas = Pi;
+    phi = geogr_to_geoce(phi_g);
+    max_delta = 23.45 * deg_rad;
 
-  *omega_sr = -omegas;
-  *omega_ss = omegas;
-  return (ier);
+    if ((fabs(phi) < (Pi / 2.0)) && (fabs(delta) <= max_delta) && (ier == 0))
+    {
+        cos_omega_sunset = (sin(horizon) - (sin(phi) * sin(delta))) / (cos(phi) * cos(delta));
+        ier = 0;
+    }
+    else
+        ier = 1;
+
+    if (cos_omega_sunset >= 1.0) /* the sun is always below the horizon: polar night */
+        omega_sunset = 0.0;
+    else if (cos_omega_sunset <= -1.0) /* the sun is always above the horizon: polar day */
+        omega_sunset = Pi;
+    else
+        omega_sunset = acos(cos_omega_sunset);
+
+    *omega_sr = -omega_sunset;
+    *omega_ss = omega_sunset;
+    return (ier);
 }
 
 /* Source : */
@@ -531,8 +536,9 @@ timerise_daylength(double omega_sr, double omega_ss, double *t_sr,
        * alternative way
        */
       /*
-       * ier = omega_to_LAT(omega_sr,&t_sr); if(ier == 0) ier ==
-       * omega_to_LAT(omega_ss,&t_ss); if(ier != 0) return(ier);
+       * ier = omega_to_LAT(omega_sr,&t_sr); 
+       * if(ier == 0) ier = omega_to_LAT(omega_ss,&t_ss); 
+       * if(ier != 0) return(ier);
        */
       *t_sr = 12.0 + omega_sr * 12.0 / Pi;
       *t_ss = 12.0 + omega_ss * 12.0 / Pi;
@@ -567,24 +573,23 @@ int
 LMT_to_LAT(double day_angle, double lambda, double lambda_ref, int summer_corr,
     double *dt)
 {
-  const double deg_rad = (Pi / 180.0); /* converts decimal degrees into radians */
-  int ier;
-  double a1, a2, a3, a4, ET;
+    const double deg_rad = (Pi / 180.0); /* converts decimal degrees into radians */
+    int ier = 1;
+    double const a1 = -0.128;
+    double const a2 = -0.165;
+    double const a3 = 2.80 * deg_rad;
+    double const a4 = 19.70 * deg_rad;
+    double ET;
 
-  ier = 1;
-  a1 = -0.128;
-  a2 = -0.165;
-  a3 = 2.80 * deg_rad;
-  a4 = 19.70 * deg_rad;
-  if ((day_angle > 0.0) && (day_angle < (2.0 * Pi * 1.0021)) && (fabs(lambda)
-      <= Pi) && (fabs(lambda_ref) <= Pi))
+    if ((day_angle > 0.0) && (day_angle < (2.0 * Pi * 1.0021)) && (fabs(lambda) <= Pi) 
+      && (fabs(lambda_ref) <= Pi))
     {
       ier = 0;
       ET = a1 * sin(day_angle - a3) + a2 * sin(2.0 * day_angle + a4);
       *dt = ET + ((lambda - lambda_ref) * 12.0 / Pi) - (double) summer_corr;
     }
 
-  return (ier);
+    return (ier);
 }
 
 /* Source : */
@@ -728,18 +733,19 @@ azimuth_sun(double phi_g, double delta, double omega, double gamma,
 int
 corr_distance(double day_angle, double *eccentricity)
 {
-  const double deg_rad = (Pi / 180.0); /* converts decimal degrees into radians */
-  int ier;
-  double a;
+    const double deg_rad = (Pi / 180.0); /* converts decimal degrees into radians */
+    int ier;
 
-  ier = 1;
-  a = 2.80 * deg_rad;
-  if ((day_angle >= 0.0) && (day_angle <= (2.0 * Pi * 1.0021)))
+    assert((day_angle >= 0.0) && (day_angle <= (2.0 * Pi * 1.0021)));
+
+    ier = 1;
+    if ((day_angle >= 0.0) && (day_angle <= (2.0 * Pi * 1.0021)))
     {
       ier = 0;
+      double a = 2.80 * deg_rad;
       *eccentricity = 1.0 + 0.03344 * cos(day_angle - a);
     }
-  return (ier);
+    return (ier);
 }
 
 /* Source : */
@@ -795,7 +801,7 @@ G0_general(double phi_g, double eccentricity, double delta, double omega1,
     *G0_12 = 0.0;
   else
     {
-      a = I0 * eccentricity * Dl / (2.0 * Pi);
+      a = I0 * eccentricity * DAY_LENGTH / (2.0 * Pi);
       b1 = sin(phi) * sin(delta) * (omega2 - omega1);
       b2 = cos(phi) * cos(delta) * (sin(omega2) - sin(omega1));
       c = a * (b1 + b2);
@@ -833,7 +839,7 @@ G0_day(double phi_g, double eccentricity, double delta, double *G0d)
   ier = sunrise_hour_angle(phi_g, delta, 0.0, &omega_sr, &omega_ss);
   if (ier != 0)
     return (ier);
-  a = I0 * eccentricity * Dl / Pi;
+  a = I0 * eccentricity * DAY_LENGTH / Pi;
   /*
    * b = cos(phi) * cos(delta) * (sin(omega_ss) - omega_ss * cos(omega_ss));
    */
@@ -867,7 +873,7 @@ G0_hours_profile(double phi_g, double eccentricity, double delta, double *G0h)
   ier = sunrise_hour_angle(phi_g, delta, 0.0, &omega_sr, &omega_ss);
   if (ier != 0)
     return (ier);
-  a = I0 * eccentricity * Dl / (2.0 * Pi);
+  a = I0 * eccentricity * DAY_LENGTH / (2.0 * Pi);
   b1 = sin(phi) * sin(delta);
   b2 = cos(phi) * cos(delta);
 
@@ -924,7 +930,7 @@ G0_hour(double phi_g, double eccentricity, double delta, double t, double *G0h)
   ier = sunrise_hour_angle(phi_g, delta, 0.0, &omega_sr, &omega_ss);
   if (ier != 0)
     return (ier);
-  a = I0 * eccentricity * Dl / (2.0 * Pi);
+  a = I0 * eccentricity * DAY_LENGTH / (2.0 * Pi);
   b1 = sin(phi) * sin(delta);
   b2 = cos(phi) * cos(delta);
 
