@@ -157,7 +157,7 @@ int julian_to_date(int year_number, int julian_day,
   return (ier);
 }
 
-inline int nbdays_month(int year_number, int month_number) 
+INLINE int nbdays_month(int year_number, int month_number) 
 {
     assert((year_number > 0) && (month_number > 0) && (month_number < 13));
     
@@ -184,14 +184,14 @@ int number_to_name_month(int month_number, char *month_name)
   return (ier);
 }
 
-inline double Day_Angle(int julian_day)
+INLINE double Day_Angle(int julian_day)
 {
   assert((julian_day > 0) && (julian_day <= 366));
 
   return (double)julian_day * 2.0 * Pi / 365.2422;
 }
 
-inline double declination_sun(int year_number, int julian_day, double lambda) 
+INLINE double declination_sun(int year_number, int julian_day, double lambda) 
 {
 	double n0, t1, wt;
 
@@ -202,6 +202,7 @@ inline double declination_sun(int year_number, int julian_day, double lambda)
 	double const b5 = -0.0132296;
 	double const b6 = 0.0063809;
 	double const b7 = 0.0003508;
+	double const w0 = 2.0 * Pi / 365.2422;
 
     assert ((julian_day > 0) && (julian_day <= 366));
 
@@ -217,7 +218,6 @@ inline double declination_sun(int year_number, int julian_day, double lambda)
     */
 	n0 = 78.8946 + 0.2422 * (year_number - 1957) - ((year_number - 1957) >> 2);
     t1 = -0.5 - lambda / (2 * Pi) - n0;
-	double const w0 = 2.0 * Pi / 365.2422;
 	wt = w0 * (julian_day + t1);
 
 	return b1 + b2 * sin(wt) + b3 * sin(2 * wt) + b4 * sin(3 * wt)
@@ -262,21 +262,21 @@ int declination_sun_month(int month_number, int type_use,
   return (ier);
 }
 
-inline double solar_hour_angle (double t)
+INLINE double solar_hour_angle (double t)
 {
 //  assert((t >= 0.0) && (t <= 24.0));
 
   return (t - 12.0) * Pi / 12.0;
 }
 
-inline double omega_to_LAT (double omega)
+INLINE double omega_to_LAT (double omega)
 {
   assert((omega >= -Pi) && (omega <= Pi));
 
   return 12.0 * (1.0 + omega / Pi);
 }
 
-inline double geogr_to_geoce(double phi_g)
+INLINE double geogr_to_geoce(double phi_g)
 {
     double const CC = 0.99330552; /* Correction factor for converting geographic
                                    * into geocentric latitude. 
@@ -359,7 +359,7 @@ int sunrise_hour_angle(double phi_g, double delta, double gamma_riset,
     return (ier);
 }
 
-inline double sunset(double phi, double delta) 
+INLINE double sunset(double phi, double delta) 
 {
     //double cos_omega_sunset = (sin(0.0) - (sin(phi) * sin(delta))) / (cos(phi) * cos(delta));
 	double cos_omega_sunset = - tan(phi) * tan(delta);
@@ -401,7 +401,7 @@ int timerise_daylength(double omega_sr, double omega_ss,
 /* CHANGING THE TIME SYSTEM */
 /****************************/
 
-inline double LMT_to_LAT(double day_angle, double lambda, double lambda_ref, int summer_corr)
+INLINE double LMT_to_LAT(double day_angle, double lambda, double lambda_ref, int summer_corr)
 {
     const double deg_rad = (Pi / 180.0); /* converts decimal degrees into radians */
     double const a1 = -0.128;
@@ -511,13 +511,13 @@ int azimuth_sun(double phi_g, double delta, double omega, double gamma,
 /* EXTRATERRESTRIAL IRRADIATION */
 /********************************/
 
-inline double corr_distance(double day_angle)
+INLINE double corr_distance(double day_angle)
 {
     const double deg_rad = (Pi / 180.0); /* converts decimal degrees into radians */
+    const double a = 2.80 * deg_rad;
 
     assert((day_angle >= 0.0) && (day_angle <= (2.0 * Pi * 1.0021)));
 
-    const double a = 2.80 * deg_rad;
 	return 1.0 + 0.03344 * cos(day_angle - a);
 }
 

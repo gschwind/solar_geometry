@@ -61,8 +61,10 @@ extern "C"
 
 #ifdef _WIN32
 #define EXPORT _declspec (dllexport)
+#define INLINE
 #else
 #define EXPORT
+#define INLINE inline
 #endif
 
 #define Pi  3.141592654
@@ -156,7 +158,7 @@ EXPORT PUBLIC int julian_to_date (int year_number, int julian_day,
    number_days_month : number of days in a month */
 /* The procedure "nbdays_month" returns the number of days in a month, useful for
    monthly calculations. */
-EXPORT PUBLIC inline int nbdays_month(int year_number, int month_number);
+EXPORT PUBLIC INLINE int nbdays_month(int year_number, int month_number);
 
 /* Source : */
 /* Inputs :
@@ -176,7 +178,7 @@ EXPORT PUBLIC int number_to_name_month (int month_number, char *month_name);
 /* The procedure "Day_Angle" expresses the integer day number as an angle (in
    radians) from 12:00 hours on the day 31st December. A year length of 
    365.2422 days is used. */
-EXPORT PUBLIC inline double Day_Angle (int julian_day);
+EXPORT PUBLIC INLINE double Day_Angle (int julian_day);
 
 /* Sources : 
    Bourges, B., 1985. Improvement in solar declination computation. Solar 
@@ -198,7 +200,7 @@ EXPORT PUBLIC inline double Day_Angle (int julian_day);
    longitude, as noon occurs earlier if longitude is East of Greenwich, and 
    later if it is West. The chosen algorithm uses 1957 as base year; it is 
    basically a truncated Fourier series with six harmonics. */
-EXPORT PUBLIC inline double declination_sun(int year_number, int julian_day, double lambda);
+EXPORT PUBLIC INLINE double declination_sun(int year_number, int julian_day, double lambda);
 
 /* Source : Gruter (Ed.) (1984) */
 /* Inputs :
@@ -233,7 +235,7 @@ EXPORT PUBLIC double solar_hour_angle (double t);
    solar hour angle (in radians). */
 EXPORT PUBLIC double omega_to_LAT (double omega);
 
-EXPORT PUBLIC inline double geogr_to_geoce (double phi_g);
+EXPORT PUBLIC INLINE double geogr_to_geoce (double phi_g);
 
 /* Source : */
 /* Inputs :
@@ -272,7 +274,7 @@ EXPORT PUBLIC int sunrise_hour_angle (double phi_g, double delta, double gamma_r
 			 double *omega_sr, double *omega_ss);
 
 /* Same algorithm for sunset only */
-EXPORT PUBLIC inline double sunset(double phi, double delta);
+EXPORT PUBLIC INLINE double sunset(double phi, double delta);
 
 /* Source : */
 /* Inputs :
@@ -309,7 +311,7 @@ EXPORT PUBLIC int timerise_daylength (double omega_sr, double omega_ss,
    - the second stage handles the difference between the longitude of the site 
    under consideration and the reference time zone longitude for the site. A 
    summer time correction must be added for some countries. */
-EXPORT PUBLIC inline double LMT_to_LAT(double day_angle, double lambda, double lambda_ref, int summer_corr);
+EXPORT PUBLIC INLINE double LMT_to_LAT(double day_angle, double lambda, double lambda_ref, int summer_corr);
 
 /* Source : */
 /* Inputs :
@@ -374,7 +376,7 @@ EXPORT PUBLIC int azimuth_sun (double phi_g, double delta, double omega, double 
    sun-earth distance from its mean value (also known as eccentricity). It is a
    fucntion of time, but a single (average) value per day is enough for 
    practical calculations. */
-EXPORT PUBLIC inline double corr_distance(double day_angle);
+EXPORT PUBLIC INLINE double corr_distance(double day_angle);
 
 /* Source : */
 /* Inputs :
