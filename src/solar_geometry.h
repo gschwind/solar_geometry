@@ -59,7 +59,7 @@ extern "C"
 #define PUBLIC extern
 #endif
 
-#ifdef _WIN32
+#ifdef _VISUAL_
 #define EXPORT _declspec (dllexport)
 #define INLINE
 #else
