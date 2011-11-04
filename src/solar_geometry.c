@@ -38,7 +38,11 @@ static const char NAME_OF_MONTH[][4] = { "", "jan", "feb", "mar", "apr", "may", 
 
 #define MIN(x,y) ((x)<(y) ? (x) : (y))
 #define MAX(x,y) ((x)>(y) ? (x) : (y))
-
+#define M_PI 3.141592653589793
+#define M_PI_2 1.570796326794897
+#define M_PI_3 1.047197551196598
+#define M_PI_12 0.261799387799149
+#define M_PI_24 0.130899693899575
 
 /*************/
 /* NOTATIONS */
@@ -447,6 +451,88 @@ int UT_to_LAT(double UT, double day_angle, double lambda,
     }
 
   return (ier);
+}
+
+/***************************************/
+/* POSITION OF THE SUN IN THE SKY FAST */
+/***************************************/
+
+void init_solar_geometry_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double phi_g, double delta)
+{
+	double phi;
+
+	p_sgf->phi_g = phi_g;
+	p_sgf->delta = delta;
+	
+	phi = geogr_to_geoce(phi_g);
+	p_sgf->phi = phi;
+		
+	p_sgf->sin_phi = sin(phi);	
+	p_sgf->cos_phi = cos(phi);	
+	p_sgf->sin_delta = sin(delta);	
+	p_sgf->cos_delta = cos(delta);	
+
+	p_sgf->sin_phi_sin_delta = p_sgf->sin_phi*p_sgf->sin_delta;
+	p_sgf->cos_phi_cos_delta = p_sgf->cos_phi*p_sgf->cos_delta;
+	
+}
+
+void deftilt_solar_geometry_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double alpha, double beta)
+{
+	p_sgf->sin_alpha = sin(alpha);	
+	p_sgf->cos_alpha = cos(alpha);	
+	p_sgf->sin_beta = sin(beta);	
+	p_sgf->cos_beta = cos(beta);	
+
+	if (p_sgf->phi >= 0.0) {
+		p_sgf->A = p_sgf->cos_delta * (p_sgf->cos_phi * p_sgf->cos_beta + p_sgf->sin_phi * p_sgf->sin_beta * p_sgf->cos_alpha);
+		p_sgf->B = p_sgf->cos_delta * p_sgf->sin_beta * p_sgf->sin_alpha;
+		p_sgf->C = p_sgf->sin_delta * (p_sgf->sin_phi * p_sgf->cos_beta - p_sgf->cos_phi * p_sgf->sin_beta * p_sgf->cos_alpha);
+	} else {
+		p_sgf->A = p_sgf->cos_delta * (p_sgf->cos_phi * p_sgf->cos_beta - p_sgf->sin_phi * p_sgf->sin_beta * p_sgf->cos_alpha);
+		p_sgf->B = p_sgf->cos_delta * p_sgf->sin_beta * p_sgf->sin_alpha;
+		p_sgf->C = p_sgf->sin_delta * (p_sgf->sin_phi * p_sgf->cos_beta + p_sgf->cos_phi * p_sgf->sin_beta * p_sgf->cos_alpha);
+	}
+}
+
+void elevation_sun_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, double *p_gamma)
+{
+	*p_gamma = asin(p_sgf->sin_phi_sin_delta + p_sgf->cos_phi_cos_delta*cos_omega);
+}
+
+void elevation_zenith_sun_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, double *p_gamma, double *p_theta)
+{
+	*p_gamma = asin(p_sgf->sin_phi_sin_delta + p_sgf->cos_phi_cos_delta*cos_omega);
+	*p_theta = M_PI_2 - *p_gamma;
+}
+
+void azimuth_sun_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double sin_omega, double gamma, double *p_alpha)
+{
+	double cos_as, sin_as, x;
+	double cos_gamma = cos(gamma);
+  
+	cos_as = (p_sgf->sin_phi * sin(gamma) - p_sgf->sin_delta) / (p_sgf->cos_phi * cos_gamma);
+	if (p_sgf->phi < 0.0)
+		cos_as = -cos_as; /* Southern hemisphere */
+		
+	sin_as = p_sgf->cos_delta * sin_omega / cos_gamma;
+
+	if (cos_as > 1.0)
+		cos_as = 1.0;
+	else if (cos_as < -1.0)
+		cos_as = -1.0;
+
+	x = acos(cos_as);
+	if (sin_as >= 0.0)
+		*p_alpha = x;
+	else
+		*p_alpha = -x;
+
+}
+
+void cos_incident_angle_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, double sin_omega, double *p_costhetai)
+{
+	*p_costhetai = p_sgf->A*cos_omega + p_sgf->B*sin_omega + p_sgf->C;
 }
 
 /**********************************/
