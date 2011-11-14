@@ -38,8 +38,11 @@ static const char NAME_OF_MONTH[][4] = { "", "jan", "feb", "mar", "apr", "may", 
 
 #define MIN(x,y) ((x)<(y) ? (x) : (y))
 #define MAX(x,y) ((x)>(y) ? (x) : (y))
+
+#ifdef _VISUAL_
 #define M_PI 3.141592653589793
 #define M_PI_2 1.570796326794897
+#endif
 #define M_PI_3 1.047197551196598
 #define M_PI_12 0.261799387799149
 #define M_PI_24 0.130899693899575
