@@ -482,8 +482,10 @@ void init_solar_geometry_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double phi_g, double
 
 void deftilt_solar_geometry_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double alpha, double beta)
 {
+	p_sgf->alpha = alpha;
 	p_sgf->sin_alpha = sin(alpha);	
 	p_sgf->cos_alpha = cos(alpha);	
+	p_sgf->beta = beta;
 	p_sgf->sin_beta = sin(beta);	
 	p_sgf->cos_beta = cos(beta);	
 
