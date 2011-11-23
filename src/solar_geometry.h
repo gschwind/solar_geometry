@@ -61,7 +61,7 @@ extern "C"
 
 #ifdef _VISUAL_
 #define EXPORT _declspec (dllexport)
-#define INLINE
+#define INLINE inline
 #else
 #define EXPORT
 #define INLINE inline
