@@ -402,6 +402,70 @@ EXPORT PUBLIC int elevation_zenith_sun (double phi_g, double delta, double omega
 EXPORT PUBLIC int azimuth_sun (double phi_g, double delta, double omega, double gamma,
 		  double *alpha);
 
+/* Source : Lucien Wald */
+/* Inputs :
+   phi      : latitude of site (in radians, positive to North)
+   alpha    : solar azimuthal angle using Solar Geometry convention (in radians) */
+/* Outputs :
+   alpha_iso: solar azimuthal angle using ISO convention (in radians) */
+/* The procedure "azimuth_sg_to_azimuth_iso" converts the solar azimuthal angle expressed
+   using Solar Geometry convention (in the Northern hemisphere, the azimuth angle 
+   has a positive value when the sun is to the west of South, i.e. during the afternoon 
+   in solar time ; for the Southern hemisphere, the azimuth angle is measured from North) 
+   into the solar azimuthal angle expressed using ISO convention (0 = North, East is positive). */
+PUBLIC inline double azimuth_sg_to_azimuth_iso(double phi, double alpha)
+{
+    double alpha_iso;
+    
+    // If Northern hemisphere
+    if (phi >= 0)
+        alpha_iso = alpha + Pi;
+    else 
+        alpha_iso = -alpha;
+    
+    return alpha_iso;
+}
+
+/* Source : Lucien Wald */
+/* Inputs :
+   phi      : latitude of site (in radians, positive to North)
+   alpha_iso: solar azimuthal angle using ISO convention (in radians) */
+/* Outputs :
+   alpha    : solar azimuthal angle using Solar Geometry convention (in radians) */
+/* The procedure "azimuth_iso_to_azimuth_sg" converts the solar azimuthal angle expressed
+   using ISO convention (0 = North, East is positive) into the solar azimuthal angle expressed
+   using Solar Geometry convention (in the Northern hemisphere, the azimuth angle 
+   has a positive value when the sun is to the west of South, i.e. during the afternoon 
+   in solar time ; for the Southern hemisphere, the azimuth angle is measured from North). */
+PUBLIC inline double azimuth_iso_to_azimuth_sg(double phi, double alpha_iso)
+{
+    double alpha;
+    
+    // If Northern hemisphere
+    if (phi >= 0)
+        alpha = alpha_iso - Pi;
+    else 
+        alpha = -alpha_iso;
+    
+    return alpha;
+}
+
+/* Source : */
+/* Inputs :
+   phi_g : latitude of site (in radians, positive to North)
+   delta : solar declination angle (in radians)
+   omega : solar hour angle (in radians)
+   gamma : solar altitude angle (in radians)
+   beta  : plane tilt angle (in radians)
+   alpha : plane azimuthal angle (in radians) */
+/* Outputs :
+   costhetai : cosinus of the incidence angle of the sun wrt plane */
+/* The procedure "cos_incident_angle" computes the cosinus of the incidence angle 
+   of the sun wrt a tilted plane. Returns 0 if OK, 1 otherwise. */
+EXPORT PUBLIC int cos_incident_angle(double phi_g, double delta, double omega, double gamma, 
+        double beta, double alpha,
+        double *costhetai);
+
 /********************************/
 /* EXTRATERRESTRIAL IRRADIATION */
 /********************************/

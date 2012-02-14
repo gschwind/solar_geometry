@@ -532,7 +532,6 @@ void azimuth_sun_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double sin_omega, double gam
 		*p_alpha = x;
 	else
 		*p_alpha = -x;
-
 }
 
 void cos_incident_angle_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, double sin_omega, double *p_costhetai)
@@ -596,6 +595,38 @@ int azimuth_sun(double phi_g, double delta, double omega, double gamma,
     *alpha = -x;
 
   return (ier);
+}
+
+int cos_incident_angle(double phi_g, double delta, double omega, double gamma, 
+    double beta, double alpha,
+    double *costhetai)
+{
+    int ier = 0;
+    double sinBeta;
+    double cosBeta;
+    double A;
+    double B;
+    double C;
+    double phi;
+    
+    sinBeta = sin(beta);
+    cosBeta = cos(beta);
+
+    phi = geogr_to_geoce(phi_g);
+
+    if (phi >= 0.0) {
+        A = cos(delta) * (cos(phi) * cosBeta + sin(phi) * sinBeta * cos(alpha));
+        B = cos(delta) * sinBeta * sin(alpha);
+        C = sin(delta) * (sin(phi) * cosBeta - cos(phi) * sinBeta * cos(alpha));
+    } else {
+        A = cos(delta) * (cos(phi) * cosBeta - sin(phi) * sinBeta * cos(alpha));
+        B = cos(delta) * sinBeta * sin(alpha);
+        C = sin(delta) * (sin(phi) * cosBeta + cos(phi) * sinBeta * cos(alpha));
+    }
+
+    *costhetai = A * cos(omega) + B * sin(omega) + C;
+
+    return (ier);
 }
 
 /********************************/
