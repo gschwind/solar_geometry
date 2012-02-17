@@ -19,6 +19,10 @@
 #include <assert.h>
 
 
+/*************/
+/* CONSTANTS */
+/*************/
+
 // #days of each month (0-based) for NON leap year
 static const int NB_DAYS_OF_MONTH[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 // #days of each month (0-based) for leap year
@@ -460,67 +464,46 @@ int UT_to_LAT(double UT, double day_angle, double lambda,
 /* POSITION OF THE SUN IN THE SKY FAST */
 /***************************************/
 
-void init_solar_geometry_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double phi_g, double delta)
+void init_geo_location_fast(S_GEO_LOCATION_FAST *p_loc, double phi_g, double delta)
 {
 	double phi;
 
-	p_sgf->phi_g = phi_g;
-	p_sgf->delta = delta;
+	p_loc->phi_g = phi_g;
+	p_loc->delta = delta;
 	
 	phi = geogr_to_geoce(phi_g);
-	p_sgf->phi = phi;
+	p_loc->phi = phi;
 		
-	p_sgf->sin_phi = sin(phi);	
-	p_sgf->cos_phi = cos(phi);	
-	p_sgf->sin_delta = sin(delta);	
-	p_sgf->cos_delta = cos(delta);	
+	p_loc->sin_phi = sin(phi);	
+	p_loc->cos_phi = cos(phi);	
+	p_loc->sin_delta = sin(delta);	
+	p_loc->cos_delta = cos(delta);	
 
-	p_sgf->sin_phi_sin_delta = p_sgf->sin_phi*p_sgf->sin_delta;
-	p_sgf->cos_phi_cos_delta = p_sgf->cos_phi*p_sgf->cos_delta;
-	
+	p_loc->sin_phi_sin_delta = p_loc->sin_phi*p_loc->sin_delta;
+	p_loc->cos_phi_cos_delta = p_loc->cos_phi*p_loc->cos_delta;
 }
 
-void deftilt_solar_geometry_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double alpha, double beta)
+void elevation_sun_fast(S_GEO_LOCATION_FAST *p_loc, double cos_omega, double *p_gamma)
 {
-	p_sgf->alpha = alpha;
-	p_sgf->sin_alpha = sin(alpha);	
-	p_sgf->cos_alpha = cos(alpha);	
-	p_sgf->beta = beta;
-	p_sgf->sin_beta = sin(beta);	
-	p_sgf->cos_beta = cos(beta);	
-
-	if (p_sgf->phi >= 0.0) {
-		p_sgf->A = p_sgf->cos_delta * (p_sgf->cos_phi * p_sgf->cos_beta + p_sgf->sin_phi * p_sgf->sin_beta * p_sgf->cos_alpha);
-		p_sgf->B = p_sgf->cos_delta * p_sgf->sin_beta * p_sgf->sin_alpha;
-		p_sgf->C = p_sgf->sin_delta * (p_sgf->sin_phi * p_sgf->cos_beta - p_sgf->cos_phi * p_sgf->sin_beta * p_sgf->cos_alpha);
-	} else {
-		p_sgf->A = p_sgf->cos_delta * (p_sgf->cos_phi * p_sgf->cos_beta - p_sgf->sin_phi * p_sgf->sin_beta * p_sgf->cos_alpha);
-		p_sgf->B = p_sgf->cos_delta * p_sgf->sin_beta * p_sgf->sin_alpha;
-		p_sgf->C = p_sgf->sin_delta * (p_sgf->sin_phi * p_sgf->cos_beta + p_sgf->cos_phi * p_sgf->sin_beta * p_sgf->cos_alpha);
-	}
+	*p_gamma = asin(p_loc->sin_phi_sin_delta + p_loc->cos_phi_cos_delta*cos_omega);
 }
 
-void elevation_sun_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, double *p_gamma)
+void elevation_zenith_sun_fast(S_GEO_LOCATION_FAST *p_loc, double cos_omega, double *p_gamma, double *p_theta)
 {
-	*p_gamma = asin(p_sgf->sin_phi_sin_delta + p_sgf->cos_phi_cos_delta*cos_omega);
-}
-
-void elevation_zenith_sun_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, double *p_gamma, double *p_theta)
-{
-	*p_gamma = asin(p_sgf->sin_phi_sin_delta + p_sgf->cos_phi_cos_delta*cos_omega);
+	*p_gamma = asin(p_loc->sin_phi_sin_delta + p_loc->cos_phi_cos_delta*cos_omega);
 	*p_theta = M_PI_2 - *p_gamma;
 }
 
-void azimuth_sun_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double sin_omega, double gamma, double *p_alpha)
+void azimuth_sun_fast(S_GEO_LOCATION_FAST *p_loc, double sin_omega, double gamma, double *p_alpha)
 {
 	double cos_as, sin_as, x;
 	double cos_gamma = cos(gamma);
   
-	cos_as = (p_sgf->sin_phi * sin(gamma) - p_sgf->sin_delta) / (p_sgf->cos_phi * cos_gamma);
-	if (p_sgf->phi < 0.0)
+	cos_as = (p_loc->sin_phi * sin(gamma) - p_loc->sin_delta) / (p_loc->cos_phi * cos_gamma);
+	if (p_loc->phi < 0.0)
 		cos_as = -cos_as; /* Southern hemisphere */
 		
-	sin_as = p_sgf->cos_delta * sin_omega / cos_gamma;
+	sin_as = p_loc->cos_delta * sin_omega / cos_gamma;
 
 	if (cos_as > 1.0)
 		cos_as = 1.0;
@@ -534,9 +517,29 @@ void azimuth_sun_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double sin_omega, double gam
 		*p_alpha = -x;
 }
 
-void cos_incident_angle_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, double sin_omega, double *p_costhetai)
+void init_tilted_plane_fast(S_TILTED_PLANE_FAST *p_tp, const S_GEO_LOCATION_FAST *p_loc, double alpha, double beta)
 {
-	*p_costhetai = p_sgf->A*cos_omega + p_sgf->B*sin_omega + p_sgf->C;
+	p_tp->alpha = alpha;
+	p_tp->sin_alpha = sin(alpha);	
+	p_tp->cos_alpha = cos(alpha);	
+	p_tp->beta = beta;
+	p_tp->sin_beta = sin(beta);	
+	p_tp->cos_beta = cos(beta);	
+
+	if (p_loc->phi >= 0.0) {
+		p_tp->A = p_loc->cos_delta * (p_loc->cos_phi * p_tp->cos_beta + p_loc->sin_phi * p_tp->sin_beta * p_tp->cos_alpha);
+		p_tp->B = p_loc->cos_delta * p_tp->sin_beta * p_tp->sin_alpha;
+		p_tp->C = p_loc->sin_delta * (p_loc->sin_phi * p_tp->cos_beta - p_loc->cos_phi * p_tp->sin_beta * p_tp->cos_alpha);
+	} else {
+		p_tp->A = p_loc->cos_delta * (p_loc->cos_phi * p_tp->cos_beta - p_loc->sin_phi * p_tp->sin_beta * p_tp->cos_alpha);
+		p_tp->B = p_loc->cos_delta * p_tp->sin_beta * p_tp->sin_alpha;
+		p_tp->C = p_loc->sin_delta * (p_loc->sin_phi * p_tp->cos_beta + p_loc->cos_phi * p_tp->sin_beta * p_tp->cos_alpha);
+	}
+}
+
+void cos_incident_angle_fast(S_TILTED_PLANE_FAST *p_tp, double cos_omega, double sin_omega, double *p_costhetai)
+{
+	*p_costhetai = p_tp->A*cos_omega + p_tp->B*sin_omega + p_tp->C;
 }
 
 /**********************************/

@@ -67,6 +67,11 @@ extern "C"
 #define INLINE inline
 #endif
 
+
+/*************/
+/* CONSTANTS */
+/*************/
+
 #define Pi  3.141592654
 #define I0  1367.0			/* solar constant in W/m2 */
 #define DAY_LENGTH  24.0	/* average value for the length of the day in decimal hours */
@@ -117,45 +122,6 @@ extern "C"
 /* A  N E A R  P O I N T  S O U R C E        */
 /*                                           */
 /*********************************************/
-
-/***************************************/
-/* POSITION OF THE SUN IN THE SKY FAST */
-/***************************************/
-typedef struct s_sgf {
-	
-	double phi_g;
-	double phi;
-	double delta;
-	
-	double sin_phi;
-	double sin_delta;
-	double cos_phi;
-	double cos_delta;
-	double sin_phi_sin_delta;
-	double cos_phi_cos_delta;
-	
-	/* For computation of the cosinus of the incident angle */
-	
-	double alpha;
-	double beta;
-	
-	double cos_alpha;
-	double sin_alpha;
-	
-	double cos_beta;
-	double sin_beta;
-	
-	double A;
-	double B;
-	double C;	
-} S_SOLAR_GEOMETRY_FAST;
-
-EXPORT PUBLIC void init_solar_geometry_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double phi_g, double delta);
-EXPORT PUBLIC void deftilt_solar_geometry_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double alpha, double beta);
-EXPORT PUBLIC void elevation_sun_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, double *p_gamma);
-EXPORT PUBLIC void elevation_zenith_sun_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, double *p_gamma, double *p_theta);
-EXPORT PUBLIC void azimuth_sun_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double sin_omega, double gamma, double *p_alpha);
-EXPORT PUBLIC void cos_incident_angle_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, double sin_omega, double *p_costhetai);
 
 /********************/
 /* BASIC PARAMETERS */
@@ -367,6 +333,52 @@ EXPORT PUBLIC INLINE double LMT_to_LAT(double day_angle, double lambda, double l
    Returns 0 if OK, 1 otherwise. */
 EXPORT PUBLIC int UT_to_LAT (double UT, double day_angle, double lambda,
 		double *LAT);
+
+/***************************************/
+/* POSITION OF THE SUN IN THE SKY FAST */
+/***************************************/
+
+// Structure representing the sun position w.r.t. a location on Earth
+typedef struct {
+    
+    double phi_g;
+    double phi;
+    double delta;
+    
+    double sin_phi;
+    double sin_delta;
+    double cos_phi;
+    double cos_delta;
+    double sin_phi_sin_delta;
+    double cos_phi_cos_delta;
+    
+} S_GEO_LOCATION_FAST;
+
+EXPORT PUBLIC void init_geo_location_fast(S_GEO_LOCATION_FAST *p_loc, double phi_g, double delta);
+EXPORT PUBLIC void elevation_sun_fast(S_GEO_LOCATION_FAST *p_loc, double cos_omega, double *p_gamma);
+EXPORT PUBLIC void elevation_zenith_sun_fast(S_GEO_LOCATION_FAST *p_loc, double cos_omega, double *p_gamma, double *p_theta);
+EXPORT PUBLIC void azimuth_sun_fast(S_GEO_LOCATION_FAST *p_loc, double sin_omega, double gamma, double *p_alpha);
+
+// Structure representing a tilted plane
+typedef struct {
+    
+    double alpha;
+    double beta;
+    
+    double cos_alpha;
+    double sin_alpha;
+    
+    double cos_beta;
+    double sin_beta;
+    
+    double A;
+    double B;
+    double C;   
+
+} S_TILTED_PLANE_FAST;
+
+EXPORT PUBLIC void init_tilted_plane_fast(S_TILTED_PLANE_FAST *p_tp, const S_GEO_LOCATION_FAST *p_loc, double alpha, double beta);
+EXPORT PUBLIC void cos_incident_angle_fast(S_TILTED_PLANE_FAST *p_tp, double cos_omega, double sin_omega, double *p_costhetai);
 
 /**********************************/
 /* POSITION OF THE SUN IN THE SKY */
