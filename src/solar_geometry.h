@@ -425,18 +425,7 @@ EXPORT PUBLIC int azimuth_sun (double phi_g, double delta, double omega, double 
    has a positive value when the sun is to the west of South, i.e. during the afternoon 
    in solar time ; for the Southern hemisphere, the azimuth angle is measured from North) 
    into the solar azimuthal angle expressed using ISO convention (0 = North, East is positive). */
-PUBLIC inline double azimuth_sg_to_azimuth_iso(double phi, double alpha)
-{
-    double alpha_iso;
-    
-    // If Northern hemisphere
-    if (phi >= 0)
-        alpha_iso = alpha + Pi;
-    else 
-        alpha_iso = -alpha;
-    
-    return alpha_iso;
-}
+EXPORT PUBLIC double azimuth_sg_to_azimuth_iso(double phi, double alpha);
 
 /* Source : Lucien Wald */
 /* Inputs :
@@ -449,18 +438,7 @@ PUBLIC inline double azimuth_sg_to_azimuth_iso(double phi, double alpha)
    using Solar Geometry convention (in the Northern hemisphere, the azimuth angle 
    has a positive value when the sun is to the west of South, i.e. during the afternoon 
    in solar time ; for the Southern hemisphere, the azimuth angle is measured from North). */
-PUBLIC inline double azimuth_iso_to_azimuth_sg(double phi, double alpha_iso)
-{
-    double alpha;
-    
-    // If Northern hemisphere
-    if (phi >= 0)
-        alpha = alpha_iso - Pi;
-    else 
-        alpha = -alpha_iso;
-    
-    return alpha;
-}
+EXPORT PUBLIC double azimuth_iso_to_azimuth_sg(double phi, double alpha_iso);
 
 /* Source : */
 /* Inputs :

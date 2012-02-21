@@ -600,6 +600,44 @@ int azimuth_sun(double phi_g, double delta, double omega, double gamma,
   return (ier);
 }
 
+double azimuth_sg_to_azimuth_iso(double phi, double alpha)
+{
+    double alpha_iso;
+    
+    assert(alpha >= -Pi && alpha <= Pi);
+    
+    // If Northern hemisphere
+    if (phi >= 0) {
+        alpha_iso = alpha + Pi;
+    } else { 
+        alpha_iso = -alpha;
+        if (alpha_iso < 0.0)
+            alpha_iso += 2*Pi;
+    }
+    
+    assert(alpha_iso >= 0.0 && alpha_iso <= 2*Pi);
+    return alpha_iso;
+}
+
+double azimuth_iso_to_azimuth_sg(double phi, double alpha_iso)
+{
+    double alpha;
+    
+    assert(alpha_iso >= 0.0 && alpha_iso <= 2*Pi);
+
+    // If Northern hemisphere
+    if (phi >= 0) {
+        alpha = alpha_iso - Pi;
+    } else {
+        alpha = -alpha_iso;
+        if (alpha < -Pi)
+            alpha += 2*Pi;
+    }
+    
+    assert(alpha >= -Pi && alpha <= Pi);
+    return alpha;
+}
+
 int cos_incident_angle(double phi_g, double delta, double omega, double gamma, 
     double beta, double alpha,
     double *costhetai)
