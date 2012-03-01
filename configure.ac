@@ -7,11 +7,6 @@ AM_INIT_AUTOMAKE()
 AC_CONFIG_SRCDIR([src/solar_geometry.c])
 #AC_CONFIG_HEADER([config.h])
 
-# --enable-m64 compiles in 64 bits. Default is 32 bits as Helioclim does not support 64 bits (yet).
-# Order is not arbitrary. Keep this block before AC_PROG_CC/AC_PROG_CXX.
-AC_ARG_ENABLE(m64,
-[  --enable-m64            compiles in 64 bits],[CFLAGS="$CFLAGS -m64 -mfpmath=387";],[CFLAGS="$CFLAGS -m32";])
-
 # --enable-debug compiles with debugging info. Default is -O2 optimization.
 # Order is not arbitrary. Keep this block before AC_PROG_CC/AC_PROG_CXX.
 AC_ARG_ENABLE(debug,
@@ -30,6 +25,11 @@ AC_PROG_LIBTOOL
 
 # Checks for library functions.
 #AC_CHECK_FUNCS([sqrt])
+
+# simple_pgm2db requires -mfpmath=387 in 64 bits mode.
+if test "x$GCC" = "xyes"; then
+  CFLAGS="$CFLAGS -mfpmath=387"
+fi
 
 # Turn on gcc checks
 if test "x$GCC" = "xyes"; then
