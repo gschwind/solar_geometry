@@ -240,6 +240,13 @@ EXPORT PUBLIC double solar_hour_angle (double t);
    solar hour angle (in radians). */
 EXPORT PUBLIC double omega_to_LAT (double omega);
 
+/* Source : */
+/* Inputs :
+   phi_g : geographic latitude (in radians) */
+/* Outputs :
+   phi : geocentric latitude (in radians) */
+/* The procedure "geogr_to_geoce" converts geographic latitude
+ * into geocentric latitude. */
 EXPORT PUBLIC double geogr_to_geoce (double phi_g);
 
 /* Source : */

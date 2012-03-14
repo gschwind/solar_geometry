@@ -289,7 +289,7 @@ INLINE double omega_to_LAT (double omega)
 
 INLINE double geogr_to_geoce(double phi_g)
 {
-    double const CC = 0.99330552; /* Correction factor for converting geographic
+    double const CC = 0.99330552; /* Correction factor for converting geographic latitude
                                    * into geocentric latitude. 
                                    * CC=(Rpole/Requator)**2
                                    * Rpole=6356.752, Requator=6378.137
