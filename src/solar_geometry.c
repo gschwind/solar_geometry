@@ -483,18 +483,18 @@ void init_geo_location_fast(S_GEO_LOCATION_FAST *p_loc, double phi_g, double del
 	p_loc->cos_phi_cos_delta = p_loc->cos_phi*p_loc->cos_delta;
 }
 
-void elevation_sun_fast(S_GEO_LOCATION_FAST *p_loc, double cos_omega, double *p_gamma)
+void elevation_sun_fast(const S_GEO_LOCATION_FAST *p_loc, double cos_omega, double *p_gamma)
 {
 	*p_gamma = asin(p_loc->sin_phi_sin_delta + p_loc->cos_phi_cos_delta*cos_omega);
 }
 
-void elevation_zenith_sun_fast(S_GEO_LOCATION_FAST *p_loc, double cos_omega, double *p_gamma, double *p_theta)
+void elevation_zenith_sun_fast(const S_GEO_LOCATION_FAST *p_loc, double cos_omega, double *p_gamma, double *p_theta)
 {
 	*p_gamma = asin(p_loc->sin_phi_sin_delta + p_loc->cos_phi_cos_delta*cos_omega);
 	*p_theta = M_PI_2 - *p_gamma;
 }
 
-void azimuth_sun_fast(S_GEO_LOCATION_FAST *p_loc, double sin_omega, double gamma, double *p_alpha)
+void azimuth_sun_fast(const S_GEO_LOCATION_FAST *p_loc, double sin_omega, double gamma, double *p_alpha)
 {
 	double cos_as, sin_as, x;
 	double cos_gamma = cos(gamma);
@@ -537,7 +537,7 @@ void init_tilted_plane_fast(S_TILTED_PLANE_FAST *p_tp, const S_GEO_LOCATION_FAST
 	}
 }
 
-void cos_incident_angle_fast(S_TILTED_PLANE_FAST *p_tp, double cos_omega, double sin_omega, double *p_costhetai)
+void cos_incident_angle_fast(const S_TILTED_PLANE_FAST *p_tp, double cos_omega, double sin_omega, double *p_costhetai)
 {
 	*p_costhetai = p_tp->A*cos_omega + p_tp->B*sin_omega + p_tp->C;
 }

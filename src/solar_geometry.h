@@ -362,9 +362,9 @@ typedef struct {
 } S_GEO_LOCATION_FAST;
 
 EXPORT PUBLIC void init_geo_location_fast(S_GEO_LOCATION_FAST *p_loc, double phi_g, double delta);
-EXPORT PUBLIC void elevation_sun_fast(S_GEO_LOCATION_FAST *p_loc, double cos_omega, double *p_gamma);
-EXPORT PUBLIC void elevation_zenith_sun_fast(S_GEO_LOCATION_FAST *p_loc, double cos_omega, double *p_gamma, double *p_theta);
-EXPORT PUBLIC void azimuth_sun_fast(S_GEO_LOCATION_FAST *p_loc, double sin_omega, double gamma, double *p_alpha);
+EXPORT PUBLIC void elevation_sun_fast(const S_GEO_LOCATION_FAST *p_loc, double cos_omega, double *p_gamma);
+EXPORT PUBLIC void elevation_zenith_sun_fast(const S_GEO_LOCATION_FAST *p_loc, double cos_omega, double *p_gamma, double *p_theta);
+EXPORT PUBLIC void azimuth_sun_fast(const S_GEO_LOCATION_FAST *p_loc, double sin_omega, double gamma, double *p_alpha);
 
 // Structure representing a tilted plane
 typedef struct {
@@ -385,7 +385,7 @@ typedef struct {
 } S_TILTED_PLANE_FAST;
 
 EXPORT PUBLIC void init_tilted_plane_fast(S_TILTED_PLANE_FAST *p_tp, const S_GEO_LOCATION_FAST *p_loc, double alpha, double beta);
-EXPORT PUBLIC void cos_incident_angle_fast(S_TILTED_PLANE_FAST *p_tp, double cos_omega, double sin_omega, double *p_costhetai);
+EXPORT PUBLIC void cos_incident_angle_fast(const S_TILTED_PLANE_FAST *p_tp, double cos_omega, double sin_omega, double *p_costhetai);
 
 /**********************************/
 /* POSITION OF THE SUN IN THE SKY */
