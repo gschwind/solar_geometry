@@ -40,6 +40,8 @@
 #include <windows.h>
 #endif
 
+#include "angle.h"
+
 #ifdef	__cplusplus
 extern "C"
 {
@@ -345,38 +347,31 @@ EXPORT PUBLIC int UT_to_LAT (double UT, double day_angle, double lambda,
 /* POSITION OF THE SUN IN THE SKY FAST */
 /***************************************/
 
-// Structure representing the sun position w.r.t. a location on Earth
+// Structure representing the sun position w.r.t. a location on Earth and a day
 typedef struct {
     
-    double phi_g;
-    double phi;
-    double delta;
+    angle_t phi;   /* phi    : geocentric latitude of the site, positive to North */
+    angle_t delta; /* delta  : solar declination angle */
     
-    double sin_phi;
-    double sin_delta;
-    double cos_phi;
-    double cos_delta;
     double sin_phi_sin_delta;
     double cos_phi_cos_delta;
     
 } S_GEO_LOCATION_FAST;
 
-EXPORT PUBLIC void init_geo_location_fast(S_GEO_LOCATION_FAST *p_loc, double phi_g, double delta);
-EXPORT PUBLIC void elevation_sun_fast(const S_GEO_LOCATION_FAST *p_loc, double cos_omega, double *p_gamma);
-EXPORT PUBLIC void elevation_zenith_sun_fast(const S_GEO_LOCATION_FAST *p_loc, double cos_omega, double *p_gamma, double *p_theta);
-EXPORT PUBLIC void azimuth_sun_fast(const S_GEO_LOCATION_FAST *p_loc, double sin_omega, double gamma, double *p_alpha);
+EXPORT PUBLIC void init_geo_location_fast(S_GEO_LOCATION_FAST *p_loc, 
+                                          const angle_t* phi, const angle_t* delta);
+EXPORT PUBLIC void elevation_sun_fast(const S_GEO_LOCATION_FAST *p_loc, const angle_t* omega, 
+                                      angle_t *p_gamma);
+EXPORT PUBLIC void elevation_zenith_sun_fast(const S_GEO_LOCATION_FAST *p_loc, const angle_t* omega, 
+                                             angle_t *p_gamma, angle_t *p_theta);
+EXPORT PUBLIC void azimuth_sun_fast(const S_GEO_LOCATION_FAST *p_loc, const angle_t* omega, const angle_t* gamma, 
+                                    angle_t *p_alpha);
 
 // Structure representing a tilted plane
 typedef struct {
     
-    double alpha;
-    double beta;
-    
-    double cos_alpha;
-    double sin_alpha;
-    
-    double cos_beta;
-    double sin_beta;
+    angle_t alpha;
+    angle_t beta;
     
     double A;
     double B;
@@ -384,8 +379,10 @@ typedef struct {
 
 } S_TILTED_PLANE_FAST;
 
-EXPORT PUBLIC void init_tilted_plane_fast(S_TILTED_PLANE_FAST *p_tp, const S_GEO_LOCATION_FAST *p_loc, double alpha, double beta);
-EXPORT PUBLIC void cos_incident_angle_fast(const S_TILTED_PLANE_FAST *p_tp, double cos_omega, double sin_omega, double *p_costhetai);
+EXPORT PUBLIC void init_tilted_plane_fast(S_TILTED_PLANE_FAST *p_tp, 
+                                          const S_GEO_LOCATION_FAST *p_loc, const angle_t* alpha, const angle_t* beta);
+EXPORT PUBLIC void cos_incident_angle_fast(const S_TILTED_PLANE_FAST *p_tp, const angle_t* omega, 
+                                           double *p_costhetai);
 
 /**********************************/
 /* POSITION OF THE SUN IN THE SKY */

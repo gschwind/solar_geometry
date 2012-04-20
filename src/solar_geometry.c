@@ -43,7 +43,7 @@ static const char NAME_OF_MONTH[][4] = { "", "jan", "feb", "mar", "apr", "may", 
 #define MIN(x,y) ((x)<(y) ? (x) : (y))
 #define MAX(x,y) ((x)>(y) ? (x) : (y))
 
-#ifdef _VISUAL_
+#ifndef M_PI
 #define M_PI 3.141592653589793
 #define M_PI_2 1.570796326794897
 #endif
@@ -232,7 +232,7 @@ INLINE double declination_sun(int year_number, int julian_day, double lambda)
 	wt = w0 * (julian_day + t1);
 
 	return b1 + b2 * sin(wt) + b3 * sin(2 * wt) + b4 * sin(3 * wt)
-			+ b5 * cos(wt) + b6 * cos(2 * wt) + b7 * cos(3 * wt);
+			  + b5 * cos(wt) + b6 * cos(2 * wt) + b7 * cos(3 * wt);
 }
 
 int declination_sun_month(int month_number, int type_use, 
@@ -464,81 +464,133 @@ int UT_to_LAT(double UT, double day_angle, double lambda,
 /* POSITION OF THE SUN IN THE SKY FAST */
 /***************************************/
 
-void init_geo_location_fast(S_GEO_LOCATION_FAST *p_loc, double phi_g, double delta)
+void init_geo_location_fast(S_GEO_LOCATION_FAST *p_loc, 
+                            const angle_t* phi, const angle_t* delta)
 {
-	double phi;
-
-	p_loc->phi_g = phi_g;
-	p_loc->delta = delta;
+    assert(p_loc != NULL);
+    assert(phi != NULL);
+    assert(delta != NULL);
 	
-	phi = geogr_to_geoce(phi_g);
-	p_loc->phi = phi;
-		
-	p_loc->sin_phi = sin(phi);	
-	p_loc->cos_phi = cos(phi);	
-	p_loc->sin_delta = sin(delta);	
-	p_loc->cos_delta = cos(delta);	
+	double sin_phi   = get_sin(phi);
+	double cos_phi   = get_cos(phi);
+	double sin_delta = get_sin(delta);
+	double cos_delta = get_cos(delta);
 
-	p_loc->sin_phi_sin_delta = p_loc->sin_phi*p_loc->sin_delta;
-	p_loc->cos_phi_cos_delta = p_loc->cos_phi*p_loc->cos_delta;
+	p_loc->sin_phi_sin_delta = sin_phi * sin_delta;
+	p_loc->cos_phi_cos_delta = cos_phi * cos_delta;
+    
+    // copy angle structures once sinus and cosinus are computed
+    p_loc->phi   = *phi;
+    p_loc->delta = *delta;
 }
 
-void elevation_sun_fast(const S_GEO_LOCATION_FAST *p_loc, double cos_omega, double *p_gamma)
+void elevation_sun_fast(const S_GEO_LOCATION_FAST *p_loc, const angle_t* omega, 
+                        angle_t *p_gamma)
 {
-	*p_gamma = asin(p_loc->sin_phi_sin_delta + p_loc->cos_phi_cos_delta*cos_omega);
+    assert(p_loc != NULL);
+    assert(omega != NULL);
+    assert(p_gamma != NULL);
+    
+	double cos_omega = get_cos(omega);
+
+    double sin_gamma = p_loc->sin_phi_sin_delta + p_loc->cos_phi_cos_delta*cos_omega;
+    if (sin_gamma < 0.0)
+        sin_gamma = 0.0; // force gamma sun = 0 before sunrise or after sunset
+    *p_gamma = init_angle_sin(asin(sin_gamma), sin_gamma);
 }
 
-void elevation_zenith_sun_fast(const S_GEO_LOCATION_FAST *p_loc, double cos_omega, double *p_gamma, double *p_theta)
+void elevation_zenith_sun_fast(const S_GEO_LOCATION_FAST *p_loc, const angle_t* omega, 
+                               angle_t *p_gamma, angle_t *p_theta)
 {
-	*p_gamma = asin(p_loc->sin_phi_sin_delta + p_loc->cos_phi_cos_delta*cos_omega);
-	*p_theta = M_PI_2 - *p_gamma;
+    assert(p_loc != NULL);
+    assert(omega != NULL);
+    assert(p_gamma != NULL);
+    assert(p_theta != NULL);
+    
+	double cos_omega = get_cos(omega);
+
+    double sin_gamma = p_loc->sin_phi_sin_delta + p_loc->cos_phi_cos_delta*cos_omega;
+    if (sin_gamma < 0.0)
+        sin_gamma = 0.0; // force gamma sun = 0 before sunrise or after sunset
+    *p_gamma = init_angle_sin(asin(sin_gamma), sin_gamma);
+    
+	*p_theta = pi_2_minus_angle(p_gamma); // PI/2 - gamma
 }
 
-void azimuth_sun_fast(const S_GEO_LOCATION_FAST *p_loc, double sin_omega, double gamma, double *p_alpha)
+void azimuth_sun_fast(const S_GEO_LOCATION_FAST *p_loc, const angle_t* omega, const angle_t* gamma, 
+                      angle_t *p_alpha)
 {
-	double cos_as, sin_as, x;
-	double cos_gamma = cos(gamma);
-  
-	cos_as = (p_loc->sin_phi * sin(gamma) - p_loc->sin_delta) / (p_loc->cos_phi * cos_gamma);
-	if (p_loc->phi < 0.0)
+    assert(p_loc != NULL);
+    assert(omega != NULL);
+    assert(gamma != NULL);
+    assert(p_alpha != NULL);
+    
+	double sin_gamma = get_sin(gamma);
+	double cos_gamma = get_cos(gamma);
+	double phi       = get_angle(&p_loc->phi);
+	double sin_phi   = get_sin(&p_loc->phi);
+	double cos_phi   = get_cos(&p_loc->phi);
+	double sin_delta = get_sin(&p_loc->delta);
+	double cos_delta = get_cos(&p_loc->delta);
+	double sin_omega = get_sin(omega);
+
+	double cos_as = (sin_phi * sin_gamma - sin_delta) / (cos_phi * cos_gamma); // azimuth sun
+	if (phi < 0.0)
 		cos_as = -cos_as; /* Southern hemisphere */
 		
-	sin_as = p_loc->cos_delta * sin_omega / cos_gamma;
+	double sin_as = cos_delta * sin_omega / cos_gamma;
 
 	if (cos_as > 1.0)
 		cos_as = 1.0;
 	else if (cos_as < -1.0)
 		cos_as = -1.0;
 
-	x = acos(cos_as);
+	double as = acos(cos_as);
 	if (sin_as >= 0.0)
-		*p_alpha = x;
+		*p_alpha = init_angle_cos_sin( as, cos_as, sin_as);
 	else
-		*p_alpha = -x;
+		*p_alpha = init_angle_cos_sin(-as, cos_as, sin_as);
 }
 
-void init_tilted_plane_fast(S_TILTED_PLANE_FAST *p_tp, const S_GEO_LOCATION_FAST *p_loc, double alpha, double beta)
+void init_tilted_plane_fast(S_TILTED_PLANE_FAST *p_tp, 
+                            const S_GEO_LOCATION_FAST *p_loc, const angle_t* alpha, const angle_t* beta)
 {
-	p_tp->alpha = alpha;
-	p_tp->sin_alpha = sin(alpha);	
-	p_tp->cos_alpha = cos(alpha);	
-	p_tp->beta = beta;
-	p_tp->sin_beta = sin(beta);	
-	p_tp->cos_beta = cos(beta);	
+    assert(p_tp != NULL);
+    assert(p_loc != NULL);
+    assert(alpha != NULL);
+    assert(beta != NULL);
+     
+	double sin_alpha = get_sin(alpha);	
+	double cos_alpha = get_cos(alpha);	
+	double sin_beta  = get_sin(beta);	
+	double cos_beta  = get_cos(beta);	
+	double phi       = get_angle(&p_loc->phi);
+	double sin_phi   = get_sin(&p_loc->phi);
+	double cos_phi   = get_cos(&p_loc->phi);
+	double sin_delta = get_sin(&p_loc->delta);
+	double cos_delta = get_cos(&p_loc->delta);
 
-	if (p_loc->phi >= 0.0) {
-		p_tp->A = p_loc->cos_delta * (p_loc->cos_phi * p_tp->cos_beta + p_loc->sin_phi * p_tp->sin_beta * p_tp->cos_alpha);
-		p_tp->B = p_loc->cos_delta * p_tp->sin_beta * p_tp->sin_alpha;
-		p_tp->C = p_loc->sin_delta * (p_loc->sin_phi * p_tp->cos_beta - p_loc->cos_phi * p_tp->sin_beta * p_tp->cos_alpha);
+	if (phi >= 0.0) {
+		p_tp->A = cos_delta * (cos_phi * cos_beta + sin_phi * sin_beta * cos_alpha);
+		p_tp->B = cos_delta * sin_beta * sin_alpha;
+		p_tp->C = sin_delta * (sin_phi * cos_beta - cos_phi * sin_beta * cos_alpha);
 	} else {
-		p_tp->A = p_loc->cos_delta * (p_loc->cos_phi * p_tp->cos_beta - p_loc->sin_phi * p_tp->sin_beta * p_tp->cos_alpha);
-		p_tp->B = p_loc->cos_delta * p_tp->sin_beta * p_tp->sin_alpha;
-		p_tp->C = p_loc->sin_delta * (p_loc->sin_phi * p_tp->cos_beta + p_loc->cos_phi * p_tp->sin_beta * p_tp->cos_alpha);
+		p_tp->A = cos_delta * (cos_phi * cos_beta - sin_phi * sin_beta * cos_alpha);
+		p_tp->B = cos_delta * sin_beta * sin_alpha;
+		p_tp->C = sin_delta * (sin_phi * cos_beta + cos_phi * sin_beta * cos_alpha);
 	}
+
+    // copy angle structures once sinus and cosinus are computed
+    p_tp->alpha = *alpha;
+    p_tp->beta  = *beta;
 }
 
-void cos_incident_angle_fast(const S_TILTED_PLANE_FAST *p_tp, double cos_omega, double sin_omega, double *p_costhetai)
+void cos_incident_angle_fast(const S_TILTED_PLANE_FAST *p_tp, const angle_t* omega, 
+                             double *p_costhetai)
 {
+	double sin_omega = get_sin(omega);
+	double cos_omega = get_cos(omega);
+
 	*p_costhetai = p_tp->A*cos_omega + p_tp->B*sin_omega + p_tp->C;
 }
 
@@ -559,7 +611,7 @@ int elevation_zenith_sun(double phi_g, double delta, double omega,
   if (ier != 0)
     return (ier);
   if ((omega < omega_sr) || (omega > omega_ss))
-    *gamma = 0.0;
+    *gamma = 0.0; // force gamma sun = 0 before sunrise or after sunset
   else
     *gamma = asin(sin(phi) * sin(delta) + cos(phi) * cos(delta) * cos(omega));
   if (*gamma < 0.0)
@@ -574,7 +626,7 @@ int azimuth_sun(double phi_g, double delta, double omega, double gamma,
     double *alpha)
 {
   int ier;
-  double cos_as, sin_as, x;
+  double cos_as, sin_as, as;
   double phi;
 
   ier = 0;
@@ -589,13 +641,13 @@ int azimuth_sun(double phi_g, double delta, double omega, double gamma,
   else if (cos_as < -1.0)
     cos_as = -1.0;
 
-  x = acos(cos_as);
-  if (fabs(x) > Pi)
+  as = acos(cos_as);
+  if (fabs(as) > Pi)
     ier = 1;
   if (sin_as >= 0.0)
-    *alpha = x;
+    *alpha = as;
   else
-    *alpha = -x;
+    *alpha = -as;
 
   return (ier);
 }
