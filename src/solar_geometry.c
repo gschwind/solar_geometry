@@ -221,9 +221,7 @@ INLINE double declination_sun(int year_number, int julian_day, double lambda)
     * n0 : spring-equinox time expressed in days from the beginning of the year i.e.
     * the time in decimal days elapsing from 00:00 hours Jan 1st to the spring equinox
     * at Greenwich in a given year.
-	* ((year_number - 1957) >> 2)  <=> INT[(year_number - 1957)/4] ou INT est la partie entière.
-    */
-    /*
+	* ((year_number - 1957) >> 2)  <=> INT[(year_number - 1957)/4] where INT is the integral value.
     * t1 : time in days, from the spring equinox.
     * 0.5 represents the decimal day number at noon on Jan 1st at Greenwich.
     */
