@@ -1,7 +1,7 @@
-Compilation de solar_geometry
+Compilation of Solar Geometry library:
 
-* Sous WIN / MINGW
-Ajouter le symbole _MINGW_
+* On Unix, see INSTALL document.
 
-*  Sous WIN / VISUAL
-Ajouter le symbole _VISUAL_
+* On Windows / MINGW, you should add the symbol _MINGW_.
+
+* On Windows / Visual C++, you should add the symbol _VISUAL_.
