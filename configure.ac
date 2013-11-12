@@ -26,9 +26,9 @@ AC_PROG_LIBTOOL
 # Checks for library functions.
 #AC_CHECK_FUNCS([sqrt])
 
-# simple_pgm2db requires -mfpmath=387 in 64 bits mode.
+# Use SSE2 floating point instructions in 32 bits mode to get the same results as 64 bits mode.
 if test "x$GCC" = "xyes"; then
-  CFLAGS="$CFLAGS -mfpmath=387"
+  CFLAGS="$CFLAGS -mfpmath=sse -msse2"
 fi
 
 # Turn on gcc checks
