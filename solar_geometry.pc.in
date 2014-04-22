@@ -7,5 +7,5 @@ Name: Solar Geometry
 Description: Solar Geometry library
 Requires:
 Version: @PACKAGE_VERSION@
-Libs: -L${libdir} -lsolar_geometry
+Libs: -L${libdir} -lsolar_geometry -lm
 Cflags: -I${includedir}/
