@@ -1,10 +1,17 @@
+# -*- coding: utf-8 -*-
+#
 #                     -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.59)
+AC_PREREQ([2.59])
 AC_INIT([solar_geometry], [2.0])
+
+LT_PREREQ([2.4.2])
+LT_INIT()
+
 AM_INIT_AUTOMAKE()
 AC_CONFIG_SRCDIR([src/solar_geometry.c])
+AC_CONFIG_MACRO_DIR([m4])
 #AC_CONFIG_HEADER([config.h])
 
 # --enable-debug compiles with debugging info. Default is -O2 optimization.
@@ -14,7 +21,7 @@ AC_ARG_ENABLE(debug,
 
 # Checks for programs.
 AC_PROG_CC
-AC_PROG_LIBTOOL
+#AC_PROG_LIBTOOL
 
 # Checks for libraries.
 
@@ -41,4 +48,5 @@ AC_CONFIG_FILES([
   src/Makefile
   solar_geometry.pc
 ])
+
 AC_OUTPUT
