@@ -14,10 +14,12 @@ AC_CONFIG_SRCDIR([src/solar_geometry.c])
 AC_CONFIG_MACRO_DIR([m4])
 #AC_CONFIG_HEADER([config.h])
 
-# --enable-debug compiles with debugging info. Default is -O2 optimization.
+# --enable-debug compiles with debugging info. Default is "-g -O2".
 # Order is not arbitrary. Keep this block before AC_PROG_CC/AC_PROG_CXX.
 AC_ARG_ENABLE(debug,
-[  --enable-debug          compiles with debugging info],[CFLAGS="$CFLAGS -g";],[CFLAGS="$CFLAGS -O2 -DNDEBUG";])
+ [  --enable-debug          compiles with debugging info],
+ [CFLAGS="$CFLAGS -g -O0";],
+ [CFLAGS="$CFLAGS -O2 -DNDEBUG";])
 
 # Checks for programs.
 AC_PROG_CC
