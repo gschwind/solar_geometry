@@ -19,7 +19,7 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_ARG_ENABLE(debug,
  [  --enable-debug          compiles with debugging info],
  [CFLAGS="$CFLAGS -g -O0";],
- [CFLAGS="$CFLAGS -O2 -DNDEBUG";])
+ [CFLAGS="-O2 -DNDEBUG $CFLAGS";])
 
 # Checks for programs.
 AC_PROG_CC
