@@ -6,12 +6,13 @@
 AC_PREREQ([2.59])
 AC_INIT([solar_geometry], [2.0])
 
+AC_CONFIG_MACRO_DIR([m4])
+
 LT_PREREQ([2.4.2])
 LT_INIT()
 
 AM_INIT_AUTOMAKE()
 AC_CONFIG_SRCDIR([src/solar_geometry.c])
-AC_CONFIG_MACRO_DIR([m4])
 #AC_CONFIG_HEADER([config.h])
 
 # --enable-debug compiles with debugging info. Default is "-g -O2".
