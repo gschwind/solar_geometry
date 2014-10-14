@@ -7,6 +7,7 @@ AC_PREREQ([2.59])
 AC_INIT([solar_geometry], [2.0])
 
 AC_CONFIG_MACRO_DIR([m4])
+AM_MAINTAINER_MODE([enable])
 
 LT_PREREQ([2.4.2])
 LT_INIT()
