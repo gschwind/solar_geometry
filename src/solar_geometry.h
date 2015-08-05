@@ -40,8 +40,6 @@
 #include <windows.h>
 #endif
 
-#include "angle.h"
-
 #ifdef	__cplusplus
 extern "C"
 {
@@ -61,14 +59,15 @@ extern "C"
 #define PUBLIC extern
 #endif
 
-#ifdef _VISUAL_
+#ifdef WIN32
 #define EXPORT _declspec (dllexport)
-#define INLINE inline
+#define INLINE
 #else
 #define EXPORT
 #define INLINE inline
 #endif
 
+#include "angle.h"
 
 /*************/
 /* CONSTANTS */
