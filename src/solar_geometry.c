@@ -102,7 +102,7 @@ static const char NAME_OF_MONTH[][4] = { "", "jan", "feb", "mar", "apr", "may", 
 /* BASIC PARAMETERS */
 /********************/
 
-int make_julian_day(int day_of_month, int month_number, int year_number,
+EXPORT int make_julian_day(int day_of_month, int month_number, int year_number,
   int *julian_day)
 {
   int ier, julien;
@@ -126,7 +126,7 @@ int make_julian_day(int day_of_month, int month_number, int year_number,
   return (ier);
 }
 
-int julian_to_date(int year_number, int julian_day, 
+EXPORT int julian_to_date(int year_number, int julian_day, 
     int *day_of_month, int *month_number)
 {
   const int *tab;
@@ -271,21 +271,21 @@ int declination_sun_month(int month_number, int type_use,
   return (ier);
 }
 
-INLINE double solar_hour_angle (double t)
+EXPORT INLINE double solar_hour_angle (double t)
 {
 //  assert((t >= 0.0) && (t <= 24.0));
 
   return (t - 12.0) * Pi / 12.0;
 }
 
-INLINE double omega_to_LAT (double omega)
+EXPORT INLINE double omega_to_LAT (double omega)
 {
   assert((omega >= -Pi) && (omega <= Pi));
 
   return 12.0 * (1.0 + omega / Pi);
 }
 
-INLINE double geogr_to_geoce(double phi_g)
+EXPORT INLINE double geogr_to_geoce(double phi_g)
 {
     double const CC = 0.99330552; /* Correction factor for converting geographic latitude
                                    * into geocentric latitude. 
@@ -298,7 +298,7 @@ INLINE double geogr_to_geoce(double phi_g)
     return atan(tan(phi_g) * CC);
 }
 
-int solar_hour_angle_h(double phi_g, double delta, double t, 
+EXPORT int solar_hour_angle_h(double phi_g, double delta, double t, 
   double *omega)
 {
   int ier;
@@ -326,7 +326,7 @@ int solar_hour_angle_h(double phi_g, double delta, double t,
 /* SUNRISE, SUNSET AND DAYLENGTH */
 /*********************************/
 
-int sunrise_hour_angle(double phi_g, double delta, double gamma_riset,
+EXPORT int sunrise_hour_angle(double phi_g, double delta, double gamma_riset,
     double *omega_sr, double *omega_ss)
 {
     static double deg_rad = (Pi / 180.0); /* converts decimal degrees into radians */

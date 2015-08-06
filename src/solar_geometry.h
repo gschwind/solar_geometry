@@ -50,7 +50,26 @@ extern "C"
 #endif
 
 #ifdef EXPORT
-#undef EXPORT
+	#undef EXPORT
+#endif
+
+#ifdef WIN32
+	#ifndef SOLAR_GEOMETRY_EXPORTS
+		// when importing the library
+		#define EXPORT _declspec (dllimport)
+	#else
+		// exporting the library
+		#define EXPORT _declspec (dllexport)
+	#endif
+#else
+	#define EXPORT
+#endif
+
+#define INLINE inline
+
+#ifdef WIN32
+#undef INLINE
+#define INLINE
 #endif
 
 #ifdef __C_solar_geometry
@@ -59,13 +78,6 @@ extern "C"
 #define PUBLIC extern
 #endif
 
-#ifdef WIN32
-#define EXPORT _declspec (dllexport)
-#define INLINE
-#else
-#define EXPORT
-#define INLINE inline
-#endif
 
 #include "angle.h"
 
