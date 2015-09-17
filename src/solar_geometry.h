@@ -40,7 +40,9 @@
 #include <windows.h>
 #endif
 
-#ifdef	__cplusplus
+#include "angle.h"
+
+#ifdef __cplusplus
 extern "C"
 {
 #endif
@@ -50,7 +52,17 @@ extern "C"
 #endif
 
 #ifdef EXPORT
-	#undef EXPORT
+#undef EXPORT
+#endif
+
+#ifdef INLINE
+#undef INLINE
+#endif
+
+#ifdef __C_solar_geometry
+#define PUBLIC
+#else
+#define PUBLIC extern
 #endif
 
 #ifdef WIN32
@@ -61,25 +73,12 @@ extern "C"
 		// exporting the library
 		#define EXPORT _declspec (dllexport)
 	#endif
+    #define INLINE
 #else
 	#define EXPORT
+    #define INLINE inline
 #endif
 
-#define INLINE inline
-
-#ifdef WIN32
-#undef INLINE
-#define INLINE
-#endif
-
-#ifdef __C_solar_geometry
-#define PUBLIC
-#else
-#define PUBLIC extern
-#endif
-
-
-#include "angle.h"
 
 /*************/
 /* CONSTANTS */

@@ -11,18 +11,25 @@
 #include <math.h>
 #include <float.h>
 
-
-
 #ifndef M_PI
 #define M_PI 3.141592653589793
 #define M_PI_2 1.570796326794897
 #endif
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 extern "C"
 {
 #endif
 
+#ifdef INLINE
+#undef INLINE
+#endif
+
+#ifdef WIN32
+    #define INLINE
+#else
+    #define INLINE inline
+#endif
 /* This structure represents an angle expressed in radians.
  * Calls to cos(), sin(), tan() are cached.
  * 
@@ -151,6 +158,7 @@ static INLINE void fill_cache(const angle_t* ths) {
     (void) get_sin(ths);
     (void) get_tan(ths);
 }
+
 
 #ifdef __cplusplus
 }
