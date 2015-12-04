@@ -380,8 +380,10 @@ EXPORT PUBLIC void azimuth_sun_fast(const S_GEO_LOCATION_FAST *p_loc, const angl
 // Structure representing a tilted plane
 typedef struct {
     
-    angle_t alpha;
-    angle_t beta;
+    S_GEO_LOCATION_FAST loc; // sun position w.r.t. a location on Earth and a day
+    
+    angle_t alpha; // azimuth
+    angle_t beta;  // tilt
     
     double A;
     double B;
@@ -389,6 +391,7 @@ typedef struct {
 
 } S_TILTED_PLANE_FAST;
 
+// Create a tilted plane at location p_loc with alpha azimuth and beta tilt 
 EXPORT PUBLIC void init_tilted_plane_fast(S_TILTED_PLANE_FAST *p_tp, 
                                           const S_GEO_LOCATION_FAST *p_loc, const angle_t* alpha, const angle_t* beta);
 EXPORT PUBLIC void cos_incident_angle_fast(const S_TILTED_PLANE_FAST *p_tp, const angle_t* omega, 

@@ -619,9 +619,9 @@ void init_tilted_plane_fast(S_TILTED_PLANE_FAST *p_tp,
 	}
 
     // copy angle structures once sinus and cosinus are computed
+    p_tp->loc = *p_loc;
     p_tp->alpha = *alpha;
     p_tp->beta  = *beta;
-	
 }
 
 void cos_incident_angle_fast(const S_TILTED_PLANE_FAST *p_tp, const angle_t* omega, 
