@@ -102,7 +102,7 @@ static const char NAME_OF_MONTH[][4] = { "", "jan", "feb", "mar", "apr", "may", 
 /* BASIC PARAMETERS */
 /********************/
 
-EXPORT int make_julian_day(int day_of_month, int month_number, int year_number,
+int make_julian_day(int day_of_month, int month_number, int year_number,
   int *julian_day)
 {
   int ier, julien;
@@ -126,7 +126,7 @@ EXPORT int make_julian_day(int day_of_month, int month_number, int year_number,
   return (ier);
 }
 
-EXPORT int julian_to_date(int year_number, int julian_day, 
+int julian_to_date(int year_number, int julian_day,
     int *day_of_month, int *month_number)
 {
   const int *tab;
@@ -168,7 +168,7 @@ EXPORT int julian_to_date(int year_number, int julian_day,
   return (ier);
 }
 
-INLINE int nbdays_month(int year_number, int month_number) 
+inline int nbdays_month(int year_number, int month_number)
 {
     assert((year_number > 0) && (month_number > 0) && (month_number < 13));
     
@@ -195,14 +195,14 @@ int number_to_name_month(int month_number, char *month_name)
   return (ier);
 }
 
-INLINE double Day_Angle(int julian_day)
+inline extern double Day_Angle(int julian_day)
 {
   assert((julian_day > 0) && (julian_day <= 366));
 
   return (double)julian_day * 2.0 * Pi / 365.2422;
 }
 
-INLINE double declination_sun(int year_number, int julian_day, double lambda) 
+inline extern double declination_sun(int year_number, int julian_day, double lambda)
 {
 	double n0, t1, wt;
 
@@ -271,21 +271,21 @@ int declination_sun_month(int month_number, int type_use,
   return (ier);
 }
 
-EXPORT INLINE double solar_hour_angle (double t)
+inline extern double solar_hour_angle (double t)
 {
 //  assert((t >= 0.0) && (t <= 24.0));
 
   return (t - 12.0) * Pi / 12.0;
 }
 
-EXPORT INLINE double omega_to_LAT (double omega)
+inline extern double omega_to_LAT (double omega)
 {
   assert((omega >= -Pi) && (omega <= Pi));
 
   return 12.0 * (1.0 + omega / Pi);
 }
 
-EXPORT INLINE double geogr_to_geoce(double phi_g)
+inline extern double geogr_to_geoce(double phi_g)
 {
     double const CC = 0.99330552; /* Correction factor for converting geographic latitude
                                    * into geocentric latitude. 
@@ -298,7 +298,7 @@ EXPORT INLINE double geogr_to_geoce(double phi_g)
     return atan(tan(phi_g) * CC);
 }
 
-EXPORT int solar_hour_angle_h(double phi_g, double delta, double t, 
+int solar_hour_angle_h(double phi_g, double delta, double t,
   double *omega)
 {
   int ier;
@@ -326,7 +326,7 @@ EXPORT int solar_hour_angle_h(double phi_g, double delta, double t,
 /* SUNRISE, SUNSET AND DAYLENGTH */
 /*********************************/
 
-EXPORT int sunrise_hour_angle(double phi_g, double delta, double gamma_riset,
+int sunrise_hour_angle(double phi_g, double delta, double gamma_riset,
     double *omega_sr, double *omega_ss)
 {
     static double deg_rad = (Pi / 180.0); /* converts decimal degrees into radians */
@@ -368,7 +368,7 @@ EXPORT int sunrise_hour_angle(double phi_g, double delta, double gamma_riset,
     return (ier);
 }
 
-INLINE double sunset(double phi, double delta) 
+inline double sunset(double phi, double delta)
 {
     //double cos_omega_sunset = (sin(0.0) - (sin(phi) * sin(delta))) / (cos(phi) * cos(delta));
 	double cos_omega_sunset = - tan(phi) * tan(delta);
@@ -410,7 +410,7 @@ int timerise_daylength(double omega_sr, double omega_ss,
 /* CHANGING THE TIME SYSTEM */
 /****************************/
 
-INLINE double LMT_to_LAT(double day_angle, double lambda, double lambda_ref, int summer_corr)
+inline double LMT_to_LAT(double day_angle, double lambda, double lambda_ref, int summer_corr)
 {
     const double deg_rad = (Pi / 180.0); /* converts decimal degrees into radians */
     double const a1 = -0.128;
@@ -765,7 +765,7 @@ int cos_incident_angle(double phi_g, double delta, double omega, double gamma,
 /* EXTRATERRESTRIAL IRRADIATION */
 /********************************/
 
-INLINE double corr_distance(double day_angle)
+inline double corr_distance(double day_angle)
 {
     const double deg_rad = (Pi / 180.0); /* converts decimal degrees into radians */
     const double a = 2.80 * deg_rad;

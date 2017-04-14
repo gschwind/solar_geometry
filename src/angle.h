@@ -27,17 +27,6 @@ extern "C"
 {
 #endif
 
-#ifdef INLINE
-#undef INLINE
-#endif
-
-#ifdef WIN32
-    #define INLINE
-#else
-    #define INLINE inline
-#endif
-
-
 /* This structure represents an angle expressed in radians.
  * Calls to cos(), sin(), tan() are cached.
  * 
@@ -51,7 +40,7 @@ typedef struct {
     /*mutable*/ double tan_angle; // tan(angle)
 } angle_t;
 
-static INLINE angle_t init_angle(double angle) { // angle in radians
+inline static angle_t init_angle(double angle) { // angle in radians
     angle_t ths;
     
     assert(!isnan(angle));
@@ -66,7 +55,7 @@ static INLINE angle_t init_angle(double angle) { // angle in radians
     return ths;
 }
 
-static INLINE angle_t init_angle_cos(double angle, double cos_angle) {
+inline static angle_t init_angle_cos(double angle, double cos_angle) {
     angle_t ths;
     
     assert(!isnan(angle));
@@ -81,7 +70,7 @@ static INLINE angle_t init_angle_cos(double angle, double cos_angle) {
     return ths;
 }
 
-static INLINE angle_t init_angle_sin(double angle, double sin_angle) {
+inline static angle_t init_angle_sin(double angle, double sin_angle) {
     angle_t ths;
     
     assert(!isnan(angle));
@@ -96,7 +85,7 @@ static INLINE angle_t init_angle_sin(double angle, double sin_angle) {
     return ths;
 }
 
-static INLINE angle_t init_angle_tan(double angle, double tan_angle) {
+inline static angle_t init_angle_tan(double angle, double tan_angle) {
     angle_t ths;
     
     assert(!isnan(angle));
@@ -111,7 +100,7 @@ static INLINE angle_t init_angle_tan(double angle, double tan_angle) {
     return ths;
 }
 
-static INLINE angle_t init_angle_cos_sin(double angle, double cos_angle, double sin_angle) {
+inline static angle_t init_angle_cos_sin(double angle, double cos_angle, double sin_angle) {
     angle_t ths;
     
     assert(!isnan(angle));
@@ -127,7 +116,7 @@ static INLINE angle_t init_angle_cos_sin(double angle, double cos_angle, double 
 }
 
 // Return -a
-static INLINE angle_t minus_angle(const angle_t* a) {
+inline static angle_t minus_angle(const angle_t* a) {
     angle_t ths;
     
     ths.angle     = -a->angle;
@@ -139,7 +128,7 @@ static INLINE angle_t minus_angle(const angle_t* a) {
 }
 
 // Return PI/2 - a
-static INLINE angle_t pi_2_minus_angle(const angle_t* a) {
+inline static angle_t pi_2_minus_angle(const angle_t* a) {
     angle_t ths;
     
     ths.angle     = M_PI_2 - a->angle;
@@ -151,7 +140,7 @@ static INLINE angle_t pi_2_minus_angle(const angle_t* a) {
 }
 
 // Return a + PI 
-static INLINE angle_t angle_plus_pi(const angle_t* a) {
+inline static angle_t angle_plus_pi(const angle_t* a) {
     angle_t ths;
     
     ths.angle     = a->angle + M_PI;
@@ -163,7 +152,7 @@ static INLINE angle_t angle_plus_pi(const angle_t* a) {
 }
 
 // Return a + 2*PI 
-static INLINE angle_t angle_plus_2pi(const angle_t* a) {
+inline static angle_t angle_plus_2pi(const angle_t* a) {
     angle_t ths;
     
     ths.angle     = a->angle + 2.0*M_PI;
@@ -175,7 +164,7 @@ static INLINE angle_t angle_plus_2pi(const angle_t* a) {
 }
 
 // Return a - 2*PI 
-static INLINE angle_t angle_minus_2pi(const angle_t* a) {
+inline static angle_t angle_minus_2pi(const angle_t* a) {
     angle_t ths;
     
     ths.angle     = a->angle - 2.0*M_PI;
@@ -187,12 +176,12 @@ static INLINE angle_t angle_minus_2pi(const angle_t* a) {
 }
 
 // get angle in radians
-static INLINE double get_angle(const angle_t* ths) { 
+inline static double get_angle(const angle_t* ths) {
     return ths->angle;
 }
 
 // compute cosinus (cached)
-static INLINE double get_cos(const angle_t* ths) { 
+inline static double get_cos(const angle_t* ths) {
     if (isnan(ths->cos_angle))
         ((angle_t*)ths)->cos_angle = cos(ths->angle);
     
@@ -200,7 +189,7 @@ static INLINE double get_cos(const angle_t* ths) {
 }
 
 // compute sinus (cached)
-static INLINE double get_sin(const angle_t* ths) { 
+inline static double get_sin(const angle_t* ths) {
     if (isnan(ths->sin_angle))
         ((angle_t*)ths)->sin_angle = sin(ths->angle);
     
@@ -208,7 +197,7 @@ static INLINE double get_sin(const angle_t* ths) {
 }
 
 // compute tangent (cached)
-static INLINE double get_tan(const angle_t* ths) { 
+inline static double get_tan(const angle_t* ths) {
     if (isnan(ths->tan_angle))
         ((angle_t*)ths)->tan_angle = tan(ths->angle);
     
@@ -216,7 +205,7 @@ static INLINE double get_tan(const angle_t* ths) {
 }
 
 // force cosinus, sinus and tangent computation
-static INLINE void fill_cache(const angle_t* ths) { 
+inline static void fill_cache(const angle_t* ths) {
     (void) get_cos(ths);
     (void) get_sin(ths);
     (void) get_tan(ths);
