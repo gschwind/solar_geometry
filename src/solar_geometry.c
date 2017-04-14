@@ -44,7 +44,7 @@ static const char NAME_OF_MONTH[][4] = { "", "jan", "feb", "mar", "apr", "may", 
 #define MAX(x,y) ((x)>(y) ? (x) : (y))
 
 #ifndef M_PI
-#define M_PI 3.141592653589793
+#define _SG1_M_PI 3.141592653589793
 #define M_PI_2 1.570796326794897
 #endif
 #define M_PI_3 1.047197551196598
