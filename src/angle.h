@@ -13,6 +13,7 @@
 #include <cmath>
 #include <cassert>
 
+// same as isnan()
 inline static bool _sg1_isnan(double x) { return std::isnan(x); }
 
 #else

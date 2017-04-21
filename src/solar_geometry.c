@@ -44,7 +44,7 @@ static const char NAME_OF_MONTH[][4] = { "", "jan", "feb", "mar", "apr", "may", 
 #define MAX(x,y) ((x)>(y) ? (x) : (y))
 
 #ifndef M_PI
-#define _SG1_M_PI 3.141592653589793
+#define M_PI 3.141592653589793
 #define M_PI_2 1.570796326794897
 #endif
 #define M_PI_3 1.047197551196598
@@ -195,14 +195,14 @@ int number_to_name_month(int month_number, char *month_name)
   return (ier);
 }
 
-inline extern double Day_Angle(int julian_day)
+inline double Day_Angle(int julian_day)
 {
   assert((julian_day > 0) && (julian_day <= 366));
 
   return (double)julian_day * 2.0 * Pi / 365.2422;
 }
 
-inline extern double declination_sun(int year_number, int julian_day, double lambda)
+inline double declination_sun(int year_number, int julian_day, double lambda)
 {
 	double n0, t1, wt;
 
@@ -271,21 +271,21 @@ int declination_sun_month(int month_number, int type_use,
   return (ier);
 }
 
-inline extern double solar_hour_angle (double t)
+inline double solar_hour_angle (double t)
 {
 //  assert((t >= 0.0) && (t <= 24.0));
 
   return (t - 12.0) * Pi / 12.0;
 }
 
-inline extern double omega_to_LAT (double omega)
+inline double omega_to_LAT (double omega)
 {
   assert((omega >= -Pi) && (omega <= Pi));
 
   return 12.0 * (1.0 + omega / Pi);
 }
 
-inline extern double geogr_to_geoce(double phi_g)
+inline double geogr_to_geoce(double phi_g)
 {
     double const CC = 0.99330552; /* Correction factor for converting geographic latitude
                                    * into geocentric latitude. 
@@ -1054,7 +1054,7 @@ int yearly_averages(int month_number, int year_start, int year_end,
       *S0_y = *S0_y + S0_m;
       *eccentricity_y = *eccentricity_y + eccentricity_m;
       *G0d_y = *G0d_y + G0d_m;
-      for (i = 1; i <= 24; i++)
+      for (i = 0; i < 24; i++)
         G0h_y[i] = G0h_y[i] + G0h_m[i];
       /*
        * printf("year_number= %4d G0d_m = %8.2f (Wh/m2) G0d_y = %8.2f
