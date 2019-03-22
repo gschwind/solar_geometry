@@ -20,6 +20,51 @@ extern "C"
 {
 #endif
 
+
+/*********************************************/
+/*                                           */
+/* C O N V E N T I O N S                     */
+/*                                           */
+/*  I S O   vs   S O L A R  G E O M E T R Y  */
+/*                                           */
+/*********************************************/
+/******************************************************/
+/* ISO [0; 360] (indepent of the hemisphere location) */
+/******************************************************/
+/*
+ *             NORTH=0 => EAST=90 => SOUTH=180 => WEST=270 => NORTH=360
+ *                   360= NORTH = 0
+ *
+ *        WEST=270                           EAST 90
+ *
+ *                     SOUTH 180
+ *
+ */
+
+/******************************************************************/
+/* Solar Geometry [-180; 180] (depend on the hemisphere location) */
+/******************************************************************/
+/*
+ *      - SG Northern Hemisphere : NORTH=-180 => EAST=-90 => SOUTH=0 => WEST=90 => NORTH=180
+ *
+ *                    180= NORTH = -180
+ *
+ *        WEST = 90                           EAST = -90
+ *
+ *                         SOUTH = 0
+ *
+ *     - SG Southern Hemisphere : SOUTH=-180 => EAST=-90 => NORTH=0 => WEST=90 => SOUTH=180
+ *
+ *                         NORTH = 0
+ *
+ *        WEST = 90                           EAST = -90
+ *
+ *                   180 = SOUTH = -180
+ */
+
+
+
+
 /*************/
 /* CONSTANTS */
 /*************/
