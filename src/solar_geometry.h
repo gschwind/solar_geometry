@@ -20,50 +20,35 @@ extern "C"
 {
 #endif
 
+/*******************************************/
+/*                                         */
+/* ANGLE CONVENTIONS ISO VS SOLAR GEOMETRY */
+/*                                         */
+/*******************************************/
 
-/*********************************************/
-/*                                           */
-/* C O N V E N T I O N S                     */
-/*                                           */
-/*  I S O   vs   S O L A R  G E O M E T R Y  */
-/*                                           */
-/*********************************************/
-/******************************************************/
-/* ISO [0; 360] (indepent of the hemisphere location) */
-/******************************************************/
-/*
- *             NORTH=0 => EAST=90 => SOUTH=180 => WEST=270 => NORTH=360
+/* 
+ * ISO [0; 360] (independent of the hemisphere):
+ * *********************************************
+ *
  *                   360= NORTH = 0
- *
  *        WEST=270                           EAST 90
- *
  *                     SOUTH 180
- *
  */
 
-/******************************************************************/
-/* Solar Geometry [-180; 180] (depend on the hemisphere location) */
-/******************************************************************/
 /*
- *      - SG Northern Hemisphere : NORTH=-180 => EAST=-90 => SOUTH=0 => WEST=90 => NORTH=180
+ * Solar Geometry [-180; 180] (dependent of the hemisphere):
+ * *********************************************************
  *
+ *      - SG Northern Hemisphere:
  *                    180= NORTH = -180
- *
  *        WEST = 90                           EAST = -90
- *
  *                         SOUTH = 0
  *
- *     - SG Southern Hemisphere : SOUTH=-180 => EAST=-90 => NORTH=0 => WEST=90 => SOUTH=180
- *
+ *     - SG Southern Hemisphere:
  *                         NORTH = 0
- *
  *        WEST = 90                           EAST = -90
- *
  *                   180 = SOUTH = -180
  */
-
-
-
 
 /*************/
 /* CONSTANTS */
