@@ -57,7 +57,7 @@ extern "C"
 #define SG1_PI_LOW_PRECISION  3.141592654
 
 #define SG1_I0  1367.0			/* solar constant in W/m2 */
-#define DAY_LENGTH  24.0	/* average value for the length of the day in decimal hours */
+#define SG1_DAY_LENGTH  24.0	/* average value for the length of the day in decimal hours */
 
 /*************/
 /* NOTATIONS */
