@@ -44,7 +44,7 @@ fi
 
 # Turn on gcc checks
 if test "x$GCC" = "xyes"; then
-  CFLAGS="-fno-strict-aliasing -Wall -Wextra -Wno-unused -Wno-sign-compare -Wno-comment -Wstrict-prototypes -Wformat -Wswitch-enum $CFLAGS"
+  CFLAGS="-fno-strict-aliasing -Wall -Wextra -Wno-unused -Wno-sign-compare -Wno-comment -Wstrict-prototypes -Wformat -Wswitch-enum -Werror=implicit-function-declaration $CFLAGS"
 fi
 
 AC_CONFIG_FILES([
