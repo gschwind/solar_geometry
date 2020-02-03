@@ -12,55 +12,10 @@
 
 #ifndef __H_solar_geometry
 #define __H_solar_geometry
-#endif
-#pragma once
 
-// Modifiez les définitions suivantes si vous devez cibler une plate-forme avant celles spécifiées ci-dessous.
-// Reportez-vous à MSDN pour obtenir les dernières informations sur les valeurs correspondantes pour les différentes plates-formes.
-#ifndef WINVER				// Autorise l'utilisation des fonctionnalités spécifiques à Windows XP ou version ultérieure.
-#define WINVER 0x0501		// Attribuez la valeur appropriée à cet élément pour cibler d'autres versions de Windows.
-#endif
-
-#ifndef _WIN32_WINNT		// Autorise l'utilisation des fonctionnalités spécifiques à Windows XP ou version ultérieure.                   
-#define _WIN32_WINNT 0x0501	// Attribuez la valeur appropriée à cet élément pour cibler d'autres versions de Windows.
-#endif						
-
-#ifndef _WIN32_WINDOWS		// Autorise l'utilisation des fonctionnalités spécifiques à Windows 98 ou version ultérieure.
-#define _WIN32_WINDOWS 0x0410 // Attribuez la valeur appropriée à cet élément pour cibler Windows Me ou version ultérieure.
-#endif
-
-#ifndef _WIN32_IE			// Autorise l'utilisation des fonctionnalités spécifiques à Internet Explorer 6.0 ou version ultérieure.
-#define _WIN32_IE 0x0600	// Attribuez la valeur appropriée à cet élément pour cibler d'autres versions d'Internet Explorer.
-#endif
-
-#define WIN32_LEAN_AND_MEAN		// Exclure les en-têtes Windows rarement utilisés
-// Fichiers d'en-tête Windows :
-#include <windows.h>
 #ifdef	__cplusplus
 extern "C"
 {
-#endif
-
-#ifdef PUBLIC
-#undef PUBLIC
-#endif
-
-#ifdef INIT
-#undef INIT
-#endif
-
-#ifdef __C_solar_geometry
-#define PUBLIC
-#define INIT
-#define PRIVATE static
-#else
-#define PUBLIC extern
-#endif
-
-#ifdef _WIN32
-#define EXPORT _declspec (dllexport)
-#else
-#define EXPORT
 #endif
   
 #define Pi  3.141592654
@@ -129,7 +84,7 @@ extern "C"
    */
   /* The procedure "make_julian_day" converts a day given in day, month and year 
      into a julian day. Returns 0 if OK, 1 otherwise. */
-  EXPORT PUBLIC int make_julian_day (int day_of_month, int month_number,
+    int make_julian_day (int day_of_month, int month_number,
 			      int year_number, int *julian_day);
 
   /* Source : MA in /u2/tm/src/srcgeo/julian_lib/ */
@@ -144,7 +99,7 @@ extern "C"
      "make_julian_day" i.e. computes the month number and the respective day of 
      month from the information on year and integer day number. Returns 0 if OK,
      1 otherwise. */
-  EXPORT PUBLIC int julian_to_date (int year_number, int julian_day,
+    int julian_to_date (int year_number, int julian_day,
 			     int *day_of_month, int *month_number);
 
   /* Source : */
@@ -155,7 +110,7 @@ extern "C"
      number_days_month : number of days in a month */
   /* The procedure "nbdays_month" gives the number of days in a month, useful for
      monthly calculations. Returns 0 if OK, 1 otherwise. */
-  EXPORT PUBLIC int nbdays_month (int year_number, int month_number,
+    int nbdays_month (int year_number, int month_number,
 			   int *number_days_month);
 
   /* Source : */
@@ -166,7 +121,7 @@ extern "C"
      month_name : name of the month abbreviated with 3 characters (jan..dec) */
   /* The procedure "number_to_name_month" converts the month number into the 
      corresponding month name. Returns 0 if OK, 1 otherwise. */
-  EXPORT PUBLIC int number_to_name_month (int month_number, char *month_name);
+    int number_to_name_month (int month_number, char *month_name);
 
   /* Source : */
   /* Inputs :
@@ -176,7 +131,7 @@ extern "C"
   /* The procedure "Day_Angle" expresses the integer day number as an angle (in
      radians) from 12:00 hours on the day 31st December. A year length of 
      365.2422 days is used. Returns 0 if OK, 1 otherwise. */
-  EXPORT PUBLIC int Day_Angle (int julian_day, double *day_angle);
+    int Day_Angle (int julian_day, double *day_angle);
 
   /* Sources : 
      Bourges, B., 1985. Improvement in solar declination computation. Solar 
@@ -199,7 +154,7 @@ extern "C"
      later if it is West. The chosen algorithm uses 1957 as base year; it is 
      basically a truncated Fourier series with six harmonics. Returns 0 if OK, 1
      otherwise. */
-  EXPORT PUBLIC int declination_sun (int year_number, int julian_day,
+    int declination_sun (int year_number, int julian_day,
 			      double lambda, double *delta);
 
   /* Source : Gruter (Ed.) (1984) */
@@ -213,7 +168,7 @@ extern "C"
      type_use=1 : for estimating monthly mean maximum global solar radiation
      The integer day number to be selected in each case for the computations is
      given by two tables. Returns 0 if OK, 1 otherwise. */
-  EXPORT PUBLIC int declination_sun_month (int month_number, int type_use,
+    int declination_sun_month (int month_number, int type_use,
 				    double *delta_month);
 
   /* Source : */
@@ -224,7 +179,7 @@ extern "C"
   /* The procedure "soldar_hour_angle" supplies the solar hour angle (in radians).
      By convention the hour angle is negative before noon and positive after noon
      Returns 0 if OK, 1 otherwise. */
-  EXPORT PUBLIC int solar_hour_angle (double t, double *omega);
+    int solar_hour_angle (double t, double *omega);
 
   /* Source : */
   /* Inputs :
@@ -234,9 +189,9 @@ extern "C"
   /* The procedure "omega_to_LAT" does the reverse operation of the procedure 
      "solar_hour_angle" i.e. computes the solar time (in decimal hours) from the 
      solar hour angle (in radians). Returns 0 if OK, 1 otherwise. */
-  EXPORT PUBLIC int omega_to_LAT (double omega, double *t);
+    int omega_to_LAT (double omega, double *t);
 
-  EXPORT PUBLIC double geogr_to_geoce (double phi_g);
+    double geogr_to_geoce (double phi_g);
 
   /* Source : */
   /* Inputs :
@@ -249,7 +204,7 @@ extern "C"
      hour angle (in radians) for a whole solar hour, taking into account only the
      portion of the solar hour with the sun standing above the horizon. Returns 0
      if OK, 1 otherwise. */
-  EXPORT PUBLIC int solar_hour_angle_h (double phi_g, double delta, double t,
+    int solar_hour_angle_h (double phi_g, double delta, double t,
 				 double *omega);
 
 	/*********************************/
@@ -271,7 +226,7 @@ extern "C"
      of the atmospheric refraction, the edge of the solar disk will just appear 
      (disappear) at the horizon at sunrise (at sunset) when the calculated 
      astronomical elevation is 50'. Returns 0 if OK, 1 otherwise. */
-  EXPORT PUBLIC int sunrise_hour_angle (double phi_g, double delta,
+    int sunrise_hour_angle (double phi_g, double delta,
 				 double gamma_riset, double *omega_sr,
 				 double *omega_ss);
 
@@ -286,7 +241,7 @@ extern "C"
   /* The procedure "timerise_daylength" supplies the times of astronomical 
      sunrise and sunset, and the astronomical daylength, all in LAT decimal 
      hours. Returns 0 if OK, 1 otherwise. */
-  EXPORT PUBLIC int timerise_daylength (double omega_sr, double omega_ss,
+    int timerise_daylength (double omega_sr, double omega_ss,
 				 double *t_sr, double *t_ss, double *S0);
 
 	/****************************/
@@ -311,7 +266,7 @@ extern "C"
      under consideration and the reference time zone longitude for the site. A 
      summer time correction must be added for some countries.
      Returns 0 if OK, 1 otherwise. */
-  EXPORT PUBLIC int LMT_to_LAT (double day_angle, double lambda,
+    int LMT_to_LAT (double day_angle, double lambda,
 			 double lambda_ref, int summer_corr, double *dt);
 
   /* Source : */
@@ -327,7 +282,7 @@ extern "C"
      First, the equation of time, ET, is computed (in decimal hours), wich allows
      for perturbations in the rotational and angular orbital speed of the Earth.
      Returns 0 if OK, 1 otherwise. */
-  EXPORT PUBLIC int UT_to_LAT (double UT, double day_angle, double lambda,
+    int UT_to_LAT (double UT, double day_angle, double lambda,
 			double *LAT);
 
 	/**********************************/
@@ -345,7 +300,7 @@ extern "C"
   /* The procedure "elevation_zenith_sun" computes the solar elevation (or 
      altitude) angle and the solar zenithal (or incidence) angle. These two 
      angles are complementary. Returns 0 if OK, 1 otherwise. */
-  EXPORT PUBLIC int elevation_zenith_sun (double phi_g, double delta,
+    int elevation_zenith_sun (double phi_g, double delta,
 				   double omega, double *gamma, double *theta);
 
   /* Source : */
@@ -361,7 +316,7 @@ extern "C"
      west of South, i.e. during the afternoon in solar time. For the Southern 
      hemisphere, the azimuth angle is measured from North. Returns 0 if OK, 1 
      otherwise. */
-  EXPORT PUBLIC int azimuth_sun (double phi_g, double delta, double omega,
+    int azimuth_sun (double phi_g, double delta, double omega,
 			  double gamma, double *alpha);
 
 	/********************************/
@@ -377,7 +332,7 @@ extern "C"
      sun-earth distance from its mean value (also known as eccentricity). It is a
      fucntion of time, but a single (average) value per day is enough for 
      practical calculations. Returns 0 if OK, 1 otherwise. */
-  EXPORT PUBLIC int corr_distance (double day_angle, double *eccentricity);
+    int corr_distance (double day_angle, double *eccentricity);
 
   /* Source : */
   /* Inputs :
@@ -387,7 +342,7 @@ extern "C"
      G0 : extraterrestrial global solar irradiation (in Wh/m2) */
   /* The procedure "G0_normal" delivers the extraterrestrial solar irradiance 
      normal to beam for day j. Returns 0 if OK, 1 otherwise. */
-  EXPORT PUBLIC int G0_normal (double I0j, double theta, double *G0);
+    int G0_normal (double I0j, double theta, double *G0);
 
   /* Source : */
   /* Inputs :
@@ -401,7 +356,7 @@ extern "C"
   /* The procedure "G0_general" delivers the extraterrestrial solar irradiation 
      incident on an horizontal surface in the general case (in Wh/m2). Returns 0
      if OK, 1 otherwise */
-  EXPORT PUBLIC int G0_general (double phi_g, double eccentricity, double delta,
+    int G0_general (double phi_g, double eccentricity, double delta,
 			 double omega1, double omega2, double *G0_12);
 
   /* Source : */
@@ -417,7 +372,7 @@ extern "C"
      otherwise.
      REMARK: It is a special case of G0_general with the sunrise and sunset 
      angles as integration limits. */
-  EXPORT PUBLIC int G0_day (double phi_g, double eccentricity, double delta,
+    int G0_day (double phi_g, double eccentricity, double delta,
 		     double *G0d);
 
   /* Source : */
@@ -431,7 +386,7 @@ extern "C"
      irradiation incident on an horizontal surface in case of hourly values, for
      the 24 integral hours in a given day (in Wh/m2), i.e. |omega1-omega2| = 
      Pi/12. Returns 0 if OK, 1 otherwise */
-  EXPORT PUBLIC int G0_hours_profile (double phi_g, double eccentricity,
+    int G0_hours_profile (double phi_g, double eccentricity,
 			       double delta, double *G0h);
 
 
@@ -448,7 +403,7 @@ extern "C"
      Wh/m2), i.e. |omega1-omega2| = Pi/12. t is taken as the mid hour for 
      computation of the hourly value of extraterrestrial solar irradiation. 
      Returns 0 if OK, 1 otherwise */
-  EXPORT PUBLIC int G0_hour (double phi_g, double eccentricity, double delta,
+    int G0_hour (double phi_g, double eccentricity, double delta,
 		      double t, double *G0h);
 
 	/***********************************************/
@@ -478,7 +433,7 @@ extern "C"
      decimal hours), daily extraterrestrial irradiation (in Wh/m2) and the 24 
      hourly extraterrestrial solar irradiation (in Wh/m2) . Returns 0 if OK, 1 
      otherwise */
-  EXPORT PUBLIC int monthly_averages (int month_number, int year_number,
+    int monthly_averages (int month_number, int year_number,
 			       double phi_g, double lambda,
 			       double gamma_riset, double *day_angle_m,
 			       double *delta_m, double *omega_ss_m,
@@ -514,7 +469,7 @@ extern "C"
      angle (in radians), daylength (in decimal hours), daily extraterrestrial 
      irradiation (in Wh/m2) and 24 hourly extraterrestrial solar irradiation 
      (in Wh/m2). Returns 0 if OK, 1 otherwise */
-  EXPORT PUBLIC int yearly_averages (int month_number, int year_start,
+    int yearly_averages (int month_number, int year_start,
 			      int year_end, double phi_g, double lambda,
 			      double gamma_riset, double *day_angle_y,
 			      double *delta_y, double *omega_ss_y,
@@ -550,7 +505,7 @@ extern "C"
      hourly extraterrestrial solar irradiation (in Wh/m2). Returns 0 if OK, 1 
      otherwise. 
      REMARK: gamma_riset set to 0.0 in the original procedure by Aguiar. */
-  EXPORT PUBLIC int solar_parameters_day (int day_of_month, int month_number,
+    int solar_parameters_day (int day_of_month, int month_number,
 				   int year_number, double phi_g,
 				   double lambda, double gamma_riset,
 				   double *day_angle, double *delta,
@@ -584,7 +539,7 @@ extern "C"
      and the 24 hourly extraterrestrial solar irradiation (in Wh/m2). Returns 0 
      if OK, 1 otherwise. 
      REMARK: gamma_riset set to 0.0 in the original procedure by Aguiar. */
-  EXPORT PUBLIC int solar_parameters_avg (int month_number,
+    int solar_parameters_avg (int month_number,
 				   double phi_g, double gamma_riset,
 				   double *day_angle_avg,
 				   double *delta_avg,
@@ -618,7 +573,7 @@ extern "C"
      and the 24 hourly extraterrestrial solar irradiation (in Wh/m2). Returns 0 
      if OK, 1 otherwise. 
      REMARK: gamma_riset set to 0.0 in the original procedure by Aguiar. */
-  EXPORT PUBLIC int solar_parameters_max (int month_number,
+    int solar_parameters_max (int month_number,
 				   double phi_g, double gamma_riset,
 				   double *day_angle_max,
 				   double *delta_max,
@@ -626,7 +581,7 @@ extern "C"
 				   double *eccentricity_max,
 				   double *G0d_max, double *G0h_max);
 
-  EXPORT PUBLIC int intervals_omega_tilted_plane (double phi_g, double delta,
+    int intervals_omega_tilted_plane (double phi_g, double delta,
 					   double omega_ss, double beta,
 					   double alpha, double *v_om,
 					   int *p_nb);
@@ -634,3 +589,6 @@ extern "C"
 #ifdef	__cplusplus
 }
 #endif
+
+#endif // __H_solar_geometry
+

@@ -159,11 +159,11 @@
  * The procedure "make_julian_day" converts a day given in day, month and year into a
  * julian day. Returns 0 if OK, 1 otherwise. 
  */
-PUBLIC int
+ int
 make_julian_day (int day_of_month, int month_number, int year_number,
 		 int *julian_day)
 {
-  PRIVATE int tab[12] =
+   int tab[12] =
     { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
   int ier, julien;
 
@@ -198,7 +198,7 @@ make_julian_day (int day_of_month, int month_number, int year_number,
  * "make_julian_day" i.e. computes the month number and the respective day of month from 
  * the information on year and integer day number. Returns 0 if OK, 1 otherwise. 
  */
-PUBLIC int
+ int
 julian_to_date (int year_number, int julian_day, int *day_of_month,
 		int *month_number)
 {
@@ -255,10 +255,10 @@ julian_to_date (int year_number, int julian_day, int *day_of_month,
  * The procedure "nbdays_month" gives the number of days in a month, useful for monthly
  * calculations. Returns 0 if OK, 1 otherwise. 
  */
-PUBLIC int
+ int
 nbdays_month (int year_number, int month_number, int *number_days_month)
 {
-  PRIVATE int tab_nbdays[12] =
+   int tab_nbdays[12] =
     { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
   int ier;
 
@@ -289,10 +289,10 @@ nbdays_month (int year_number, int month_number, int *number_days_month)
  * The procedure "number_to_name_month" converts the month number into the corresponding 
  * month name. Returns 0 if OK, 1 otherwise. 
  */
-PUBLIC int
+ int
 number_to_name_month (int month_number, char *month_name)
 {
-  PRIVATE char tab_name[][4] =
+   char tab_name[][4] =
     { "   ", "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug",
     "sep", "oct", "nov", "dec"
   };
@@ -322,7 +322,7 @@ number_to_name_month (int month_number, char *month_name)
  * from 12:00 hours on the day 31st December. A year length of 365.2422 days is used.
  * Returns 0 if OK, 1 otherwise. 
  */
-PUBLIC int
+ int
 Day_Angle (int julian_day, double *day_angle)
 {
   int ier;
@@ -359,7 +359,7 @@ Day_Angle (int julian_day, double *day_angle)
  * 1957 as base year; it is basically a truncated Fourier series with six harmonics.
  * Returns 0 if OK, 1 otherwise. 
  */
-PUBLIC int
+ int
 declination_sun (int year_number, int julian_day, double lambda, double *delta)
 {
   int ier;
@@ -419,7 +419,7 @@ declination_sun (int year_number, int julian_day, double lambda, double *delta)
  * mean maximum global solar radiation The integer day number to be selected in each case 
  * for the computations is given by two tables. Returns 0 if OK, 1 otherwise. 
  */
-PUBLIC int
+ int
 declination_sun_month (int month_number, int type_use, double *delta_month)
 {
   const double deg_rad = (Pi / 180.0);	/* converts decimal degrees into radians */
@@ -469,7 +469,7 @@ declination_sun_month (int month_number, int type_use, double *delta_month)
  * convention the hour angle is negative before noon and positive after noon Returns 0 if 
  * OK, 1 otherwise. 
  */
-PUBLIC int
+ int
 solar_hour_angle (double t, double *omega)
 {
   int ier;
@@ -498,7 +498,7 @@ solar_hour_angle (double t, double *omega)
  * "solar_hour_angle" i.e. computes the solar time (in decimal hours) from the solar
  * hour angle (in radians). Returns 0 if OK, 1 otherwise. 
  */
-PUBLIC int
+ int
 omega_to_LAT (double omega, double *t)
 {
   int ier;
@@ -513,7 +513,7 @@ omega_to_LAT (double omega, double *t)
   return (ier);
 }
 
-PUBLIC double
+ double
 geogr_to_geoce (double phi_g)
 {
   double phi;
@@ -546,7 +546,7 @@ geogr_to_geoce (double phi_g)
  * (in radians) for a whole solar hour, taking into account only the portion of the solar 
  * hour with the sun standing above the horizon. Returns 0 if OK, 1 otherwise. 
  */
-PUBLIC int
+ int
 solar_hour_angle_h (double phi_g, double delta, double t, double *omega)
 {
   int ier;
@@ -597,11 +597,11 @@ solar_hour_angle_h (double phi_g, double delta, double t, double *omega)
  * sunrise (at sunset) when the calculated astronomical elevation is 50'. Returns 0 if
  * OK, 1 otherwise. 
  */
-PUBLIC int
+ int
 sunrise_hour_angle (double phi_g, double delta, double gamma_riset,
 		    double *omega_sr, double *omega_ss)
 {
-  PRIVATE double deg_rad = (Pi / 180.0);	/* converts decimal degrees into radians */
+   double deg_rad = (Pi / 180.0);	/* converts decimal degrees into radians */
   int ier;
   double horizon, max_delta, cos_omegas, omegas;
   double phi;
@@ -654,7 +654,7 @@ sunrise_hour_angle (double phi_g, double delta, double gamma_riset,
  * sunset, and the astronomical daylength, all in LAT decimal hours. Returns 0 if OK, 1
  * otherwise. 
  */
-PUBLIC int
+ int
 timerise_daylength (double omega_sr, double omega_ss, double *t_sr,
 		    double *t_ss, double *S0)
 {
@@ -706,7 +706,7 @@ timerise_daylength (double omega_sr, double omega_ss, double *t_sr,
  * consideration and the reference time zone longitude for the site. A summer time
  * correction must be added for some countries. Returns 0 if OK, 1 otherwise. 
  */
-PUBLIC int
+ int
 LMT_to_LAT (double day_angle, double lambda, double lambda_ref, int summer_corr,
 	    double *dt)
 {
@@ -747,7 +747,7 @@ LMT_to_LAT (double day_angle, double lambda, double lambda_ref, int summer_corr,
  * equation of time, ET, is computed (in decimal hours), wich allows for perturbations in 
  * the rotational and angular orbital speed of the Earth. Returns 0 if OK, 1 otherwise. 
  */
-PUBLIC int
+ int
 UT_to_LAT (double UT, double day_angle, double lambda, double *LAT)
 {
   const double deg_rad = (Pi / 180.0);	/* converts decimal degrees into radians */
@@ -796,7 +796,7 @@ UT_to_LAT (double UT, double day_angle, double lambda, double *LAT)
  * and the solar zenithal (or incidence) angle. These two angles are complementary.
  * Returns 0 if OK, 1 otherwise. 
  */
-PUBLIC int
+ int
 elevation_zenith_sun (double phi_g, double delta, double omega, double *gamma,
 		      double *theta)
 {
@@ -839,7 +839,7 @@ elevation_zenith_sun (double phi_g, double delta, double omega, double *gamma,
  * South, i.e. during the afternoon in solar time. For the Southern hemisphere, the
  * azimuth angle is measured from North. Returns 0 if OK, 1 otherwise. 
  */
-PUBLIC int
+ int
 azimuth_sun (double phi_g, double delta, double omega, double gamma,
 	     double *alpha)
 {
@@ -893,7 +893,7 @@ azimuth_sun (double phi_g, double delta, double omega, double gamma,
  * but a single (average) value per day is enough for practical calculations. Returns 0
  * if OK, 1 otherwise. 
  */
-PUBLIC int
+ int
 corr_distance (double day_angle, double *eccentricity)
 {
   const double deg_rad = (Pi / 180.0);	/* converts decimal degrees into radians */
@@ -925,7 +925,7 @@ corr_distance (double day_angle, double *eccentricity)
  * The procedure "G0_normal" delivers the extraterrestrial solar irradiance normal to
  * beam for day j. Returns 0 if OK, 1 otherwise. 
  */
-PUBLIC int
+ int
 G0_normal (double I0j, double theta, double *G0)
 {
   *G0 = I0j * cos (theta);
@@ -948,7 +948,7 @@ G0_normal (double I0j, double theta, double *G0)
  * The procedure "G0_general" delivers the extraterrestrial solar irradiation incident
  * on an horizontal surface in the general case (in Wh/m2). Returns 0 if OK, 1 otherwise 
  */
-PUBLIC int
+ int
 G0_general (double phi_g, double eccentricity, double delta,
 	    double omega1, double omega2, double *G0_12)
 {
@@ -1003,7 +1003,7 @@ G0_general (double phi_g, double eccentricity, double delta,
  * -omega_ss et omega2 = omega_ss. Returns 0 if OK, 1 otherwise. REMARK: It is a special 
  * case of G0_general with the sunrise and sunset angles as integration limits. 
  */
-PUBLIC int
+ int
 G0_day (double phi_g, double eccentricity, double delta, double *G0d)
 {
   int ier;
@@ -1042,7 +1042,7 @@ G0_day (double phi_g, double eccentricity, double delta, double *G0d)
  * incident on an horizontal surface in case of hourly values, for the 24 integral hours
  * in a given day (in Wh/m2), i.e. |omega1-omega2| = Pi/12. Returns 0 if OK, 1 otherwise 
  */
-PUBLIC int
+ int
 G0_hours_profile (double phi_g, double eccentricity, double delta, double *G0h)
 {
   int ier, i;
@@ -1103,7 +1103,7 @@ G0_hours_profile (double phi_g, double eccentricity, double delta, double *G0h)
  * |omega1-omega2| = Pi/12. t is taken as the mid hour for computation of the hourly
  * value of extraterrestrial solar irradiation. Returns 0 if OK, 1 otherwise 
  */
-PUBLIC int
+ int
 G0_hour (double phi_g, double eccentricity, double delta, double t, double *G0h)
 {
   int ier;
@@ -1176,7 +1176,7 @@ G0_hour (double phi_g, double eccentricity, double delta, double t, double *G0h)
  * irradiation (in Wh/m2) and the 24 hourly extraterrestrial solar irradiation (in
  * Wh/m2) . Returns 0 if OK, 1 otherwise 
  */
-PUBLIC int
+ int
 monthly_averages (int month_number, int year_number,
 		  double phi_g, double lambda, double gamma_riset,
 		  double *day_angle_m, double *delta_m, double *omega_ss_m,
@@ -1298,7 +1298,7 @@ monthly_averages (int month_number, int year_number,
  * daylength (in decimal hours), daily extraterrestrial irradiation (in Wh/m2) and 24
  * hourly extraterrestrial solar irradiation (in Wh/m2). Returns 0 if OK, 1 otherwise 
  */
-PUBLIC int
+ int
 yearly_averages (int month_number, int year_start, int year_end,
 		 double phi_g, double lambda, double gamma_riset,
 		 double *day_angle_y, double *delta_y, double *omega_ss_y,
@@ -1392,7 +1392,7 @@ yearly_averages (int month_number, int year_start, int year_end,
  * Wh/m2). Returns 0 if OK, 1 otherwise. REMARK: gamma_riset set to 0.0 in the original 
  * procedure by Aguiar.
  */
-PUBLIC int
+ int
 solar_parameters_day (int day_of_month, int month_number, int year_number,
 		      double phi_g, double lambda, double gamma_riset,
 		      double *day_angle, double *delta, double *omega_ss,
@@ -1451,7 +1451,7 @@ solar_parameters_day (int day_of_month, int month_number, int year_number,
  * extraterrestrial solar irradiation (in Wh/m2). Returns 0 if OK, 1 otherwise. REMARK: 
  * gamma_riset set to 0.0 in the original procedure by Aguiar.
  */
-PUBLIC int
+ int
 solar_parameters_avg (int month_number,
 		      double phi_g, double gamma_riset,
 		      double *day_angle_avg, double *delta_avg,
@@ -1528,7 +1528,7 @@ solar_parameters_avg (int month_number,
  * extraterrestrial solar irradiation (in Wh/m2). Returns 0 if OK, 1 otherwise. REMARK: 
  * gamma_riset set to 0.0 in the original procedure by Aguiar.
  */
-PUBLIC int
+ int
 solar_parameters_max (int month_number,
 		      double phi_g, double gamma_riset,
 		      double *day_angle_max, double *delta_max,
@@ -1600,7 +1600,7 @@ solar_parameters_max (int month_number,
  * If all values are different from -999,sun is visible during the
  * periods:[$omega1;$omega2] and [$omega3;$omega4] 
  */
-PUBLIC int
+ int
 intervals_omega_tilted_plane (double phi_g, double delta, double omega_ss,
 			      double beta, double alpha, double *v_om,
 			      int *p_nb)
