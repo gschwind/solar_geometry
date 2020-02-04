@@ -595,6 +595,45 @@ extern "C"
      */
     double ymd_to_julian_day(int year, int month, int day_of_month);
 
+    /***************************************/
+    /* POSITION OF THE SUN IN THE SKY FAST */
+    /***************************************/
+    typedef struct s_sgf {
+
+	    double phi_g;
+	    double phi;
+	    double delta;
+
+	    double sin_phi;
+	    double sin_delta;
+	    double cos_phi;
+	    double cos_delta;
+	    double sin_phi_sin_delta;
+	    double cos_phi_cos_delta;
+
+	    /* For computation of the cosinus of the incident angle */
+
+	    double alpha;
+	    double beta;
+
+	    double cos_alpha;
+	    double sin_alpha;
+
+	    double cos_beta;
+	    double sin_beta;
+
+	    double A;
+	    double B;
+	    double C;
+    } S_SOLAR_GEOMETRY_FAST;
+
+    void init_solar_geometry_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double phi_g, double delta);
+    void deftilt_solar_geometry_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double alpha, double beta);
+    void elevation_sun_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, double *p_gamma);
+    void elevation_zenith_sun_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, double *p_gamma, double *p_theta);
+    void azimuth_sun_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double sin_omega, double gamma, double *p_alpha);
+    void cos_incident_angle_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, double sin_omega, double *p_costhetai);
+
 
 #ifdef	__cplusplus
 }
