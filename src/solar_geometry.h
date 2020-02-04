@@ -586,6 +586,16 @@ extern "C"
 					   double alpha, double *v_om,
 					   int *p_nb);
 
+    /**
+     * Convert y-m-d date to julian day (number of day from -4713
+     * @param year
+     * @param month
+     * @param day_of_month
+     * @return julian day a 12h
+     */
+    double ymd_to_julian_day(int year, int month, int day_of_month);
+
+
 #ifdef	__cplusplus
 }
 #endif

@@ -1987,3 +1987,14 @@ intervals_omega_tilted_plane (double phi_g, double delta, double omega_ss,
   return (ierr);
 
 }
+
+
+double ymd_to_julian_day(int year, int month, int day_of_month)
+{
+       if (month <= 2) {
+               month = month + 12;
+               year = year - 1;
+       }
+       return 1721028.0 + day_of_month + floor((153 * month - 2) / 5) + 365 * year + floor(year / 4)
+                   - floor(year / 100) + floor(year / 400) + 12.0 / 24.0 - 0.5;
+}
