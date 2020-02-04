@@ -974,7 +974,7 @@ G0_general (double phi_g, double eccentricity, double delta,
     *G0_12 = 0.0;
   else
     {
-      a = I0 * eccentricity * Dl / (2.0 * SG1_PI_LOW_PRECISION);
+      a = SG1_I0 * eccentricity * Dl / (2.0 * SG1_PI_LOW_PRECISION);
       b1 = sin (phi) * sin (delta) * (omega2 - omega1);
       b2 = cos (phi) * cos (delta) * (sin (omega2) - sin (omega1));
       c = a * (b1 + b2);
@@ -1015,7 +1015,7 @@ G0_day (double phi_g, double eccentricity, double delta, double *G0d)
   ier = sunrise_hour_angle (phi_g, delta, 0.0, &omega_sr, &omega_ss);
   if (ier != 0)
     return (ier);
-  a = I0 * eccentricity * Dl / SG1_PI_LOW_PRECISION;
+  a = SG1_I0 * eccentricity * Dl / SG1_PI_LOW_PRECISION;
   /*
    * b = cos(phi) * cos(delta) * (sin(omega_ss) - omega_ss * cos(omega_ss)); 
    */
@@ -1055,7 +1055,7 @@ G0_hours_profile (double phi_g, double eccentricity, double delta, double *G0h)
   ier = sunrise_hour_angle (phi_g, delta, 0.0, &omega_sr, &omega_ss);
   if (ier != 0)
     return (ier);
-  a = I0 * eccentricity * Dl / (2.0 * SG1_PI_LOW_PRECISION);
+  a = SG1_I0 * eccentricity * Dl / (2.0 * SG1_PI_LOW_PRECISION);
   b1 = sin (phi) * sin (delta);
   b2 = cos (phi) * cos (delta);
 
@@ -1116,7 +1116,7 @@ G0_hour (double phi_g, double eccentricity, double delta, double t, double *G0h)
   ier = sunrise_hour_angle (phi_g, delta, 0.0, &omega_sr, &omega_ss);
   if (ier != 0)
     return (ier);
-  a = I0 * eccentricity * Dl / (2.0 * SG1_PI_LOW_PRECISION);
+  a = SG1_I0 * eccentricity * Dl / (2.0 * SG1_PI_LOW_PRECISION);
   b1 = sin (phi) * sin (delta);
   b2 = cos (phi) * cos (delta);
 
