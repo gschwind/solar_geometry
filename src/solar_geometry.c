@@ -20,6 +20,8 @@
 #define MIN(x,y) ((x)<(y) ? (x) : (y))
 #define MAX(x,y) ((x)>(y) ? (x) : (y))
 
+#define SG1_PI_2     1.57079632679489661923
+
 /*************/
 /* NOTATIONS */
 /*************/
@@ -1978,7 +1980,7 @@ void sg1_elevation_sun_fast(SG1_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, do
 void sg1_elevation_zenith_sun_fast(SG1_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, double *p_gamma, double *p_theta)
 {
 	*p_gamma = asin(p_sgf->sin_phi_sin_delta + p_sgf->cos_phi_cos_delta*cos_omega);
-	*p_theta = M_PI_2 - *p_gamma;
+	*p_theta = SG1_PI_2 - *p_gamma;
 }
 
 void sg1_azimuth_sun_fast(SG1_SOLAR_GEOMETRY_FAST *p_sgf, double sin_omega, double gamma, double *p_alpha)
