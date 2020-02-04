@@ -1,29 +1,13 @@
 /*-------------------------------------------------------------------------*/
-/*
- * ECOLE DES MINES DE PARIS 
- */
-/*
- * CENTRE D'ENERGETIQUE - GROUPE TELEDETECTION & MODELISATION 
- */
-/*
- * Rue Claude Daunesse, BP 207 
- */
-/*
- * 06904 Sophia Antipolis cedex, FRANCE 
- */
-/*
- * Tel (+33) 04 93 95 74 49 Fax (+33) 04 93 95 75 35 
- */
-/*
- * E-mail : (name)@cenerg.cma.fr 
- */
+/*                        ECOLE DES MINES DE PARIS                         */
+/*        CENTRE D'ENERGETIQUE - GROUPE TELEDETECTION & MODELISATION       */
+/*                       Rue Claude Daunesse, BP 207                       */
+/*                   06904 Sophia Antipolis cedex, FRANCE                  */
+/*          Tel (+33) 04 93 95 74 49     Fax (+33) 04 93 95 75 35          */
+/*                       E-mail : (name)@cenerg.cma.fr                     */
 /*-------------------------------------------------------------------------*/
-/*
- * L. Wald - O. Bauer - February 1997 
- */
-/*
- * modified 8 July 2004 L. Wald for geocentric - geographic lat 
- */
+/*   L. Wald - O. Bauer - February 1997                                    */
+/*   modified 8 July 2004 L. Wald for geocentric - geographic lat          */
 /*-------------------------------------------------------------------------*/
 
 #define __C_solar_geometry
@@ -37,106 +21,47 @@
 #define MAX(x,y) ((x)>(y) ? (x) : (y))
 
 /*************/
-/*
- * NOTATIONS 
- */
+/* NOTATIONS */
 /*************/
-/*
- * phi_g : geographic latitude of the site, positive to North 
- */
-/*
- * phi : geocentric latitude of the site, positive to North 
- */
-/*
- * lambda : longitude of the site, positive to East 
- */
-/*
- * delta : solar declination angle 
- */
-/*
- * omega : solar hour angle 
- */
-/*
- * gamma : solar altitude (or elevation) angle 
- */
-/*
- * theta : solar incidence (or zenithal) angle (ESRA --> zeta) 
- */
-/*
- * alpha : solar azimuthal angle (or psi) 
- */
+/* phi_g  : geographic latitude of the site, positive to North */
+/* phi    : geocentric latitude of the site, positive to North */
+/* lambda : longitude of the site, positive to East */
+/* delta  : solar declination angle */
+/* omega  : solar hour angle */
+/* gamma  : solar altitude (or elevation) angle */
+/* theta  : solar incidence (or zenithal) angle (ESRA --> zeta) */
+/* alpha  : solar azimuthal angle (or psi) */
+/* t   : solar time = true solar time (TST) = local apparent time (LAT) */
+/* LAT : local apparent time or solar time or true solar time (TST)
+ --> this system of time offers the advantage of symmetry of the solar
+ geometry about the north-south line */
+/* LMT : local mean time or clock time */
+/* UT  : Universal Time, is GMT measured from Greenwich mean midnight */
+/* omega_sr : sunrise hour angle */
+/* omega_ss : sunset hour angle */
+/* t_sr     : time of astronomical sunrise */
+/* t_ss     : time of astronomical sunset */
+/* omega1 : solar hour angle at beginning of the time period */
+/* omega2 : solar hour angle at end of the time period */
 
-/*
- * t : solar time = true solar time (TST) = local apparent time (LAT) 
- */
-/*
- * LAT : local apparent time or solar time or true solar time (TST) --> this system of
- * time offers the advantage of symmetry of the solar geometry about the north-south
- * line 
- */
-/*
- * LMT : local mean time or clock time 
- */
-/*
- * UT : Universal Time, is GMT measured from Greenwich mean midnight 
- */
+/* S0  : astronomical daylength or astronomical sunshine duration */
+/* I0  : solar constant = annual mean value of extraterrestrial direct solar
+ irradiance G0 (1367.0 W/m2) */
+/* G0  : extraterrestrial global solar irradiation (on an horizontal plane)
+ =B0 */
+/* G0h : hourly extraterrestrial solar irradiation (on an horizontal plane) */
+/* G0d : daily extraterrestrial solar irradiation (on an horizontal plane) */
 
-/*
- * omega_sr : sunrise hour angle 
- */
-/*
- * omega_ss : sunset hour angle 
- */
-/*
- * t_sr : time of astronomical sunrise 
- */
-/*
- * t_ss : time of astronomical sunset 
- */
-
-/*
- * omega1 : solar hour angle at beginning of the time period 
- */
-/*
- * omega2 : solar hour angle at end of the time period 
- */
-
-/*
- * S0 : astronomical daylength or astronomical sunshine duration 
- */
-/*
- * I0 : solar constant = annual mean value of extraterrestrial direct solar irradiance
- * G0 (1367.0 W/m2) 
- */
-/*
- * G0 : extraterrestrial global solar irradiation (on an horizontal plane) =B0
- */
-/*
- * G0h : hourly extraterrestrial solar irradiation (on an horizontal plane) 
- */
-/*
- * G0d : daily extraterrestrial solar irradiation (on an horizontal plane) 
- */
-
-/*
- * NB : All angles are computed in radians as a standard. The basic trigonometric
- * calculations on the position of the sun are carried out in LAT. 
- */
-
+/* NB : All angles are computed in radians as a standard.
+ The basic trigonometric calculations on the position of the sun are
+ carried out in LAT. */
 
 /*********************************************/
-/*
- */
-/*
- * G E O M E T R Y O F S O L A R B E A M, 
- */
-/*
- */
-/*
- * A N E A R P O I N T S O U R C E 
- */
-/*
- */
+/*                                           */
+/* G E O M E T R Y  O F  S O L A R  B E A M, */
+/*                                           */
+/* A  N E A R  P O I N T  S O U R C E        */
+/*                                           */
 /*********************************************/
 
 /********************/
