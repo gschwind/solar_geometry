@@ -331,7 +331,7 @@ Day_Angle (int julian_day, double *day_angle)
   if ((julian_day > 0) && (julian_day <= 366))
     {
       ier = 0;
-      *day_angle = (double) julian_day *2.0 * Pi / 365.2422;
+      *day_angle = (double) julian_day *2.0 * SG1_PI_LOW_PRECISION / 365.2422;
     }
   return (ier);
 }
@@ -389,8 +389,8 @@ declination_sun (int year_number, int julian_day, double lambda, double *delta)
   n0 =
     78.8946 + 0.2422 * (year_number - 1957) -
     (int) (0.25 * (year_number - 1957));
-  t1 = -0.5 - lambda / (2 * Pi) - n0;
-  w0 = 2 * Pi / 365.2422;
+  t1 = -0.5 - lambda / (2 * SG1_PI_LOW_PRECISION) - n0;
+  w0 = 2 * SG1_PI_LOW_PRECISION / 365.2422;
   if ((julian_day > 0) && (julian_day <= 366))
     {
       ier = 0;
@@ -422,7 +422,7 @@ declination_sun (int year_number, int julian_day, double lambda, double *delta)
  int
 declination_sun_month (int month_number, int type_use, double *delta_month)
 {
-  const double deg_rad = (Pi / 180.0);	/* converts decimal degrees into radians */
+  const double deg_rad = (SG1_PI_LOW_PRECISION / 180.0);	/* converts decimal degrees into radians */
   int tab_julian_day[12] =
     { 17, 46, 75, 105, 135, 162, 198, 228, 259, 289, 319, 345 };
   int tab_julian_day_max[12] =
@@ -478,7 +478,7 @@ solar_hour_angle (double t, double *omega)
   if ((t >= 0.0) && (t <= 24.0))
     {
       ier = 0;
-      *omega = (t - 12.0) * Pi / 12.0;
+      *omega = (t - 12.0) * SG1_PI_LOW_PRECISION / 12.0;
     }
   return (ier);
 }
@@ -505,10 +505,10 @@ omega_to_LAT (double omega, double *t)
 
   ier = 1;
 
-  if ((omega >= -Pi) && (omega <= Pi))
+  if ((omega >= -SG1_PI_LOW_PRECISION) && (omega <= SG1_PI_LOW_PRECISION))
     {
       ier = 0;
-      *t = 12.0 * (1.0 + omega / Pi);
+      *t = 12.0 * (1.0 + omega / SG1_PI_LOW_PRECISION);
     }
   return (ier);
 }
@@ -524,7 +524,7 @@ geogr_to_geoce (double phi_g)
   /*
    * Rpole=6356.752, Requator=6378.137 
    */
-  if ((phi_g >= -(Pi / 2.0 - 0.0002)) || (phi_g <= (Pi / 2.0 - 0.0002)))
+  if ((phi_g >= -(SG1_PI_LOW_PRECISION / 2.0 - 0.0002)) || (phi_g <= (SG1_PI_LOW_PRECISION / 2.0 - 0.0002)))
     phi = atan (tan (phi_g) * CC);
   else
     phi = phi_g;
@@ -557,11 +557,11 @@ solar_hour_angle_h (double phi_g, double delta, double t, double *omega)
   if (ier != 0)
     return (ier);
 
-  omega1 = (t - 1.0 - 12.0) * Pi / 12.0;
+  omega1 = (t - 1.0 - 12.0) * SG1_PI_LOW_PRECISION / 12.0;
   if (omega1 < omega_sr)
     omega1 = omega_sr;
 
-  omega2 = (t - 12.0) * Pi / 12.0;
+  omega2 = (t - 12.0) * SG1_PI_LOW_PRECISION / 12.0;
   if (omega2 > omega_ss)
     omega2 = omega_ss;
 
@@ -601,7 +601,7 @@ solar_hour_angle_h (double phi_g, double delta, double t, double *omega)
 sunrise_hour_angle (double phi_g, double delta, double gamma_riset,
 		    double *omega_sr, double *omega_ss)
 {
-   double deg_rad = (Pi / 180.0);	/* converts decimal degrees into radians */
+   double deg_rad = (SG1_PI_LOW_PRECISION / 180.0);	/* converts decimal degrees into radians */
   int ier;
   double horizon, max_delta, cos_omegas, omegas;
   double phi;
@@ -616,7 +616,7 @@ sunrise_hour_angle (double phi_g, double delta, double gamma_riset,
   phi = geogr_to_geoce (phi_g);
   max_delta = 23.45 * deg_rad;
 
-  if ((fabs (phi) < (Pi / 2.0)) && (fabs (delta) <= max_delta) && (ier == 0))
+  if ((fabs (phi) < (SG1_PI_LOW_PRECISION / 2.0)) && (fabs (delta) <= max_delta) && (ier == 0))
     {
       cos_omegas =
 	(sin (horizon) - (sin (phi) * sin (delta))) / (cos (phi) * cos (delta));
@@ -630,7 +630,7 @@ sunrise_hour_angle (double phi_g, double delta, double gamma_riset,
   if (cos_omegas >= 1.0)	/* the sun is always below the horizon : polar night */
     omegas = 0.0;
   if (cos_omegas <= -1.0)	/* the sun is always above the horizon : polar day */
-    omegas = Pi;
+    omegas = SG1_PI_LOW_PRECISION;
 
   *omega_sr = -omegas;
   *omega_ss = omegas;
@@ -661,8 +661,8 @@ timerise_daylength (double omega_sr, double omega_ss, double *t_sr,
   int ier;
 
   ier = 1;
-  if ((omega_sr >= -Pi) && (omega_sr <= 0.0) && (omega_ss >= 0.0)
-      && (omega_ss <= Pi))
+  if ((omega_sr >= -SG1_PI_LOW_PRECISION) && (omega_sr <= 0.0) && (omega_ss >= 0.0)
+      && (omega_ss <= SG1_PI_LOW_PRECISION))
     {
       ier = 0;
       /*
@@ -672,8 +672,8 @@ timerise_daylength (double omega_sr, double omega_ss, double *t_sr,
        * ier = omega_to_LAT(omega_sr,&t_sr); if(ier == 0) ier ==
        * omega_to_LAT(omega_ss,&t_ss); if(ier != 0) return(ier);
        */
-      *t_sr = 12.0 + omega_sr * 12.0 / Pi;
-      *t_ss = 12.0 + omega_ss * 12.0 / Pi;
+      *t_sr = 12.0 + omega_sr * 12.0 / SG1_PI_LOW_PRECISION;
+      *t_ss = 12.0 + omega_ss * 12.0 / SG1_PI_LOW_PRECISION;
       *S0 = *t_ss - *t_sr;
     }
   return (ier);
@@ -710,7 +710,7 @@ timerise_daylength (double omega_sr, double omega_ss, double *t_sr,
 LMT_to_LAT (double day_angle, double lambda, double lambda_ref, int summer_corr,
 	    double *dt)
 {
-  const double deg_rad = (Pi / 180.0);	/* converts decimal degrees into radians */
+  const double deg_rad = (SG1_PI_LOW_PRECISION / 180.0);	/* converts decimal degrees into radians */
   int ier;
   double a1, a2, a3, a4, ET;
 
@@ -719,12 +719,12 @@ LMT_to_LAT (double day_angle, double lambda, double lambda_ref, int summer_corr,
   a2 = -0.165;
   a3 = 2.80 * deg_rad;
   a4 = 19.70 * deg_rad;
-  if ((day_angle > 0.0) && (day_angle < (2.0 * Pi * 1.0021)) &&
-      (fabs (lambda) <= Pi) && (fabs (lambda_ref) <= Pi))
+  if ((day_angle > 0.0) && (day_angle < (2.0 * SG1_PI_LOW_PRECISION * 1.0021)) &&
+      (fabs (lambda) <= SG1_PI_LOW_PRECISION) && (fabs (lambda_ref) <= SG1_PI_LOW_PRECISION))
     {
       ier = 0;
       ET = a1 * sin (day_angle - a3) + a2 * sin (2.0 * day_angle + a4);
-      *dt = ET + ((lambda - lambda_ref) * 12.0 / Pi) - (double) summer_corr;
+      *dt = ET + ((lambda - lambda_ref) * 12.0 / SG1_PI_LOW_PRECISION) - (double) summer_corr;
     }
 
   return (ier);
@@ -750,7 +750,7 @@ LMT_to_LAT (double day_angle, double lambda, double lambda_ref, int summer_corr,
  int
 UT_to_LAT (double UT, double day_angle, double lambda, double *LAT)
 {
-  const double deg_rad = (Pi / 180.0);	/* converts decimal degrees into radians */
+  const double deg_rad = (SG1_PI_LOW_PRECISION / 180.0);	/* converts decimal degrees into radians */
   int ier;
   double a1, a2, a3, a4, ET;
 
@@ -760,11 +760,11 @@ UT_to_LAT (double UT, double day_angle, double lambda, double *LAT)
   a3 = 2.80 * deg_rad;
   a4 = 19.70 * deg_rad;
   if ((UT >= 0.0) && (UT <= 24.0) && (day_angle > 0.0) &&
-      (day_angle < (2.0 * Pi * 1.0021)) && (fabs (lambda) <= Pi))
+      (day_angle < (2.0 * SG1_PI_LOW_PRECISION * 1.0021)) && (fabs (lambda) <= SG1_PI_LOW_PRECISION))
     {
       ier = 0;
       ET = a1 * sin (day_angle - a3) + a2 * sin (2.0 * day_angle + a4);
-      *LAT = UT + ET + (lambda * 12.0 / Pi);
+      *LAT = UT + ET + (lambda * 12.0 / SG1_PI_LOW_PRECISION);
       if (*LAT < 0)
 	*LAT += 24.0;
       if (*LAT > 24.0)
@@ -817,7 +817,7 @@ elevation_zenith_sun (double phi_g, double delta, double omega, double *gamma,
   if (*gamma < 0.0)
     *gamma = 0.0;
 
-  *theta = (Pi / 2.0) - *gamma;
+  *theta = (SG1_PI_LOW_PRECISION / 2.0) - *gamma;
 
   return (ier);
 }
@@ -861,7 +861,7 @@ azimuth_sun (double phi_g, double delta, double omega, double gamma,
 	  cos_as = -1.0;
 
   x = acos (cos_as);
-  if (fabs (x) > Pi)
+  if (fabs (x) > SG1_PI_LOW_PRECISION)
     ier = 1;
 
   if (sin_as >= 0.0)
@@ -896,13 +896,13 @@ azimuth_sun (double phi_g, double delta, double omega, double gamma,
  int
 corr_distance (double day_angle, double *eccentricity)
 {
-  const double deg_rad = (Pi / 180.0);	/* converts decimal degrees into radians */
+  const double deg_rad = (SG1_PI_LOW_PRECISION / 180.0);	/* converts decimal degrees into radians */
   int ier;
   double a;
 
   ier = 1;
   a = 2.80 * deg_rad;
-  if ((day_angle >= 0.0) && (day_angle <= (2.0 * Pi * 1.0021)))
+  if ((day_angle >= 0.0) && (day_angle <= (2.0 * SG1_PI_LOW_PRECISION * 1.0021)))
     {
       ier = 0;
       *eccentricity = 1.0 + 0.03344 * cos (day_angle - a);
@@ -974,7 +974,7 @@ G0_general (double phi_g, double eccentricity, double delta,
     *G0_12 = 0.0;
   else
     {
-      a = I0 * eccentricity * Dl / (2.0 * Pi);
+      a = I0 * eccentricity * Dl / (2.0 * SG1_PI_LOW_PRECISION);
       b1 = sin (phi) * sin (delta) * (omega2 - omega1);
       b2 = cos (phi) * cos (delta) * (sin (omega2) - sin (omega1));
       c = a * (b1 + b2);
@@ -1015,7 +1015,7 @@ G0_day (double phi_g, double eccentricity, double delta, double *G0d)
   ier = sunrise_hour_angle (phi_g, delta, 0.0, &omega_sr, &omega_ss);
   if (ier != 0)
     return (ier);
-  a = I0 * eccentricity * Dl / Pi;
+  a = I0 * eccentricity * Dl / SG1_PI_LOW_PRECISION;
   /*
    * b = cos(phi) * cos(delta) * (sin(omega_ss) - omega_ss * cos(omega_ss)); 
    */
@@ -1055,7 +1055,7 @@ G0_hours_profile (double phi_g, double eccentricity, double delta, double *G0h)
   ier = sunrise_hour_angle (phi_g, delta, 0.0, &omega_sr, &omega_ss);
   if (ier != 0)
     return (ier);
-  a = I0 * eccentricity * Dl / (2.0 * Pi);
+  a = I0 * eccentricity * Dl / (2.0 * SG1_PI_LOW_PRECISION);
   b1 = sin (phi) * sin (delta);
   b2 = cos (phi) * cos (delta);
 
@@ -1116,7 +1116,7 @@ G0_hour (double phi_g, double eccentricity, double delta, double t, double *G0h)
   ier = sunrise_hour_angle (phi_g, delta, 0.0, &omega_sr, &omega_ss);
   if (ier != 0)
     return (ier);
-  a = I0 * eccentricity * Dl / (2.0 * Pi);
+  a = I0 * eccentricity * Dl / (2.0 * SG1_PI_LOW_PRECISION);
   b1 = sin (phi) * sin (delta);
   b2 = cos (phi) * cos (delta);
 
@@ -1825,10 +1825,10 @@ intervals_omega_tilted_plane (double phi_g, double delta, double omega_ss,
 	  else
 	    {
 	      wa = atan (-A / B);
-	      wb = Pi + wa;
-	      if (wb > Pi)
+	      wb = SG1_PI_LOW_PRECISION + wa;
+	      if (wb > SG1_PI_LOW_PRECISION)
 		{
-		  wb = wb - 2.0 * Pi;
+		  wb = wb - 2.0 * SG1_PI_LOW_PRECISION;
 		}
 	    }
 
