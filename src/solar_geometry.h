@@ -18,7 +18,7 @@ extern "C"
 {
 #endif
   
-#define Pi  3.141592654
+#define SG1_PI_LOW_PRECISION  3.141592654
 #define I0  1367.0		/* solar constant in W/m2 */
 #define Dl  24.0		/* average value for the length of the day in decimal hours */
 
