@@ -1265,7 +1265,7 @@ sg1_yearly_averages (int month_number, int year_start, int year_end,
       *S0_y = *S0_y + S0_m;
       *eccentricity_y = *eccentricity_y + eccentricity_m;
       *G0d_y = *G0d_y + G0d_m;
-      for (i = 1; i <= 24; i++)
+      for (i = 0; i < 24; i++)
 	G0h_y[i] = G0h_y[i] + G0h_m[i];
       /*
        * printf("year_number= %4d G0d_m = %8.2f (Wh/m2) G0d_y = %8.2f
