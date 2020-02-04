@@ -85,7 +85,7 @@
  * julian day. Returns 0 if OK, 1 otherwise. 
  */
  int
-make_julian_day (int day_of_month, int month_number, int year_number,
+sg1_make_julian_day (int day_of_month, int month_number, int year_number,
 		 int *julian_day)
 {
    int tab[12] =
@@ -124,7 +124,7 @@ make_julian_day (int day_of_month, int month_number, int year_number,
  * the information on year and integer day number. Returns 0 if OK, 1 otherwise. 
  */
  int
-julian_to_date (int year_number, int julian_day, int *day_of_month,
+sg1_julian_to_date (int year_number, int julian_day, int *day_of_month,
 		int *month_number)
 {
   static int tab0[12] =
@@ -181,7 +181,7 @@ julian_to_date (int year_number, int julian_day, int *day_of_month,
  * calculations. Returns 0 if OK, 1 otherwise. 
  */
  int
-nbdays_month (int year_number, int month_number, int *number_days_month)
+sg1_nbdays_month (int year_number, int month_number, int *number_days_month)
 {
    int tab_nbdays[12] =
     { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
@@ -215,7 +215,7 @@ nbdays_month (int year_number, int month_number, int *number_days_month)
  * month name. Returns 0 if OK, 1 otherwise. 
  */
  int
-number_to_name_month (int month_number, char *month_name)
+sg1_number_to_name_month (int month_number, char *month_name)
 {
    char tab_name[][4] =
     { "   ", "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug",
@@ -248,7 +248,7 @@ number_to_name_month (int month_number, char *month_name)
  * Returns 0 if OK, 1 otherwise. 
  */
  int
-Day_Angle (int julian_day, double *day_angle)
+sg1_Day_Angle (int julian_day, double *day_angle)
 {
   int ier;
 
@@ -285,7 +285,7 @@ Day_Angle (int julian_day, double *day_angle)
  * Returns 0 if OK, 1 otherwise. 
  */
  int
-declination_sun (int year_number, int julian_day, double lambda, double *delta)
+sg1_declination_sun (int year_number, int julian_day, double lambda, double *delta)
 {
   int ier;
   double b1, b2, b3, b4, b5, b6, b7;
@@ -345,7 +345,7 @@ declination_sun (int year_number, int julian_day, double lambda, double *delta)
  * for the computations is given by two tables. Returns 0 if OK, 1 otherwise. 
  */
  int
-declination_sun_month (int month_number, int type_use, double *delta_month)
+sg1_declination_sun_month (int month_number, int type_use, double *delta_month)
 {
   const double deg_rad = (SG1_PI_LOW_PRECISION / 180.0);	/* converts decimal degrees into radians */
   int tab_julian_day[12] =
@@ -365,7 +365,7 @@ declination_sun_month (int month_number, int type_use, double *delta_month)
       ier = 0;
     }
 
-  ier = Day_Angle (julian_day, &day_angle);
+  ier = sg1_Day_Angle (julian_day, &day_angle);
   if (ier != 0)
     return (ier);
 
@@ -395,7 +395,7 @@ declination_sun_month (int month_number, int type_use, double *delta_month)
  * OK, 1 otherwise. 
  */
  int
-solar_hour_angle (double t, double *omega)
+sg1_solar_hour_angle (double t, double *omega)
 {
   int ier;
 
@@ -424,7 +424,7 @@ solar_hour_angle (double t, double *omega)
  * hour angle (in radians). Returns 0 if OK, 1 otherwise. 
  */
  int
-omega_to_LAT (double omega, double *t)
+sg1_omega_to_LAT (double omega, double *t)
 {
   int ier;
 
@@ -439,7 +439,7 @@ omega_to_LAT (double omega, double *t)
 }
 
  double
-geogr_to_geoce (double phi_g)
+sg1_geogr_to_geoce (double phi_g)
 {
   double phi;
   double CC = 0.99330552;	/* Correction factor for converting geographic */
@@ -472,13 +472,13 @@ geogr_to_geoce (double phi_g)
  * hour with the sun standing above the horizon. Returns 0 if OK, 1 otherwise. 
  */
  int
-solar_hour_angle_h (double phi_g, double delta, double t, double *omega)
+sg1_solar_hour_angle_h (double phi_g, double delta, double t, double *omega)
 {
   int ier;
   double omega_sr, omega_ss, omega1, omega2;
 
   ier = 1;
-  ier = sunrise_hour_angle (phi_g, delta, 0.0, &omega_sr, &omega_ss);
+  ier = sg1_sunrise_hour_angle (phi_g, delta, 0.0, &omega_sr, &omega_ss);
   if (ier != 0)
     return (ier);
 
@@ -523,7 +523,7 @@ solar_hour_angle_h (double phi_g, double delta, double t, double *omega)
  * OK, 1 otherwise. 
  */
  int
-sunrise_hour_angle (double phi_g, double delta, double gamma_riset,
+sg1_sunrise_hour_angle (double phi_g, double delta, double gamma_riset,
 		    double *omega_sr, double *omega_ss)
 {
    double deg_rad = (SG1_PI_LOW_PRECISION / 180.0);	/* converts decimal degrees into radians */
@@ -538,7 +538,7 @@ sunrise_hour_angle (double phi_g, double delta, double gamma_riset,
   if (gamma_riset >= horizon)
     horizon = gamma_riset;
 
-  phi = geogr_to_geoce (phi_g);
+  phi = sg1_geogr_to_geoce (phi_g);
   max_delta = 23.45 * deg_rad;
 
   if ((fabs (phi) < (SG1_PI_LOW_PRECISION / 2.0)) && (fabs (delta) <= max_delta) && (ier == 0))
@@ -580,7 +580,7 @@ sunrise_hour_angle (double phi_g, double delta, double gamma_riset,
  * otherwise. 
  */
  int
-timerise_daylength (double omega_sr, double omega_ss, double *t_sr,
+sg1_timerise_daylength (double omega_sr, double omega_ss, double *t_sr,
 		    double *t_ss, double *S0)
 {
   int ier;
@@ -632,7 +632,7 @@ timerise_daylength (double omega_sr, double omega_ss, double *t_sr,
  * correction must be added for some countries. Returns 0 if OK, 1 otherwise. 
  */
  int
-LMT_to_LAT (double day_angle, double lambda, double lambda_ref, int summer_corr,
+sg1_LMT_to_LAT (double day_angle, double lambda, double lambda_ref, int summer_corr,
 	    double *dt)
 {
   const double deg_rad = (SG1_PI_LOW_PRECISION / 180.0);	/* converts decimal degrees into radians */
@@ -673,7 +673,7 @@ LMT_to_LAT (double day_angle, double lambda, double lambda_ref, int summer_corr,
  * the rotational and angular orbital speed of the Earth. Returns 0 if OK, 1 otherwise. 
  */
  int
-UT_to_LAT (double UT, double day_angle, double lambda, double *LAT)
+sg1_UT_to_LAT (double UT, double day_angle, double lambda, double *LAT)
 {
   const double deg_rad = (SG1_PI_LOW_PRECISION / 180.0);	/* converts decimal degrees into radians */
   int ier;
@@ -722,7 +722,7 @@ UT_to_LAT (double UT, double day_angle, double lambda, double *LAT)
  * Returns 0 if OK, 1 otherwise. 
  */
  int
-elevation_zenith_sun (double phi_g, double delta, double omega, double *gamma,
+sg1_elevation_zenith_sun (double phi_g, double delta, double omega, double *gamma,
 		      double *theta)
 {
   int ier;
@@ -730,8 +730,8 @@ elevation_zenith_sun (double phi_g, double delta, double omega, double *gamma,
   double phi;
 
   ier = 1;
-  phi = geogr_to_geoce (phi_g);
-  ier = sunrise_hour_angle (phi_g, delta, 0.0, &omega_sr, &omega_ss);
+  phi = sg1_geogr_to_geoce (phi_g);
+  ier = sg1_sunrise_hour_angle (phi_g, delta, 0.0, &omega_sr, &omega_ss);
   if (ier != 0)
     return (ier);
   if ((omega < omega_sr) || (omega > omega_ss))
@@ -765,7 +765,7 @@ elevation_zenith_sun (double phi_g, double delta, double omega, double *gamma,
  * azimuth angle is measured from North. Returns 0 if OK, 1 otherwise. 
  */
  int
-azimuth_sun (double phi_g, double delta, double omega, double gamma,
+sg1_azimuth_sun (double phi_g, double delta, double omega, double gamma,
 	     double *alpha)
 {
   int ier;
@@ -773,7 +773,7 @@ azimuth_sun (double phi_g, double delta, double omega, double gamma,
   double phi;
 
   ier = 0;
-  phi = geogr_to_geoce (phi_g);
+  phi = sg1_geogr_to_geoce (phi_g);
   cos_as = (sin (phi) * sin (gamma) - sin (delta)) / (cos (phi) * cos (gamma));
   if (phi < 0.0)
     cos_as = -cos_as;		/* Southern hemisphere */
@@ -819,7 +819,7 @@ azimuth_sun (double phi_g, double delta, double omega, double gamma,
  * if OK, 1 otherwise. 
  */
  int
-corr_distance (double day_angle, double *eccentricity)
+sg1_corr_distance (double day_angle, double *eccentricity)
 {
   const double deg_rad = (SG1_PI_LOW_PRECISION / 180.0);	/* converts decimal degrees into radians */
   int ier;
@@ -851,7 +851,7 @@ corr_distance (double day_angle, double *eccentricity)
  * beam for day j. Returns 0 if OK, 1 otherwise. 
  */
  int
-G0_normal (double I0j, double theta, double *G0)
+sg1_G0_normal (double I0j, double theta, double *G0)
 {
   *G0 = I0j * cos (theta);
   return 0;
@@ -874,7 +874,7 @@ G0_normal (double I0j, double theta, double *G0)
  * on an horizontal surface in the general case (in Wh/m2). Returns 0 if OK, 1 otherwise 
  */
  int
-G0_general (double phi_g, double eccentricity, double delta,
+sg1_G0_general (double phi_g, double eccentricity, double delta,
 	    double omega1, double omega2, double *G0_12)
 {
   int ier;
@@ -882,8 +882,8 @@ G0_general (double phi_g, double eccentricity, double delta,
   double phi;
 
   ier = 1;
-  phi = geogr_to_geoce (phi_g);
-  ier = sunrise_hour_angle (phi_g, delta, 0.0, &omega_sr, &omega_ss);
+  phi = sg1_geogr_to_geoce (phi_g);
+  ier = sg1_sunrise_hour_angle (phi_g, delta, 0.0, &omega_sr, &omega_ss);
   if (ier != 0)
     return (ier);
   if (omega1 < omega_sr)
@@ -929,15 +929,15 @@ G0_general (double phi_g, double eccentricity, double delta,
  * case of G0_general with the sunrise and sunset angles as integration limits. 
  */
  int
-G0_day (double phi_g, double eccentricity, double delta, double *G0d)
+sg1_G0_day (double phi_g, double eccentricity, double delta, double *G0d)
 {
   int ier;
   double omega_sr, omega_ss, a, b;
   double phi;
 
   ier = 1;
-  phi = geogr_to_geoce (phi_g);
-  ier = sunrise_hour_angle (phi_g, delta, 0.0, &omega_sr, &omega_ss);
+  phi = sg1_geogr_to_geoce (phi_g);
+  ier = sg1_sunrise_hour_angle (phi_g, delta, 0.0, &omega_sr, &omega_ss);
   if (ier != 0)
     return (ier);
   a = SG1_I0 * eccentricity * SG1_DAY_LENGTH / SG1_PI_LOW_PRECISION;
@@ -968,7 +968,7 @@ G0_day (double phi_g, double eccentricity, double delta, double *G0d)
  * in a given day (in Wh/m2), i.e. |omega1-omega2| = Pi/12. Returns 0 if OK, 1 otherwise 
  */
  int
-G0_hours_profile (double phi_g, double eccentricity, double delta, double *G0h)
+sg1_G0_hours_profile (double phi_g, double eccentricity, double delta, double *G0h)
 {
   int ier, i;
   double omega_sr, omega_ss, a, b1, b2;
@@ -976,8 +976,8 @@ G0_hours_profile (double phi_g, double eccentricity, double delta, double *G0h)
   double t1, t2, omega1, omega2;
 
   ier = 1;
-  phi = geogr_to_geoce (phi_g);
-  ier = sunrise_hour_angle (phi_g, delta, 0.0, &omega_sr, &omega_ss);
+  phi = sg1_geogr_to_geoce (phi_g);
+  ier = sg1_sunrise_hour_angle (phi_g, delta, 0.0, &omega_sr, &omega_ss);
   if (ier != 0)
     return (ier);
   a = SG1_I0 * eccentricity * SG1_DAY_LENGTH / (2.0 * SG1_PI_LOW_PRECISION);
@@ -987,11 +987,11 @@ G0_hours_profile (double phi_g, double eccentricity, double delta, double *G0h)
   for (i = 0; i < 24; i++)
     {
       t1 = (double) (i + 1) - 1.0;
-      ier = solar_hour_angle (t1, &omega1);
+      ier = sg1_solar_hour_angle (t1, &omega1);
       if (ier != 0)
 	return (ier);
       t2 = (double) (i + 1);
-      ier = solar_hour_angle (t2, &omega2);
+      ier = sg1_solar_hour_angle (t2, &omega2);
       if (ier != 0)
 	return (ier);
 
@@ -1029,7 +1029,7 @@ G0_hours_profile (double phi_g, double eccentricity, double delta, double *G0h)
  * value of extraterrestrial solar irradiation. Returns 0 if OK, 1 otherwise 
  */
  int
-G0_hour (double phi_g, double eccentricity, double delta, double t, double *G0h)
+sg1_G0_hour (double phi_g, double eccentricity, double delta, double t, double *G0h)
 {
   int ier;
   double omega_sr, omega_ss, a, b1, b2;
@@ -1037,8 +1037,8 @@ G0_hour (double phi_g, double eccentricity, double delta, double t, double *G0h)
   double phi;
 
   ier = 1;
-  phi = geogr_to_geoce (phi_g);
-  ier = sunrise_hour_angle (phi_g, delta, 0.0, &omega_sr, &omega_ss);
+  phi = sg1_geogr_to_geoce (phi_g);
+  ier = sg1_sunrise_hour_angle (phi_g, delta, 0.0, &omega_sr, &omega_ss);
   if (ier != 0)
     return (ier);
   a = SG1_I0 * eccentricity * SG1_DAY_LENGTH / (2.0 * SG1_PI_LOW_PRECISION);
@@ -1046,11 +1046,11 @@ G0_hour (double phi_g, double eccentricity, double delta, double t, double *G0h)
   b2 = cos (phi) * cos (delta);
 
   t1 = t - 1.0;
-  ier = solar_hour_angle (t1, &omega1);
+  ier = sg1_solar_hour_angle (t1, &omega1);
   if (ier != 0)
     return (ier);
   t2 = t;
-  ier = solar_hour_angle (t2, &omega2);
+  ier = sg1_solar_hour_angle (t2, &omega2);
   if (ier != 0)
     return (ier);
 
@@ -1102,7 +1102,7 @@ G0_hour (double phi_g, double eccentricity, double delta, double t, double *G0h)
  * Wh/m2) . Returns 0 if OK, 1 otherwise 
  */
  int
-monthly_averages (int month_number, int year_number,
+sg1_monthly_averages (int month_number, int year_number,
 		  double phi_g, double lambda, double gamma_riset,
 		  double *day_angle_m, double *delta_m, double *omega_ss_m,
 		  double *S0_m, double *eccentricity_m, double *G0d_m,
@@ -1127,29 +1127,29 @@ monthly_averages (int month_number, int year_number,
     G0h_m[i] = 0.0;
 
   ier = 1;
-  ier = nbdays_month (year_number, month_number, &number_days_month);
+  ier = sg1_nbdays_month (year_number, month_number, &number_days_month);
   if (ier != 0)
     return (ier);
 
   for (day_of_month = 1; day_of_month <= number_days_month; day_of_month++)
     {
       ier =
-	make_julian_day (day_of_month, month_number, year_number, &julian_day);
+	sg1_make_julian_day (day_of_month, month_number, year_number, &julian_day);
       if (ier == 0)
-	ier = Day_Angle (julian_day, &day_angle);
+	ier = sg1_Day_Angle (julian_day, &day_angle);
       if (ier == 0)
-	ier = declination_sun (year_number, julian_day, lambda, &delta);
+	ier = sg1_declination_sun (year_number, julian_day, lambda, &delta);
       if (ier == 0)
 	ier =
-	  sunrise_hour_angle (phi_g, delta, gamma_riset, &omega_sr, &omega_ss);
+	  sg1_sunrise_hour_angle (phi_g, delta, gamma_riset, &omega_sr, &omega_ss);
       if (ier == 0)
-	ier = timerise_daylength (omega_sr, omega_ss, &t_sr, &t_ss, &S0);
+	ier = sg1_timerise_daylength (omega_sr, omega_ss, &t_sr, &t_ss, &S0);
       if (ier == 0)
-	ier = corr_distance (day_angle, &eccentricity);
+	ier = sg1_corr_distance (day_angle, &eccentricity);
       if (ier == 0)
-	ier = G0_day (phi_g, eccentricity, delta, &G0d);
+	ier = sg1_G0_day (phi_g, eccentricity, delta, &G0d);
       if (ier == 0)
-	ier = G0_hours_profile (phi_g, eccentricity, delta, G0h);
+	ier = sg1_G0_hours_profile (phi_g, eccentricity, delta, G0h);
       if (ier != 0)
 	return (ier);
 
@@ -1224,7 +1224,7 @@ monthly_averages (int month_number, int year_number,
  * hourly extraterrestrial solar irradiation (in Wh/m2). Returns 0 if OK, 1 otherwise 
  */
  int
-yearly_averages (int month_number, int year_start, int year_end,
+sg1_yearly_averages (int month_number, int year_start, int year_end,
 		 double phi_g, double lambda, double gamma_riset,
 		 double *day_angle_y, double *delta_y, double *omega_ss_y,
 		 double *S0_y, double *eccentricity_y, double *G0d_y,
@@ -1253,7 +1253,7 @@ yearly_averages (int month_number, int year_start, int year_end,
   for (year_number = year_start; year_number <= year_end; year_number++)
     {
       ier =
-	monthly_averages (month_number, year_number, phi_g, lambda,
+	sg1_monthly_averages (month_number, year_number, phi_g, lambda,
 			  gamma_riset, &day_angle_m, &delta_m,
 			  &omega_ss_m, &S0_m, &eccentricity_m, &G0d_m, G0h_m);
       if (ier != 0)
@@ -1318,7 +1318,7 @@ yearly_averages (int month_number, int year_start, int year_end,
  * procedure by Aguiar.
  */
  int
-solar_parameters_day (int day_of_month, int month_number, int year_number,
+sg1_solar_parameters_day (int day_of_month, int month_number, int year_number,
 		      double phi_g, double lambda, double gamma_riset,
 		      double *day_angle, double *delta, double *omega_ss,
 		      double *S0, double *eccentricity, double *G0d,
@@ -1328,21 +1328,21 @@ solar_parameters_day (int day_of_month, int month_number, int year_number,
   double omega_sr, t_sr, t_ss;
 
   ier = 1;
-  ier = make_julian_day (day_of_month, month_number, year_number, &julian_day);
+  ier = sg1_make_julian_day (day_of_month, month_number, year_number, &julian_day);
   if (ier == 0)
-    ier = Day_Angle (julian_day, day_angle);
+    ier = sg1_Day_Angle (julian_day, day_angle);
   if (ier == 0)
-    ier = declination_sun (year_number, julian_day, lambda, delta);
+    ier = sg1_declination_sun (year_number, julian_day, lambda, delta);
   if (ier == 0)
-    ier = sunrise_hour_angle (phi_g, *delta, gamma_riset, &omega_sr, omega_ss);
+    ier = sg1_sunrise_hour_angle (phi_g, *delta, gamma_riset, &omega_sr, omega_ss);
   if (ier == 0)
-    ier = timerise_daylength (omega_sr, *omega_ss, &t_sr, &t_ss, S0);
+    ier = sg1_timerise_daylength (omega_sr, *omega_ss, &t_sr, &t_ss, S0);
   if (ier == 0)
-    ier = corr_distance (*day_angle, eccentricity);
+    ier = sg1_corr_distance (*day_angle, eccentricity);
   if (ier == 0)
-    ier = G0_day (phi_g, *eccentricity, *delta, G0d);
+    ier = sg1_G0_day (phi_g, *eccentricity, *delta, G0d);
   if (ier == 0 && *G0d > 0.0)
-    ier = G0_hours_profile (phi_g, *eccentricity, *delta, G0h);
+    ier = sg1_G0_hours_profile (phi_g, *eccentricity, *delta, G0h);
 
   return (ier);
 }
@@ -1377,7 +1377,7 @@ solar_parameters_day (int day_of_month, int month_number, int year_number,
  * gamma_riset set to 0.0 in the original procedure by Aguiar.
  */
  int
-solar_parameters_avg (int month_number,
+sg1_solar_parameters_avg (int month_number,
 		      double phi_g, double gamma_riset,
 		      double *day_angle_avg, double *delta_avg,
 		      double *omega_ss_avg, double *S0_avg,
@@ -1405,21 +1405,21 @@ solar_parameters_avg (int month_number,
       ier = 0;
     }
   if (ier == 0)
-    ier = Day_Angle (julian_day, day_angle_avg);
+    ier = sg1_Day_Angle (julian_day, day_angle_avg);
   if (ier == 0)
-    ier = declination_sun_month (month_number, type_use, delta_avg);
+    ier = sg1_declination_sun_month (month_number, type_use, delta_avg);
   if (ier == 0)
     ier =
-      sunrise_hour_angle (phi_g, *delta_avg, gamma_riset, &omega_sr,
+      sg1_sunrise_hour_angle (phi_g, *delta_avg, gamma_riset, &omega_sr,
 			  omega_ss_avg);
   if (ier == 0)
-    ier = timerise_daylength (omega_sr, *omega_ss_avg, &t_sr, &t_ss, S0_avg);
+    ier = sg1_timerise_daylength (omega_sr, *omega_ss_avg, &t_sr, &t_ss, S0_avg);
   if (ier == 0)
-    ier = corr_distance (*day_angle_avg, eccentricity_avg);
+    ier = sg1_corr_distance (*day_angle_avg, eccentricity_avg);
   if (ier == 0)
-    ier = G0_day (phi_g, *eccentricity_avg, *delta_avg, G0d_avg);
+    ier = sg1_G0_day (phi_g, *eccentricity_avg, *delta_avg, G0d_avg);
   if (ier == 0)
-    ier = G0_hours_profile (phi_g, *eccentricity_avg, *delta_avg, G0h_avg);
+    ier = sg1_G0_hours_profile (phi_g, *eccentricity_avg, *delta_avg, G0h_avg);
 
   return (ier);
 }
@@ -1454,7 +1454,7 @@ solar_parameters_avg (int month_number,
  * gamma_riset set to 0.0 in the original procedure by Aguiar.
  */
  int
-solar_parameters_max (int month_number,
+sg1_solar_parameters_max (int month_number,
 		      double phi_g, double gamma_riset,
 		      double *day_angle_max, double *delta_max,
 		      double *omega_ss_max, double *S0_max,
@@ -1482,21 +1482,21 @@ solar_parameters_max (int month_number,
       ier = 0;
     }
   if (ier == 0)
-    ier = Day_Angle (julian_day, day_angle_max);
+    ier = sg1_Day_Angle (julian_day, day_angle_max);
   if (ier == 0)
-    ier = declination_sun_month (month_number, type_use, delta_max);
+    ier = sg1_declination_sun_month (month_number, type_use, delta_max);
   if (ier == 0)
     ier =
-      sunrise_hour_angle (phi_g, *delta_max, gamma_riset, &omega_sr,
+      sg1_sunrise_hour_angle (phi_g, *delta_max, gamma_riset, &omega_sr,
 			  omega_ss_max);
   if (ier == 0)
-    ier = timerise_daylength (omega_sr, *omega_ss_max, &t_sr, &t_ss, S0_max);
+    ier = sg1_timerise_daylength (omega_sr, *omega_ss_max, &t_sr, &t_ss, S0_max);
   if (ier == 0)
-    ier = corr_distance (*day_angle_max, eccentricity_max);
+    ier = sg1_corr_distance (*day_angle_max, eccentricity_max);
   if (ier == 0)
-    ier = G0_day (phi_g, *eccentricity_max, *delta_max, G0d_max);
+    ier = sg1_G0_day (phi_g, *eccentricity_max, *delta_max, G0d_max);
   if (ier == 0)
-    ier = G0_hours_profile (phi_g, *eccentricity_max, *delta_max, G0h_max);
+    ier = sg1_G0_hours_profile (phi_g, *eccentricity_max, *delta_max, G0h_max);
 
   return (ier);
 }
@@ -1526,7 +1526,7 @@ solar_parameters_max (int month_number,
  * periods:[$omega1;$omega2] and [$omega3;$omega4] 
  */
  int
-intervals_omega_tilted_plane (double phi_g, double delta, double omega_ss,
+sg1_intervals_omega_tilted_plane (double phi_g, double delta, double omega_ss,
 			      double beta, double alpha, double *v_om,
 			      int *p_nb)
 {
@@ -1548,7 +1548,7 @@ intervals_omega_tilted_plane (double phi_g, double delta, double omega_ss,
   int pa, pb;
   double phi;
 
-  phi = geogr_to_geoce (phi_g);
+  phi = sg1_geogr_to_geoce (phi_g);
 
   v_om[0] = -999.0;
   v_om[1] = -999.0;
@@ -1914,7 +1914,7 @@ intervals_omega_tilted_plane (double phi_g, double delta, double omega_ss,
 }
 
 
-double ymd_to_julian_day(int year, int month, int day_of_month)
+double sg1_ymd_to_julian_day(int year, int month, int day_of_month)
 {
        if (month <= 2) {
                month = month + 12;
@@ -1930,14 +1930,14 @@ double ymd_to_julian_day(int year, int month, int day_of_month)
 /* POSITION OF THE SUN IN THE SKY FAST */
 /***************************************/
 
-void init_solar_geometry_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double phi_g, double delta)
+void sg1_init_solar_geometry_fast(SG1_SOLAR_GEOMETRY_FAST *p_sgf, double phi_g, double delta)
 {
 	double phi;
 
 	p_sgf->phi_g = phi_g;
 	p_sgf->delta = delta;
 
-	phi = geogr_to_geoce(phi_g);
+	phi = sg1_geogr_to_geoce(phi_g);
 	p_sgf->phi = phi;
 
 	p_sgf->sin_phi = sin(phi);
@@ -1950,7 +1950,7 @@ void init_solar_geometry_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double phi_g, double
 
 }
 
-void deftilt_solar_geometry_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double alpha, double beta)
+void sg1_deftilt_solar_geometry_fast(SG1_SOLAR_GEOMETRY_FAST *p_sgf, double alpha, double beta)
 {
 	p_sgf->alpha = alpha;
 	p_sgf->sin_alpha = sin(alpha);
@@ -1970,18 +1970,18 @@ void deftilt_solar_geometry_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double alpha, dou
 	}
 }
 
-void elevation_sun_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, double *p_gamma)
+void sg1_elevation_sun_fast(SG1_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, double *p_gamma)
 {
 	*p_gamma = asin(p_sgf->sin_phi_sin_delta + p_sgf->cos_phi_cos_delta*cos_omega);
 }
 
-void elevation_zenith_sun_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, double *p_gamma, double *p_theta)
+void sg1_elevation_zenith_sun_fast(SG1_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, double *p_gamma, double *p_theta)
 {
 	*p_gamma = asin(p_sgf->sin_phi_sin_delta + p_sgf->cos_phi_cos_delta*cos_omega);
 	*p_theta = M_PI_2 - *p_gamma;
 }
 
-void azimuth_sun_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double sin_omega, double gamma, double *p_alpha)
+void sg1_azimuth_sun_fast(SG1_SOLAR_GEOMETRY_FAST *p_sgf, double sin_omega, double gamma, double *p_alpha)
 {
 	double cos_as, sin_as, x;
 	double cos_gamma = cos(gamma);
@@ -2005,7 +2005,7 @@ void azimuth_sun_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double sin_omega, double gam
 
 }
 
-void cos_incident_angle_fast(S_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, double sin_omega, double *p_costhetai)
+void sg1_cos_incident_angle_fast(SG1_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omega, double sin_omega, double *p_costhetai)
 {
 	*p_costhetai = p_sgf->A*cos_omega + p_sgf->B*sin_omega + p_sgf->C;
 }
