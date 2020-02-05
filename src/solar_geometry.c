@@ -93,8 +93,14 @@
  */
 /********************/
 
-static int const SG1_MONTHLY_DAY_OF_YEAR_OFFSET[12] = {
-        0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334
+/* the last value is used for sg1_day_of_year_to_ymd */
+static int const SG1_MONTHLY_DAY_OF_YEAR_OFFSET[13] = {
+        0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365
+};
+
+/* the last value is used for sg1_day_of_year_to_ymd */
+static int const SG1_MONTHLY_DAY_OF_YEAR_OFFSET_LEAP_YEAR[13] = {
+        0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366
 };
 
 inline static int is_leap_year(int const year) {
@@ -150,48 +156,32 @@ int sg1_ymd_to_day_of_year(int year, int month, int day_of_month,
  * "make_julian_day" i.e. computes the month number and the respective day of month from 
  * the information on year and integer day number. Returns 0 if OK, 1 otherwise. 
  */
- int
-sg1_julian_to_date (int year_number, int julian_day, int *day_of_month,
-		int *month_number)
+int sg1_day_of_year_to_ymd(int year, int day_of_year, int *month,
+        int *day_of_month)
 {
-  static int tab0[12] =
-    { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
-  static int tab1[12] =
-    { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335 };
-  int *tab, ier, m, jmax = 365;
+    if (year <= 0)
+        return 1;
+    if (day_of_year < 1)
+        return 1;
 
-  ier = 1;
-  if ((((year_number % 4) == 0) && ((year_number % 100) != 0))
-      || ((year_number % 400) == 0))
-    {				/* leap year */
-      jmax = jmax + 1;
-	  tab = tab1;
-    }
-  else {
-	  tab = tab0;
-  }
+    int const * day_of_year_offset;
 
-  if ((julian_day > 0) && (julian_day <= jmax) && (year_number > 0))
-    {
-      ier = 0;
-      for (m = 0; m < 12; m++)
-	{
-	  if ((julian_day > tab[m]) && (julian_day <= tab[m + 1]))
-	    {
-	      *month_number = m + 1;
-	      *day_of_month = julian_day - tab[m];
-	      break;
-	    }
-	  else if (julian_day > tab[11])
-	    {
-	      *month_number = 12;
-	      *day_of_month = julian_day - tab[11];
-	      break;
-	    }
-	}
+    if (is_leap_year(year)) {
+        day_of_year_offset = SG1_MONTHLY_DAY_OF_YEAR_OFFSET_LEAP_YEAR;
+    } else {
+        day_of_year_offset = SG1_MONTHLY_DAY_OF_YEAR_OFFSET;
     }
 
-  return (ier);
+    if (day_of_year > day_of_year_offset[12])
+        return 1;
+
+    int m = 12;
+    while(day_of_year <= day_of_year_offset[--m]);
+
+    *month = m+1;
+    *day_of_month = day_of_year - day_of_year_offset[m];
+    return 0;
+
 }
 
 /*
