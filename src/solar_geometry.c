@@ -93,6 +93,14 @@
  */
 /********************/
 
+static int const SG1_MONTHLY_DAY_OF_YEAR_OFFSET[12] = {
+        0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334
+};
+
+inline static int is_leap_year(int const year) {
+    return (((year % 4) == 0) && ((year % 100) != 0)) || ((year % 400) == 0);
+}
+
 /*
  * Source : 
  */
@@ -107,28 +115,24 @@
  * The procedure "make_julian_day" converts a day given in day, month and year into a
  * julian day. Returns 0 if OK, 1 otherwise. 
  */
- int
-sg1_make_julian_day (int day_of_month, int month_number, int year_number,
-		 int *julian_day)
+int sg1_ymd_to_day_of_year(int year, int month, int day_of_month,
+        int * const day_of_year)
 {
-   int tab[12] =
-    { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
-  int ier, julien;
+    int julien;
 
-  ier = 1;
-  if ((day_of_month > 0) && (day_of_month < 32) && (month_number > 0) &&
-      (month_number < 13) && (year_number > 0))
-    {
-      ier = 0;
-      julien = day_of_month + tab[month_number - 1];
-      if (((((year_number % 4) == 0) && ((year_number % 100) != 0)) || ((year_number % 400) == 0)) && (month_number > 2))
-	/* leap 
-	 * year 
-	 */
-	julien = julien + 1;
-      *julian_day = julien;
-    }
-  return (ier);
+    if (year <= 0)
+        return 1;
+    if ((month < 1) || (month > 12))
+        return 1;
+
+    /* technicaly this is not required */
+    if ((day_of_month < 1) || (day_of_month > 31))
+        return 1;
+
+    *day_of_year = day_of_month + SG1_MONTHLY_DAY_OF_YEAR_OFFSET[month - 1];
+    if (is_leap_year(year) && (month > 2))
+        *day_of_year += 1;
+    return 0;
 }
 
 /*
@@ -1157,7 +1161,7 @@ sg1_monthly_averages (int month_number, int year_number,
   for (day_of_month = 1; day_of_month <= number_days_month; day_of_month++)
     {
       ier =
-	sg1_make_julian_day (day_of_month, month_number, year_number, &julian_day);
+	sg1_ymd_to_day_of_year (day_of_month, month_number, year_number, &julian_day);
       if (ier == 0)
 	ier = sg1_Day_Angle (julian_day, &day_angle);
       if (ier == 0)
@@ -1351,7 +1355,7 @@ sg1_solar_parameters_day (int day_of_month, int month_number, int year_number,
   double omega_sr, t_sr, t_ss;
 
   ier = 1;
-  ier = sg1_make_julian_day (day_of_month, month_number, year_number, &julian_day);
+  ier = sg1_ymd_to_day_of_year (day_of_month, month_number, year_number, &julian_day);
   if (ier == 0)
     ier = sg1_Day_Angle (julian_day, day_angle);
   if (ier == 0)

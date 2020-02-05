@@ -92,16 +92,16 @@ extern "C" {
 
 /* Source : */
 /* Inputs :
- day_of_month : day of the month (1..31)
- month_number : month number (1..12)
- year_number  : year number (4 digits) */
+ year  : year number (4 digits)
+ month : month number (1..12)
+ day_of_month : day of the month (1..31) */
 /* Outputs :
- julian_day : integer day number or julian day (1..366)
+ day_of_year : integer day number of the year (1..366)
  */
 /* The procedure "make_julian_day" converts a day given in day, month and year
  into a julian day. Returns 0 if OK, 1 otherwise. */
-int sg1_make_julian_day(int day_of_month, int month_number, int year_number,
-        int *julian_day);
+int sg1_ymd_to_day_of_year(int year, int month, int day_of_month,
+        int * const day_of_year);
 
 /* Source : MA in /u2/tm/src/srcgeo/julian_lib/ */
 /* Inputs :
