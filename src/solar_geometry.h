@@ -105,8 +105,8 @@ int sg1_ymd_to_day_of_year(int year, int month, int day_of_month,
 
 /* Source : MA in /u2/tm/src/srcgeo/julian_lib/ */
 /* Inputs :
- year_number : year number (4 digits)
- julian_day  : integer day number or julian day (1..366)
+ year : year number (4 digits)
+ day_of_year  : integer day number or julian day (1..366)
  */
 /* Outputs :
  day_of_month : day of the month (1..31)
@@ -115,8 +115,8 @@ int sg1_ymd_to_day_of_year(int year, int month, int day_of_month,
  "make_julian_day" i.e. computes the month number and the respective day of
  month from the information on year and integer day number. Returns 0 if OK,
  1 otherwise. */
-int sg1_julian_to_date(int year_number, int julian_day, int *day_of_month,
-        int *month_number);
+int sg1_day_of_year_to_ymd(int year, int day_of_year, int *month_number,
+        int *day_of_month);
 
 /* Source : */
 /* Inputs :
