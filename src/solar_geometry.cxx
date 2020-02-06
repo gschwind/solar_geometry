@@ -831,42 +831,48 @@ sg1_azimuth_sun (double phi_g, double delta, double omega, double gamma,
   return (ier);
 }
 
-/********************************/
-/*
- * EXTRATERRESTRIAL IRRADIATION 
- */
-/********************************/
+ /********************************/
+ /*
+  * EXTRATERRESTRIAL IRRADIATION
+  */
+ /********************************/
 
-/*
- * Source : Gruter (ed.) (1984) 
- */
-/*
- * Inputs : day_angle : day angle (in radians) 
- */
-/*
- * Outputs : eccentricity : correction for Earth orbit eccentricity 
- */
-/*
+
+/**
  * The procedure "corr_distance" computes the correction for the variation of sun-earth
  * distance from its mean value (also known as eccentricity). It is a fucntion of time,
  * but a single (average) value per day is enough for practical calculations. Returns 0
- * if OK, 1 otherwise. 
- */
- int
-sg1_corr_distance (double day_angle, double *eccentricity)
+ * if OK, 1 otherwise.
+ *
+ * Source : Gruter (ed.) (1984)
+ *
+ * @input day_angle: Day_Angle in radians
+ * @return eccentricity
+ **/
+double sg1_corr_distance(double day_angle)
 {
-  const double deg_rad = (SG1_PI_LOW_PRECISION / 180.0);	/* converts decimal degrees into radians */
-  int ier;
-  double a;
+    double const deg_rad = (SG1_PI_LOW_PRECISION / 180.0); /* converts decimal degrees into radians */
+    double const a = 2.80 * deg_rad;
+    return 1.0 + 0.03344 * cos(day_angle - a);
+}
 
-  ier = 1;
-  a = 2.80 * deg_rad;
-  if ((day_angle >= 0.0) && (day_angle <= (2.0 * SG1_PI_LOW_PRECISION * 1.0021)))
-    {
-      ier = 0;
-      *eccentricity = 1.0 + 0.03344 * cos (day_angle - a);
-    }
-  return (ier);
+/**
+ * The procedure "corr_distance" computes the correction for the variation of sun-earth
+ * distance from its mean value (also known as eccentricity). It is a fucntion of time,
+ * but a single (average) value per day is enough for practical calculations. Returns 0
+ * if OK, 1 otherwise.
+ *
+ * Source : Gruter (ed.) (1984)
+ *
+ * @input day_angle: Day_Angle in radians
+ * @return eccentricity
+ **/
+int sg1_corr_distance(double day_angle, double *eccentricity)
+{
+    if ((day_angle < 0.0) || (day_angle > (2.0 * SG1_PI_LOW_PRECISION * 1.0021)))
+        return 1;
+    *eccentricity = sg1_corr_distance(day_angle);
+    return 0;
 }
 
 
