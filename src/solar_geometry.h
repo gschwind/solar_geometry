@@ -242,6 +242,13 @@ int sg1_solar_hour_angle_h(double phi_g, double delta, double t, double *omega);
 int sg1_sunrise_hour_angle(double phi_g, double delta, double gamma_riset,
         double *omega_sr, double *omega_ss);
 
+/**
+ * @input phi: geocentric phi in radians (latitude)
+ * @input delta: sun declination in radians
+ * @return omega at sunset
+ **/
+double sg1_sunset(double phi, double delta);
+
 /* Source : */
 /* Inputs :
  omega_sr : sunrise hour angle (in radians)
