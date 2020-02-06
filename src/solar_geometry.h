@@ -696,6 +696,28 @@ double sg1_corr_distance(double day_angle);
  **/
 int sg1_nbdays_month(int year, int month);
 
+/**
+ * The procedure "declination_sun" computes the solar declination at noon in solar time
+ * (in radians). A single (average) value per day -at noon- is adequate for pratical
+ * calculations. The noon declination depends on longitude, as noon occurs earlier if
+ * longitude is East of Greenwi²ch, and later if it is West. The chosen algorithm uses
+ * 1957 as base year; it is basically a truncated Fourier series with six harmonics.
+ * Returns 0 if OK, 1 otherwise.
+ *
+ * Sources : Bourges, B., 1985. Improvement in solar declination computation. Solar
+ * Energy, 35 (4), 367-369. Carvalho, M.J. and Bourges, B., 1986. Program Eufrad 2.0 -
+ * User's Guide. Project EUFRAT final scientific report, Contract EN3S-0111-F, Solar
+ * Energy and Development in the European Community, pp. 12.1-12.74. Duffie, J.A. and
+ * Beckman, W.A., 1980. Solar Engineering of Thermal Processes. Wiley-Interscience, New
+ * York.
+ *
+ * @input year: the year number usualy 4 digits
+ * @input day_of_year: the number of the day within year
+ * @input lambda: the lingitude of the cite in radians
+ * @return declination of the sun in radians
+ **/
+double sg1_declination_sun(int year, int day_of_year, double lambda);
+
 #endif
 
 #endif // __H_solar_geometry
