@@ -184,14 +184,14 @@ int sg1_declination_sun(int year, int day_of_year, double lambda,
  given by two tables. Returns 0 if OK, 1 otherwise. */
 int sg1_declination_sun_month(int month_number, int type_use, double *delta_month);
 
-/* Source : */
-/* Inputs :
- t : solar time i.e. LAT (0..24 decimal hours) */
-/* Outputs :
- omega : solar hour angle (in radians) */
-/* The procedure "soldar_hour_angle" supplies the solar hour angle (in radians).
- By convention the hour angle is negative before noon and positive after noon
- Returns 0 if OK, 1 otherwise. */
+/**
+ * The procedure "solar_hour_angle" supplies the solar hour angle (in radians). By
+ * convention the hour angle is negative before noon and positive after noon.
+ *
+ * @input t: solar time i.e. LAT (0..24 decimal hours)
+ * @output omega: solar hour angle in radians.
+ * @return 0 if everything is OK, otherwise return 1.
+ **/
 int sg1_solar_hour_angle(double t, double *omega);
 
 /* Source : */
@@ -717,6 +717,15 @@ int sg1_nbdays_month(int year, int month);
  * @return declination of the sun in radians
  **/
 double sg1_declination_sun(int year, int day_of_year, double lambda);
+
+/**
+ * The procedure "solar_hour_angle" supplies the solar hour angle (in radians). By
+ * convention the hour angle is negative before noon and positive after noon.
+ *
+ * @input t: solar time i.e. LAT (0..24 decimal hours)
+ * @return solar_hour_angle in radians.
+ **/
+double sg1_solar_hour_angle(double t);
 
 #endif
 
