@@ -103,6 +103,10 @@ static int const SG1_MONTHLY_DAY_OF_YEAR_OFFSET_LEAP_YEAR[13] = {
         0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366
 };
 
+static int SG1_DAYS_PER_MONTH[12] = {
+        31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+};
+
 inline static int is_leap_year(int const year) {
     return (((year % 4) == 0) && ((year % 100) != 0)) || ((year % 400) == 0);
 }
@@ -197,24 +201,17 @@ int sg1_day_of_year_to_ymd(int year, int day_of_year, int *month,
  * The procedure "nbdays_month" gives the number of days in a month, useful for monthly
  * calculations. Returns 0 if OK, 1 otherwise. 
  */
- int
-sg1_nbdays_month (int year_number, int month_number, int *number_days_month)
+int sg1_nbdays_month(int year, int month, int *number_days_of_month)
 {
-   int tab_nbdays[12] =
-    { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-  int ier;
+    if (year <= 0)
+        return 1;
+    if ((month < 1) || (month > 12))
+        return 1;
 
-  ier = 1;
-  if ((year_number > 0) && (month_number > 0) && (month_number < 13))
-    {
-      ier = 0;
-      *number_days_month = tab_nbdays[month_number - 1];
-      if (((((year_number % 4) == 0) && ((year_number % 100) != 0)) || ((year_number % 400) == 0)) && (month_number == 2))	/* leap 
-																 * year 
-																 */
-	*number_days_month = *number_days_month + 1;
-    }
-  return (ier);
+    *number_days_of_month = SG1_DAYS_PER_MONTH[month - 1];
+    if (is_leap_year(year))
+        *number_days_of_month += 1;
+    return 0;
 }
 
 /*
