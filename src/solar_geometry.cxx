@@ -200,7 +200,7 @@ int sg1_day_of_year_to_ymd(int year, int day_of_year, int *month,
 int sg1_nbdays_month(int year, int month)
 {
     int number_days_of_month = SG1_DAYS_PER_MONTH[month - 1];
-    if (is_leap_year(year))
+    if (is_leap_year(year)&&(month==2))
         number_days_of_month += 1;
     return number_days_of_month;
 }
