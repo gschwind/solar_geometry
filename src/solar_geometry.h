@@ -148,28 +148,27 @@ int sg1_number_to_name_month(int month_number, char *month_name);
  365.2422 days is used. Returns 0 if OK, 1 otherwise. */
 int sg1_Day_Angle(int julian_day, double *day_angle);
 
-/* Sources :
- Bourges, B., 1985. Improvement in solar declination computation. Solar
- Energy, 35 (4), 367-369.
- Carvalho, M.J. and Bourges, B., 1986. Program Eufrad 2.0 - User's Guide.
- Project EUFRAT final scientific report, Contract EN3S-0111-F, Solar Energy
- and Development in the European Community, pp. 12.1-12.74.
- Duffie, J.A. and Beckman, W.A., 1980. Solar Engineering of Thermal
- Processes. Wiley-Interscience, New York. */
-/* Inputs :
- year_number : year number (4 digits)
- julian_day  : integer day number or julian day (1..366)
- lambda      : longitude (in radians, positive to East) */
-/* Outputs :
- delta : solar declination angle at noon (in radians) */
-/* The procedure "declination_sun" computes the solar declination at noon in
- solar time (in radians). A single (average) value per day -at noon- is
- adequate for pratical calculations. The noon declination depends on
- longitude, as noon occurs earlier if longitude is East of Greenwich, and
- later if it is West. The chosen algorithm uses 1957 as base year; it is
- basically a truncated Fourier series with six harmonics. Returns 0 if OK, 1
- otherwise. */
-int sg1_declination_sun(int year_number, int julian_day, double lambda,
+/**
+ * The procedure "declination_sun" computes the solar declination at noon in solar time
+ * (in radians). A single (average) value per day -at noon- is adequate for pratical
+ * calculations. The noon declination depends on longitude, as noon occurs earlier if
+ * longitude is East of Greenwi²ch, and later if it is West. The chosen algorithm uses
+ * 1957 as base year; it is basically a truncated Fourier series with six harmonics.
+ * Returns 0 if OK, 1 otherwise.
+ *
+ * Sources : Bourges, B., 1985. Improvement in solar declination computation. Solar
+ * Energy, 35 (4), 367-369. Carvalho, M.J. and Bourges, B., 1986. Program Eufrad 2.0 -
+ * User's Guide. Project EUFRAT final scientific report, Contract EN3S-0111-F, Solar
+ * Energy and Development in the European Community, pp. 12.1-12.74. Duffie, J.A. and
+ * Beckman, W.A., 1980. Solar Engineering of Thermal Processes. Wiley-Interscience, New
+ * York.
+ *
+ * @input year: the year number usualy 4 digits
+ * @input day_of_year: the number of the day within year
+ * @input lambda: the lingitude of the cite in radians
+ * @return declination of the sun in radians
+ **/
+int sg1_declination_sun(int year, int day_of_year, double lambda,
         double *delta);
 
 /* Source : Gruter (Ed.) (1984) */

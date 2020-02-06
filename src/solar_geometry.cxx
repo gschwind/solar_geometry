@@ -269,70 +269,79 @@ int sg1_Day_Angle(int day_of_year, double *day_angle)
     return 0;
 }
 
-/*
- * Sources : Bourges, B., 1985. Improvement in solar declination computation. Solar
- * Energy, 35 (4), 367-369. Carvalho, M.J. and Bourges, B., 1986. Program Eufrad 2.0 -
- * User's Guide. Project EUFRAT final scientific report, Contract EN3S-0111-F, Solar
- * Energy and Development in the European Community, pp. 12.1-12.74. Duffie, J.A. and
- * Beckman, W.A., 1980. Solar Engineering of Thermal Processes. Wiley-Interscience, New
- * York. 
- */
-/*
- * Inputs : year_number : year number (4 digits) julian_day : integer day number or
- * julian day (1..366) lambda : longitude (in radians, positive to East) 
- */
-/*
- * Outputs : delta : solar declination angle at noon (in radians) 
- */
-/*
+/**
  * The procedure "declination_sun" computes the solar declination at noon in solar time
  * (in radians). A single (average) value per day -at noon- is adequate for pratical
  * calculations. The noon declination depends on longitude, as noon occurs earlier if
  * longitude is East of Greenwi²ch, and later if it is West. The chosen algorithm uses
  * 1957 as base year; it is basically a truncated Fourier series with six harmonics.
- * Returns 0 if OK, 1 otherwise. 
- */
- int
-sg1_declination_sun (int year_number, int julian_day, double lambda, double *delta)
+ * Returns 0 if OK, 1 otherwise.
+ *
+ * Sources : Bourges, B., 1985. Improvement in solar declination computation. Solar
+ * Energy, 35 (4), 367-369. Carvalho, M.J. and Bourges, B., 1986. Program Eufrad 2.0 -
+ * User's Guide. Project EUFRAT final scientific report, Contract EN3S-0111-F, Solar
+ * Energy and Development in the European Community, pp. 12.1-12.74. Duffie, J.A. and
+ * Beckman, W.A., 1980. Solar Engineering of Thermal Processes. Wiley-Interscience, New
+ * York.
+ *
+ * @input year: the year number usualy 4 digits
+ * @input day_of_year: the number of the day within year
+ * @input lambda: the lingitude of the cite in radians
+ * @return declination of the sun in radians
+ **/
+double sg1_declination_sun(int year, int day_of_year, double lambda)
 {
-  int ier;
-  double b1, b2, b3, b4, b5, b6, b7;
-  double w0, n0, t1, wt;
+    double const b1 = 0.0064979;
+    double const b2 = 0.4059059;
+    double const b3 = 0.0020054;
+    double const b4 = -0.0029880;
+    double const b5 = -0.0132296;
+    double const b6 = 0.0063809;
+    double const b7 = 0.0003508;
 
-  b1 = 0.0064979;
-  b2 = 0.4059059;
-  b3 = 0.0020054;
-  b4 = -0.0029880;
-  b5 = -0.0132296;
-  b6 = 0.0063809;
-  b7 = 0.0003508;
+    /*
+     * n0 : spring-equinox time expressed in days from the beginning of the year i.e.
+     * the time in decimal days elapsing from 00:00 hours Jan 1st to the spring equinox
+     * at Greenwich in a given year
+     * t1 : time in days, from the spring equinox
+     * 0.5 represents the decimal day number at noon on Jan 1st at Greenwich
+     */
+    double n0 = 78.8946 + 0.2422 * (year - 1957) - floor(0.25 * (year - 1957));
+    double t1 = -0.5 - lambda / (2 * SG1_PI_LOW_PRECISION) - n0;
+    double w0 = 2 * SG1_PI_LOW_PRECISION / 365.2422;
+    double wt = w0 * (day_of_year + t1);
 
-  ier = 1;
-  /*
-   * n0 : spring-equinox time expressed in days from the beginning of the year i.e.
-   * the time in decimal days elapsing from 00:00 hours Jan 1st to the spring equinox
-   * at Greenwich in a given year 
-   */
-  /*
-   * t1 : time in days, from the spring equinox 
-   */
-  /*
-   * 0.5 represents the decimal day number at noon on Jan 1st at Greenwich 
-   */
-  n0 =
-    78.8946 + 0.2422 * (year_number - 1957) -
-    (int) (0.25 * (year_number - 1957));
-  t1 = -0.5 - lambda / (2 * SG1_PI_LOW_PRECISION) - n0;
-  w0 = 2 * SG1_PI_LOW_PRECISION / 365.2422;
-  if ((julian_day > 0) && (julian_day <= 366))
-    {
-      ier = 0;
-      wt = w0 * (julian_day + t1);
-    }
+    return b1 + b2 * sin(wt) + b3 * sin(2 * wt) + b4 * sin(3 * wt)
+            + b5 * cos(wt) + b6 * cos(2 * wt) + b7 * cos(3 * wt);
+}
 
-  *delta = b1 + b2 * sin (wt) + b3 * sin (2 * wt) + b4 * sin (3 * wt)
-    + b5 * cos (wt) + b6 * cos (2 * wt) + b7 * cos (3 * wt);
-  return (ier);
+/**
+ * The procedure "declination_sun" computes the solar declination at noon in solar time
+ * (in radians). A single (average) value per day -at noon- is adequate for pratical
+ * calculations. The noon declination depends on longitude, as noon occurs earlier if
+ * longitude is East of Greenwi²ch, and later if it is West. The chosen algorithm uses
+ * 1957 as base year; it is basically a truncated Fourier series with six harmonics.
+ * Returns 0 if OK, 1 otherwise.
+ *
+ * Sources : Bourges, B., 1985. Improvement in solar declination computation. Solar
+ * Energy, 35 (4), 367-369. Carvalho, M.J. and Bourges, B., 1986. Program Eufrad 2.0 -
+ * User's Guide. Project EUFRAT final scientific report, Contract EN3S-0111-F, Solar
+ * Energy and Development in the European Community, pp. 12.1-12.74. Duffie, J.A. and
+ * Beckman, W.A., 1980. Solar Engineering of Thermal Processes. Wiley-Interscience, New
+ * York.
+ *
+ * @input year: the year number usualy 4 digits
+ * @input day_of_year: the number of the day within year
+ * @input lambda: the lingitude of the cite in radians
+ * @return declination of the sun in radians
+ **/
+int sg1_declination_sun(int year, int day_of_year, double lambda,
+        double *delta)
+{
+    if ((day_of_year < 1) || (day_of_year > 366))
+        return 1;
+  *delta = sg1_declination_sun(year, day_of_year, lambda);
+  return 0;
 }
 
 
