@@ -261,7 +261,7 @@ sg1_number_to_name_month (int month_number, char *month_name)
  * from 12:00 hours on the day 31st December. A year length of 365.2422 days is used.
  * Returns 0 if OK, 1 otherwise. 
  */
-int sg1_Day_Angle(int day_of_year, double *day_angle)
+int sg1_day_angle(int day_of_year, double *day_angle)
 {
     if ((day_of_year < 1) || (day_of_year > 366))
         return 1;
@@ -382,7 +382,7 @@ sg1_declination_sun_month (int month_number, int type_use, double *delta_month)
       ier = 0;
     }
 
-  ier = sg1_Day_Angle (julian_day, &day_angle);
+  ier = sg1_day_angle (julian_day, &day_angle);
   if (ier != 0)
     return (ier);
 
@@ -1164,7 +1164,7 @@ sg1_monthly_averages (int month_number, int year_number,
       ier =
 	sg1_ymd_to_day_of_year (day_of_month, month_number, year_number, &julian_day);
       if (ier == 0)
-	ier = sg1_Day_Angle (julian_day, &day_angle);
+	ier = sg1_day_angle (julian_day, &day_angle);
       if (ier == 0)
 	ier = sg1_declination_sun (year_number, julian_day, lambda, &delta);
       if (ier == 0)
@@ -1358,7 +1358,7 @@ sg1_solar_parameters_day (int day_of_month, int month_number, int year_number,
   ier = 1;
   ier = sg1_ymd_to_day_of_year (day_of_month, month_number, year_number, &julian_day);
   if (ier == 0)
-    ier = sg1_Day_Angle (julian_day, day_angle);
+    ier = sg1_day_angle (julian_day, day_angle);
   if (ier == 0)
     ier = sg1_declination_sun (year_number, julian_day, lambda, delta);
   if (ier == 0)
@@ -1433,7 +1433,7 @@ sg1_solar_parameters_avg (int month_number,
       ier = 0;
     }
   if (ier == 0)
-    ier = sg1_Day_Angle (julian_day, day_angle_avg);
+    ier = sg1_day_angle (julian_day, day_angle_avg);
   if (ier == 0)
     ier = sg1_declination_sun_month (month_number, type_use, delta_avg);
   if (ier == 0)
@@ -1510,7 +1510,7 @@ sg1_solar_parameters_max (int month_number,
       ier = 0;
     }
   if (ier == 0)
-    ier = sg1_Day_Angle (julian_day, day_angle_max);
+    ier = sg1_day_angle (julian_day, day_angle_max);
   if (ier == 0)
     ier = sg1_declination_sun_month (month_number, type_use, delta_max);
   if (ier == 0)
