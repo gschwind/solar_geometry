@@ -687,6 +687,15 @@ double sg1_day_angle(int day_of_year);
  **/
 double sg1_corr_distance(double day_angle);
 
+/**
+ * The procedure "nbdays_month" gives the number of days in a month, useful for monthly
+ * calculations.
+ *
+ * @input year: the year number usualy in 4 digits
+ * @input month: the number of the month
+ **/
+int sg1_nbdays_month(int year, int month);
+
 #endif
 
 #endif // __H_solar_geometry
