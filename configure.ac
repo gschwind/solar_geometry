@@ -12,11 +12,13 @@ LT_PREREQ([2.4.2])
 LT_INIT()
 
 AM_INIT_AUTOMAKE([foreign])
-AC_CONFIG_SRCDIR([src/solar_geometry.c])
+AC_CONFIG_SRCDIR([src/solar_geometry.cxx])
 
 # Checks for programs.
-AC_PROG_CC_C99
+AC_PROG_CXX
 AC_PROG_LIBTOOL
+
+AX_CXX_COMPILE_STDCXX_11(noext, mandatory)
 
 AC_CONFIG_FILES([
   Makefile
