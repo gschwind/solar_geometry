@@ -413,32 +413,32 @@ sg1_declination_sun_month (int month_number, int type_use, double *delta_month)
 }
 
 
-/*
- * Source : 
- */
-/*
- * Inputs : t : solar time i.e. LAT (0..24 decimal hours) 
- */
-/*
- * Outputs : omega : solar hour angle (in radians) 
- */
-/*
+/**
  * The procedure "solar_hour_angle" supplies the solar hour angle (in radians). By
- * convention the hour angle is negative before noon and positive after noon Returns 0 if 
- * OK, 1 otherwise. 
- */
- int
-sg1_solar_hour_angle (double t, double *omega)
+ * convention the hour angle is negative before noon and positive after noon.
+ *
+ * @input t: solar time i.e. LAT (0..24 decimal hours)
+ * @return solar_hour_angle in radians.
+ **/
+double sg1_solar_hour_angle(double t)
 {
-  int ier;
+    return (t - 12.0) * SG1_PI_LOW_PRECISION / 12.0;
+}
 
-  ier = 1;
-  if ((t >= 0.0) && (t <= 24.0))
-    {
-      ier = 0;
-      *omega = (t - 12.0) * SG1_PI_LOW_PRECISION / 12.0;
-    }
-  return (ier);
+/**
+ * The procedure "solar_hour_angle" supplies the solar hour angle (in radians). By
+ * convention the hour angle is negative before noon and positive after noon.
+ *
+ * @input t: solar time i.e. LAT (0..24 decimal hours)
+ * @output omega: solar hour angle in radians.
+ * @return 0 if everything is OK, otherwise return 1.
+ **/
+int sg1_solar_hour_angle(double t, double *omega)
+{
+    if ((t < 0.0) || (t > 24.0))
+        return 1;
+    *omega = sg1_solar_hour_angle(t);
+    return 0;
 }
 
 
