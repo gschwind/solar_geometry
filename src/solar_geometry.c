@@ -261,18 +261,12 @@ sg1_number_to_name_month (int month_number, char *month_name)
  * from 12:00 hours on the day 31st December. A year length of 365.2422 days is used.
  * Returns 0 if OK, 1 otherwise. 
  */
- int
-sg1_Day_Angle (int julian_day, double *day_angle)
+int sg1_Day_Angle(int day_of_year, double *day_angle)
 {
-  int ier;
-
-  ier = 1;
-  if ((julian_day > 0) && (julian_day <= 366))
-    {
-      ier = 0;
-      *day_angle = (double) julian_day *2.0 * SG1_PI_LOW_PRECISION / 365.2422;
-    }
-  return (ier);
+    if ((day_of_year < 1) || (day_of_year > 366))
+        return 1;
+    *day_angle = day_of_year * 2.0 * SG1_PI_LOW_PRECISION / 365.2422;
+    return 0;
 }
 
 /*
