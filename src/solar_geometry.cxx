@@ -188,19 +188,31 @@ int sg1_day_of_year_to_ymd(int year, int day_of_year, int *month,
 
 }
 
-/*
- * Source : 
- */
-/*
- * Inputs : year_number : year number (4 digits) month_number : month number (1..12) 
- */
-/*
- * Outputs : number_days_month : number of days in a month 
- */
-/*
+
+/**
  * The procedure "nbdays_month" gives the number of days in a month, useful for monthly
- * calculations. Returns 0 if OK, 1 otherwise. 
- */
+ * calculations.
+ *
+ * @input year: the year number usualy in 4 digits
+ * @input month: the number of the month
+ * @return the number of days within the month
+ **/
+int sg1_nbdays_month(int year, int month)
+{
+    int number_days_of_month = SG1_DAYS_PER_MONTH[month - 1];
+    if (is_leap_year(year))
+        number_days_of_month += 1;
+    return number_days_of_month;
+}
+
+/**
+ * The procedure "nbdays_month" gives the number of days in a month, useful for monthly
+ * calculations.
+ *
+ * @input year: the year number usualy in 4 digits
+ * @input month: the number of the month
+ * @output number_days_of_month: the number of days within the month
+ **/
 int sg1_nbdays_month(int year, int month, int *number_days_of_month)
 {
     if (year <= 0)
@@ -208,9 +220,7 @@ int sg1_nbdays_month(int year, int month, int *number_days_of_month)
     if ((month < 1) || (month > 12))
         return 1;
 
-    *number_days_of_month = SG1_DAYS_PER_MONTH[month - 1];
-    if (is_leap_year(year))
-        *number_days_of_month += 1;
+    *number_days_of_month = sg1_nbdays_month(year, month);
     return 0;
 }
 
