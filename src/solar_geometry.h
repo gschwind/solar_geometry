@@ -138,15 +138,15 @@ int sg1_nbdays_month(int year, int month, int *number_days_of_month);
  corresponding month name. Returns 0 if OK, 1 otherwise. */
 int sg1_number_to_name_month(int month_number, char *month_name);
 
-/* Source : */
-/* Inputs :
- julian_day : integer day number or julian day (1..366) */
-/* Outputs :
- day_angle : day angle (in radians) */
-/* The procedure "Day_Angle" expresses the integer day number as an angle (in
- radians) from 12:00 hours on the day 31st December. A year length of
- 365.2422 days is used. Returns 0 if OK, 1 otherwise. */
-int sg1_day_angle(int julian_day, double *day_angle);
+/**
+ * The procedure "Day_Angle" expresses the integer day number as an angle (in radians)
+ * from 12:00 hours on the day 31st December. A year length of 365.2422 days is used.
+ * Returns 0 if OK, 1 otherwise.
+ *
+ * @input day_of_year: the day number within the year in [1,366]
+ * @return Day_Angle
+ **/
+int sg1_day_angle(int day_of_year, double *day_angle);
 
 /**
  * The procedure "declination_sun" computes the solar declination at noon in solar time
