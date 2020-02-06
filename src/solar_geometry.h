@@ -120,13 +120,13 @@ int sg1_day_of_year_to_ymd(int year, int day_of_year, int *month_number,
 
 /* Source : */
 /* Inputs :
- year_number  : year number (4 digits)
- month_number : month number (1..12) */
+ year  : year number (4 digits)
+ month : month number (1..12) */
 /* Outputs :
- number_days_month : number of days in a month */
+ number_days_of_month : number of days in a month */
 /* The procedure "nbdays_month" gives the number of days in a month, useful for
  monthly calculations. Returns 0 if OK, 1 otherwise. */
-int sg1_nbdays_month(int year_number, int month_number, int *number_days_month);
+int sg1_nbdays_month(int year, int month, int *number_days_of_month);
 
 /* Source : */
 /* Inputs :
