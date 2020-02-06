@@ -644,4 +644,27 @@ void sg1_cos_incident_angle_fast(SG1_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omeg
 }
 #endif
 
+#ifdef  __cplusplus
+
+/* The C++ API */
+
+/**
+ * @input phi: geocentric phi in radians (latitude)
+ * @input delta: sun declination in radians
+ * @return omega at sunset
+ **/
+double sg1_sunset(double phi, double delta);
+
+/**
+ * The procedure "Day_Angle" expresses the integer day number as an angle (in radians)
+ * from 12:00 hours on the day 31st December. A year length of 365.2422 days is used.
+ * Returns 0 if OK, 1 otherwise.
+ *
+ * @input day_of_year: the day number within the year in [1,366]
+ * @return Day_Angle
+ **/
+double sg1_day_angle(int day_of_year);
+
+#endif
+
 #endif // __H_solar_geometry
