@@ -674,6 +674,19 @@ double sg1_sunset(double phi, double delta);
  **/
 double sg1_day_angle(int day_of_year);
 
+/**
+ * The procedure "corr_distance" computes the correction for the variation of sun-earth
+ * distance from its mean value (also known as eccentricity). It is a fucntion of time,
+ * but a single (average) value per day is enough for practical calculations. Returns 0
+ * if OK, 1 otherwise.
+ *
+ * Source : Gruter (ed.) (1984)
+ *
+ * @input day_angle: Day_Angle in radians
+ * @return eccentricity
+ **/
+double sg1_corr_distance(double day_angle);
+
 #endif
 
 #endif // __H_solar_geometry
