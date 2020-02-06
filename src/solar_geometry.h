@@ -648,6 +648,15 @@ void sg1_cos_incident_angle_fast(SG1_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omeg
 
 /* The C++ API */
 
+/*
+ * NOTE ABOUT C++ API:
+ *
+ * The C++ API is intensionnaly UNSAFE, by unsafe, We mean that that API do not
+ * check any input parameters to check if they are in valid range. If you want
+ * safer API use the obsolete C API. Anyway, we recommand to use the C++ API.
+ *
+ */
+
 /**
  * @input phi: geocentric phi in radians (latitude)
  * @input delta: sun declination in radians
