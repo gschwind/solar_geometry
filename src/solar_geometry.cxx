@@ -36,9 +36,7 @@
 #include "solar_geometry.h"
 
 #include <cmath>
-
-#define MIN(x,y) ((x)<(y) ? (x) : (y))
-#define MAX(x,y) ((x)>(y) ? (x) : (y))
+#include <algorithm>
 
 #define SG1_PI_2     1.57079632679489661923
 
@@ -1773,8 +1771,8 @@ sg1_intervals_omega_tilted_plane (double phi_g, double delta, double omega_ss,
 		}
 	    }
 
-	  wmin = MIN (wa, wb);
-	  wmax = MAX (wa, wb);
+	  wmin = std::min(wa, wb);
+	  wmax = std::max(wa, wb);
 	  wa = wmin;
 	  wb = wmax;
 
