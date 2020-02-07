@@ -598,93 +598,87 @@ int sg1_timerise_daylength(double omega_sr, double omega_ss, double *t_sr,
  */
 /****************************/
 
-/*
- * Source : Gruter (ed.) (1984) 
- */
-/*
- * Inputs : day_angle : day angle (in radians) lambda : longitude of the site (in
- * radians, positive to East) lambda_ref : reference longitude of the time zone (in
- * radians) summer_corr : correction for summer time (integer hours) 
- */
-/*
- * Outputs : dt : Offset between local mean time (LMT) and local apparent time (LAT) (in
- * decimal hours) 
- */
-/*
+ /**
+  * Compute the equation of time (ET) in decimal hours, wich allows for
+  * perturbations in the rotational and angular orbital speed of the Earth.
+  *
+  * @input day_angle: in radians
+  * @return ET in decimal hours.
+  **/
+inline static double sg1_compute_ET(double day_angle)
+{
+    double const a1 = -0.128;
+    double const a2 = -0.165;
+    double const a3 = 2.80 * SG1_PI_LOW_PRECISION / 180.0;
+    double const a4 = 19.70 * SG1_PI_LOW_PRECISION / 180.0;
+    return a1 * sin (day_angle - a3) + a2 * sin (2.0 * day_angle + a4);
+}
+
+
+/**
  * The procedure "LMT_to_LAT computes the difference (in decimal hours) between the LAT
  * (local apparent time) and the LMT (local mean time or clock time) systems at solar
  * noon. Two stages: - the first stage calculates the equation of time, ET, wich allows
  * for perturbations in the rotational and angular orbital speed of the Earth. - the
  * second stage handles the difference between the longitude of the site under
  * consideration and the reference time zone longitude for the site. A summer time
- * correction must be added for some countries. Returns 0 if OK, 1 otherwise. 
- */
- int
-sg1_LMT_to_LAT (double day_angle, double lambda, double lambda_ref, int summer_corr,
-	    double *dt)
+ * correction must be added for some countries. Returns 0 if OK, 1 otherwise.
+ *
+ * Source: Gruter (ed.) (1984)
+ *
+ * @input day_angle: day angle in radians
+ * @input lambda: lambda : longitude of the site in radians, positive to East
+ * @input lambda_ref: reference longitude of the time zone in radians
+ * @input summer_corr: correction for summer time in hours
+ * @output dt: Offset between local mean time (LMT) and local apparent time
+ *             (LAT) in decimal hours.
+ * @return Returns 0 if OK, 1 otherwise.
+ **/
+int sg1_LMT_to_LAT(double day_angle, double lambda, double lambda_ref,
+        int summer_corr, double *dt)
 {
-  const double deg_rad = (SG1_PI_LOW_PRECISION / 180.0);	/* converts decimal degrees into radians */
-  int ier;
-  double a1, a2, a3, a4, ET;
-
-  ier = 1;
-  a1 = -0.128;
-  a2 = -0.165;
-  a3 = 2.80 * deg_rad;
-  a4 = 19.70 * deg_rad;
-  if ((day_angle > 0.0) && (day_angle < (2.0 * SG1_PI_LOW_PRECISION * 1.0021)) &&
-      (fabs (lambda) <= SG1_PI_LOW_PRECISION) && (fabs (lambda_ref) <= SG1_PI_LOW_PRECISION))
-    {
-      ier = 0;
-      ET = a1 * sin (day_angle - a3) + a2 * sin (2.0 * day_angle + a4);
-      *dt = ET + ((lambda - lambda_ref) * 12.0 / SG1_PI_LOW_PRECISION) - (double) summer_corr;
-    }
-
-  return (ier);
+    if (day_angle <= 0.0 || day_angle >= (2.0 * SG1_PI_LOW_PRECISION * 1.0021))
+        return 1;
+    if (fabs(lambda) > SG1_PI_LOW_PRECISION)
+        return 1;
+    if (fabs(lambda_ref) > SG1_PI_LOW_PRECISION)
+        return 1;
+    double ET = sg1_compute_ET(day_angle);
+    *dt = ET + ((lambda - lambda_ref) * 12.0 / SG1_PI_LOW_PRECISION)
+            - summer_corr;
+    return 0;
 }
 
-/*
- * Source : 
- */
-/*
- * Inputs : UT : Universal Time (in decimal hours) day_angle : day angle (in radians)
- * lambda : longitude of the site (in radians, positive to East) 
- */
-/*
- * Outputs : LAT : local apparent time or solar time or true solar time (TST) (in decimal
- * hours) 
- */
-/*
+
+/**
  * The procedure "UT_to_LAT computes the conversion of the UT (Universal time) into the
  * LAT (local apparent time) systems at solar noon (in decimal hours). First, the
  * equation of time, ET, is computed (in decimal hours), wich allows for perturbations in 
  * the rotational and angular orbital speed of the Earth. Returns 0 if OK, 1 otherwise. 
- */
- int
-sg1_UT_to_LAT (double UT, double day_angle, double lambda, double *LAT)
+ *
+ * @input UT: Universal Time in decimal hours
+ * @input day_angle: day angle in radians
+ * @input lambda: longitude of the site in radians, positive to East
+ * @output LAT: local apparent time or solar time or true solar time (TST) in
+ *              decimal hours
+ * @return Returns 0 if OK, 1 otherwise.
+ **/
+int sg1_UT_to_LAT(double UT, double day_angle, double lambda, double *LAT)
 {
-  const double deg_rad = (SG1_PI_LOW_PRECISION / 180.0);	/* converts decimal degrees into radians */
-  int ier;
-  double a1, a2, a3, a4, ET;
+    if (day_angle <= 0.0 || day_angle >= (2.0 * SG1_PI_LOW_PRECISION * 1.0021))
+        return 1;
+    if ((UT < 0.0) || (UT > 24.0))
+        return 1;
+    if (fabs(lambda) > SG1_PI_LOW_PRECISION)
+        return 1;
 
-  ier = 1;
-  a1 = -0.128;
-  a2 = -0.165;
-  a3 = 2.80 * deg_rad;
-  a4 = 19.70 * deg_rad;
-  if ((UT >= 0.0) && (UT <= 24.0) && (day_angle > 0.0) &&
-      (day_angle < (2.0 * SG1_PI_LOW_PRECISION * 1.0021)) && (fabs (lambda) <= SG1_PI_LOW_PRECISION))
-    {
-      ier = 0;
-      ET = a1 * sin (day_angle - a3) + a2 * sin (2.0 * day_angle + a4);
-      *LAT = UT + ET + (lambda * 12.0 / SG1_PI_LOW_PRECISION);
-      if (*LAT < 0)
-	*LAT += 24.0;
-      if (*LAT > 24.0)
-	*LAT -= 24.0;
-    }
-
-  return (ier);
+    double ET = sg1_compute_ET(day_angle);
+    *LAT = UT + ET + (lambda * 12.0 / SG1_PI_LOW_PRECISION);
+    if (*LAT < 0.0)
+        *LAT += 24.0;
+    if (*LAT > 24.0)
+        *LAT -= 24.0;
+    return 0;
 }
 
 /**********************************/
