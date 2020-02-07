@@ -433,21 +433,27 @@ int sg1_omega_to_LAT(double omega, double *t)
     return 0;
 }
 
+/**
+ * Convert geographic latitude to geocentric latitude used in many other
+ * functions.
+ *
+ * @input phi_g: geographic latitude in radian
+ * @return geocentric longitude in radian.
+ **/
 double sg1_geogr_to_geoce(double phi_g)
 {
-  double phi;
-  double CC = 0.99330552;	/* Correction factor for converting geographic */
-  /*
-   * into geocentric latitude. CC=(Rpole/Requator)**2 
-   */
-  /*
-   * Rpole=6356.752, Requator=6378.137 
-   */
-  if ((phi_g >= -(SG1_PI_LOW_PRECISION / 2.0 - 0.0002)) || (phi_g <= (SG1_PI_LOW_PRECISION / 2.0 - 0.0002)))
-    phi = atan (tan (phi_g) * CC);
-  else
-    phi = phi_g;
-  return (phi);
+    /**
+     * Correction factor for converting geographic
+     * into geocentric latitude. CC=(Rpole/Requator)**2
+     * with Rpole=6356.752, Requator=6378.137
+     **/
+    double const CC = 0.99330552;
+
+    if (fabs(phi_g) <= (SG1_PI_LOW_PRECISION / 2.0 - 0.0002)) {
+        return atan(tan(phi_g) * CC);
+    } else {
+        return phi_g;
+    }
 }
 
 /*
