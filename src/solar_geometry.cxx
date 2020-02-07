@@ -745,6 +745,25 @@ int sg1_elevation_zenith_sun(double phi_g, double delta, double omega,
     return 0;
 }
 
+/**
+ * Compute the sun azimuth.
+ *
+ * @input phi: latitude geocentric in radians
+ * @input delta: sun declination in radians
+ * @input omage: solar hour angle in radians
+ * @input gamma: sun elevation in radians
+ * @return the sun azimuth.
+ **/
+double sg1_azimuth_sun(double phi, double delta, double omega, double gamma)
+{
+    double cos_as = sin(phi) * sin(gamma) - sin(delta);
+    double sin_as = cos(delta) * sin(omega) * cos(phi);
+    /* Check hemisphere and swap the azimuth if needed */
+    if (phi < 0.0)
+        cos_as = -cos_as;
+    return atan2(sin_as, cos_as);
+}
+
 /*
  * Source : 
  */
