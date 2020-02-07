@@ -517,9 +517,8 @@ int sg1_solar_hour_angle_h(double phi_g, double delta, double t,
  * sunrise (at sunset) when the calculated astronomical elevation is 50'. Returns 0 if
  * OK, 1 otherwise. 
  */
- int
-sg1_sunrise_hour_angle (double phi_g, double delta, double gamma_riset,
-		    double *omega_sr, double *omega_ss)
+int sg1_sunrise_hour_angle(double phi_g, double delta, double gamma_riset,
+        double *omega_sr, double *omega_ss)
 {
    double deg_rad = (SG1_PI_LOW_PRECISION / 180.0);	/* converts decimal degrees into radians */
   int ier;
@@ -585,9 +584,8 @@ double sg1_sunset(double phi, double delta)
  * sunset, and the astronomical daylength, all in LAT decimal hours. Returns 0 if OK, 1
  * otherwise. 
  */
- int
-sg1_timerise_daylength (double omega_sr, double omega_ss, double *t_sr,
-		    double *t_ss, double *S0)
+int sg1_timerise_daylength(double omega_sr, double omega_ss, double *t_sr,
+        double *t_ss, double *S0)
 {
   int ier;
 
