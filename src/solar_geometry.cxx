@@ -567,44 +567,29 @@ double sg1_sunset(double phi, double delta)
 }
 
 
-/*
- * Source : 
- */
-/*
- * Inputs : omega_sr : sunrise hour angle (in radians) omega_ss : sunset hour angle (in
- * radians) 
- */
-/*
- * Outputs : t_sr : time of astronomical sunrise (in decimal hours) t_ss : time of
- * astronomical sunset (in decimal hours) S0 : astronomical daylength (in decimal hours) 
- */
-/*
+/**
  * The procedure "timerise_daylength" supplies the times of astronomical sunrise and
  * sunset, and the astronomical daylength, all in LAT decimal hours. Returns 0 if OK, 1
- * otherwise. 
+ * otherwise.
+ *
+ * @input omega_sr: sunrise hour angle in radians
+ * @input omega_ss: sunset hour angle in radians
+ * @output t_sr: time of astronomical sunrise in decimal hours
+ * @output t_ss: time of astronomical sunset in decimal hours
+ * @output S0: astronomical daylength in decimal hours
+ * @return Returns 0 if OK, 1 otherwise.
  */
 int sg1_timerise_daylength(double omega_sr, double omega_ss, double *t_sr,
         double *t_ss, double *S0)
 {
-  int ier;
-
-  ier = 1;
-  if ((omega_sr >= -SG1_PI_LOW_PRECISION) && (omega_sr <= 0.0) && (omega_ss >= 0.0)
-      && (omega_ss <= SG1_PI_LOW_PRECISION))
-    {
-      ier = 0;
-      /*
-       * alternative way
-       */
-      /*
-       * ier = omega_to_LAT(omega_sr,&t_sr); if(ier == 0) ier ==
-       * omega_to_LAT(omega_ss,&t_ss); if(ier != 0) return(ier);
-       */
-      *t_sr = 12.0 + omega_sr * 12.0 / SG1_PI_LOW_PRECISION;
-      *t_ss = 12.0 + omega_ss * 12.0 / SG1_PI_LOW_PRECISION;
-      *S0 = *t_ss - *t_sr;
-    }
-  return (ier);
+    if (omega_sr < -SG1_PI_LOW_PRECISION || omega_sr > 0.0)
+        return 1;
+    if (omega_ss > SG1_PI_LOW_PRECISION || omega_ss < 0.0)
+        return 1;
+    *t_sr = sg1_omega_to_LAT(omega_sr);
+    *t_ss = sg1_omega_to_LAT(omega_ss);
+    *S0 = *t_ss - *t_sr;
+    return 0;
 }
 
 /****************************/
