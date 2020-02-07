@@ -35,8 +35,8 @@
 
 #include "solar_geometry.h"
 
-#include <math.h>
-#include <stdio.h>
+#include <cmath>
+#include <cstdio>
 
 #define MIN(x,y) ((x)<(y) ? (x) : (y))
 #define MAX(x,y) ((x)>(y) ? (x) : (y))
