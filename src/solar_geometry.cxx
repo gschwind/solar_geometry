@@ -530,7 +530,7 @@ int sg1_sunrise_hour_angle(double phi_g, double delta, double gamma_riset,
 {
    double deg_rad = (SG1_PI_LOW_PRECISION / 180.0);	/* converts decimal degrees into radians */
   int ier;
-  double horizon, max_delta, cos_omegas, omegas;
+  double horizon, cos_omegas, omegas;
   double phi;
 
   ier = 1;
@@ -541,9 +541,8 @@ int sg1_sunrise_hour_angle(double phi_g, double delta, double gamma_riset,
     horizon = gamma_riset;
 
   phi = sg1_geogr_to_geoce (phi_g);
-  max_delta = 23.45 * deg_rad;
 
-  if ((fabs (phi) < (SG1_PI_LOW_PRECISION / 2.0)) && (fabs (delta) <= max_delta) && (ier == 0))
+  if ((fabs (phi) < (SG1_PI_LOW_PRECISION / 2.0)) && (fabs (delta) <= SG1_DELTA_MAX) && (ier == 0))
     {
       cos_omegas =
 	(sin (horizon) - (sin (phi) * sin (delta))) / (cos (phi) * cos (delta));
