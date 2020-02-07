@@ -382,11 +382,22 @@ int sg1_declination_sun_month(int month_number, int type_use,
  * convention the hour angle is negative before noon and positive after noon.
  *
  * @input t: solar time i.e. LAT (0..24 decimal hours)
- * @return solar_hour_angle in radians.
+ * @return solar_hour_angle omega in radians.
  **/
 double sg1_solar_hour_angle(double t)
 {
     return (t - 12.0) * SG1_PI_LOW_PRECISION / 12.0;
+}
+
+/**
+ * Supplies the solar time in hours in [0,24].
+ *
+ * @input omega: solar_hour_angle in radians
+ * @return solar time i.e. LAT (0..24 decimal hours)
+ **/
+double sg1_omega_to_LAT(double omega)
+{
+    return 12.0 + omega * 12.0 / SG1_PI_LOW_PRECISION;
 }
 
 /**
