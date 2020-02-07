@@ -1953,13 +1953,17 @@ void sg1_deftilt_solar_geometry_fast(SG1_SOLAR_GEOMETRY_FAST *p_sgf, double alph
 	p_sgf->cos_beta = cos(beta);
 
 	if (p_sgf->phi >= 0.0) {
-		p_sgf->A = p_sgf->cos_delta * (p_sgf->cos_phi * p_sgf->cos_beta + p_sgf->sin_phi * p_sgf->sin_beta * p_sgf->cos_alpha);
+		p_sgf->A = p_sgf->cos_delta * (p_sgf->cos_phi * p_sgf->cos_beta
+		         + p_sgf->sin_phi * p_sgf->sin_beta * p_sgf->cos_alpha);
 		p_sgf->B = p_sgf->cos_delta * p_sgf->sin_beta * p_sgf->sin_alpha;
-		p_sgf->C = p_sgf->sin_delta * (p_sgf->sin_phi * p_sgf->cos_beta - p_sgf->cos_phi * p_sgf->sin_beta * p_sgf->cos_alpha);
+		p_sgf->C = p_sgf->sin_delta * (p_sgf->sin_phi * p_sgf->cos_beta
+		         - p_sgf->cos_phi * p_sgf->sin_beta * p_sgf->cos_alpha);
 	} else {
-		p_sgf->A = p_sgf->cos_delta * (p_sgf->cos_phi * p_sgf->cos_beta - p_sgf->sin_phi * p_sgf->sin_beta * p_sgf->cos_alpha);
+		p_sgf->A = p_sgf->cos_delta * (p_sgf->cos_phi * p_sgf->cos_beta
+		         - p_sgf->sin_phi * p_sgf->sin_beta * p_sgf->cos_alpha);
 		p_sgf->B = p_sgf->cos_delta * p_sgf->sin_beta * p_sgf->sin_alpha;
-		p_sgf->C = p_sgf->sin_delta * (p_sgf->sin_phi * p_sgf->cos_beta + p_sgf->cos_phi * p_sgf->sin_beta * p_sgf->cos_alpha);
+		p_sgf->C = p_sgf->sin_delta * (p_sgf->sin_phi * p_sgf->cos_beta
+		         + p_sgf->cos_phi * p_sgf->sin_beta * p_sgf->cos_alpha);
 	}
 }
 
