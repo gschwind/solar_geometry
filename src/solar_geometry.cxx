@@ -36,7 +36,6 @@
 #include "solar_geometry.h"
 
 #include <cmath>
-#include <cstdio>
 
 #define MIN(x,y) ((x)<(y) ? (x) : (y))
 #define MAX(x,y) ((x)>(y) ? (x) : (y))
@@ -222,39 +221,6 @@ int sg1_nbdays_month(int year, int month, int *number_days_of_month)
 
     *number_days_of_month = sg1_nbdays_month(year, month);
     return 0;
-}
-
-/*
- * Source : 
- */
-/*
- * Inputs : month_number : month number (1..12) month_name : name of month (3 characters
- * only, jan..dec) 
- */
-/*
- * Outputs : month_name : name of the month abbreviated with 3 characters (jan..dec) 
- */
-/*
- * The procedure "number_to_name_month" converts the month number into the corresponding 
- * month name. Returns 0 if OK, 1 otherwise. 
- */
- int
-sg1_number_to_name_month (int month_number, char *month_name)
-{
-   char tab_name[][4] =
-    { "   ", "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug",
-    "sep", "oct", "nov", "dec"
-  };
-  int ier;
-
-  ier = 1;
-  if ((month_number > 0) && (month_number < 13))
-    {
-      ier = 0;
-      sprintf (month_name, "%s", tab_name[month_number]);
-    }
-
-  return (ier);
 }
 
 /**
