@@ -416,33 +416,21 @@ int sg1_solar_hour_angle(double t, double *omega)
     return 0;
 }
 
-
-/*
- * Source : 
- */
-/*
- * Inputs : omega : solar hour angle (in radians) 
- */
-/*
- * Outputs : t : solar time i.e. LAT (0..24 decimal hours) 
- */
-/*
+/**
  * The procedure "omega_to_LAT" does the reverse operation of the procedure
  * "solar_hour_angle" i.e. computes the solar time (in decimal hours) from the solar
  * hour angle (in radians). Returns 0 if OK, 1 otherwise. 
- */
+ *
+ * @input omega: solar hour angle (in radians)
+ * @output t: solar time i.e. LAT (0..24 decimal hours)
+ * @return: Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_omega_to_LAT(double omega, double *t)
 {
-  int ier;
-
-  ier = 1;
-
-  if ((omega >= -SG1_PI_LOW_PRECISION) && (omega <= SG1_PI_LOW_PRECISION))
-    {
-      ier = 0;
-      *t = 12.0 * (1.0 + omega / SG1_PI_LOW_PRECISION);
-    }
-  return (ier);
+    if (fabs(omega) > SG1_PI_LOW_PRECISION)
+        return 1;
+    *t = sg1_omega_to_LAT(omega);
+    return 0;
 }
 
 double sg1_geogr_to_geoce(double phi_g)

@@ -727,6 +727,14 @@ double sg1_declination_sun(int year, int day_of_year, double lambda);
  **/
 double sg1_solar_hour_angle(double t);
 
+/**
+ * Supplies the solar time in hours in [0,24].
+ *
+ * @input omega: solar_hour_angle in radians
+ * @return solar time i.e. LAT (0..24 decimal hours)
+ **/
+double sg1_omega_to_LAT(double omega);
+
 #endif
 
 #endif // __H_solar_geometry
