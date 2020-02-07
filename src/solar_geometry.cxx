@@ -104,6 +104,9 @@ static int SG1_DAYS_PER_MONTH[12] = {
         31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 };
 
+static double const SG1_DELTA_MAX = 23.45 * SG1_PI_LOW_PRECISION / 180.0;
+
+
 inline static int is_leap_year(int const year) {
     return (((year % 4) == 0) && ((year % 100) != 0)) || ((year % 400) == 0);
 }
@@ -722,14 +725,16 @@ double sg1_gamma_sun(double phi, double delta, double omega)
 int sg1_elevation_zenith_sun(double phi_g, double delta, double omega,
         double *gamma, double *theta)
 {
-    double omega_sr, omega_ss;
-    int ier = sg1_sunrise_hour_angle(phi_g, delta, 0.0, &omega_sr, &omega_ss);
-    if (ier != 0)
-        return ier;
+    if (fabs(delta) > SG1_DELTA_MAX)
+        return 1;
 
     double phi = sg1_geogr_to_geoce(phi_g);
+    if (fabs(phi) >= (SG1_PI_LOW_PRECISION / 2.0))
+        return 1;
 
-    if ((omega < omega_sr) || (omega > omega_ss)) {
+    double omega_ss = sg1_sunset(phi, delta);
+
+    if (fabs(omega) >= omega_ss) {
         *gamma = 0.0;
     } else {
         *gamma = sg1_gamma_sun(phi, delta, omega);
@@ -738,7 +743,7 @@ int sg1_elevation_zenith_sun(double phi_g, double delta, double omega,
 
     *theta = (SG1_PI_LOW_PRECISION / 2.0) - *gamma;
 
-    return (ier);
+    return 0;
 }
 
 /*
