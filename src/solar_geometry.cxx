@@ -693,45 +693,52 @@ int sg1_UT_to_LAT(double UT, double day_angle, double lambda, double *LAT)
  */
 /**********************************/
 
-/*
- * Source : 
+/**
+ * Compute gamma sun.
+ *
+ * /!\ be carefull, use geocentric latitude.
+ *
+ * @input phi: geocentric latitude in radians
+ * @input delta: sun declination in radian
+ * @input omega: solar hour angle in radians
  */
-/*
- * Inputs : phi_g : latitude of site (in radians, positive to North) delta : solar
- * declination angle (in radians) omega : solar hour angle (in radians) 
- */
-/*
- * Outputs : gamma : solar altitude angle (in radians) theta : solar zenithal angle (in
- * radians) 
- */
-/*
+double sg1_gamma_sun(double phi, double delta, double omega)
+{
+    return asin (sin (phi) * sin (delta) + cos (phi) * cos (delta) * cos (omega));
+}
+
+/**
  * The procedure "elevation_zenith_sun" computes the solar elevation (or altitude) angle 
  * and the solar zenithal (or incidence) angle. These two angles are complementary.
- * Returns 0 if OK, 1 otherwise. 
- */
+ *
+ *
+ * @input phi_g: latitude of site in radians, positive to North
+ * @input delta: solar declination angle in radians
+ * @input omega: solar hour angle in radians
+ * @output gamma: solar altitude angle in radians
+ * @output theta: solar zenithal angle in radians
+ * @return Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_elevation_zenith_sun(double phi_g, double delta, double omega,
         double *gamma, double *theta)
 {
-  int ier;
-  double omega_sr, omega_ss;
-  double phi;
+    double omega_sr, omega_ss;
+    int ier = sg1_sunrise_hour_angle(phi_g, delta, 0.0, &omega_sr, &omega_ss);
+    if (ier != 0)
+        return ier;
 
-  ier = 1;
-  phi = sg1_geogr_to_geoce (phi_g);
-  ier = sg1_sunrise_hour_angle (phi_g, delta, 0.0, &omega_sr, &omega_ss);
-  if (ier != 0)
+    double phi = sg1_geogr_to_geoce(phi_g);
+
+    if ((omega < omega_sr) || (omega > omega_ss)) {
+        *gamma = 0.0;
+    } else {
+        *gamma = sg1_gamma_sun(phi, delta, omega);
+        *gamma = std::max(0.0, *gamma);
+    }
+
+    *theta = (SG1_PI_LOW_PRECISION / 2.0) - *gamma;
+
     return (ier);
-  if ((omega < omega_sr) || (omega > omega_ss))
-    *gamma = 0.0;
-  else
-    *gamma =
-      asin (sin (phi) * sin (delta) + cos (phi) * cos (delta) * cos (omega));
-  if (*gamma < 0.0)
-    *gamma = 0.0;
-
-  *theta = (SG1_PI_LOW_PRECISION / 2.0) - *gamma;
-
-  return (ier);
 }
 
 /*
