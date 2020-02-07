@@ -476,11 +476,11 @@ int sg1_solar_hour_angle_h(double phi_g, double delta, double t,
   if (ier != 0)
     return (ier);
 
-  omega1 = (t - 1.0 - 12.0) * SG1_PI_LOW_PRECISION / 12.0;
+  omega1 = sg1_solar_hour_angle(t - 1.0);
   if (omega1 < omega_sr)
     omega1 = omega_sr;
 
-  omega2 = (t - 12.0) * SG1_PI_LOW_PRECISION / 12.0;
+  omega2 = sg1_solar_hour_angle(t);
   if (omega2 > omega_ss)
     omega2 = omega_ss;
 
