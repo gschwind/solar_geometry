@@ -1937,7 +1937,7 @@ int sg1_ymd_to_julian_day(int year, int month, int day_of_month)
 
 }
 
-void sg1_julian_day_to_ymd(int jd, int & year, int & month, int & day_of_month)
+std::tuple<int,int,int> sg1_julian_day_to_ymd(int jd)
 {
 	double H, L, N, I, J, K;
 
@@ -1953,9 +1953,7 @@ void sg1_julian_day_to_ymd(int jd, int & year, int & month, int & day_of_month)
 	J = J + 2.0 - 12.0 * L;
 	I = 100.0 * (N - 49.0) + I + L;
 
-	year = I;
-	month = J;
-	day_of_month = K;
+	return std::tuple<int,int,int>(I,J,K);
 
 }
 
