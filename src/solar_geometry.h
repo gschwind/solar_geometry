@@ -747,6 +747,13 @@ void sg1_cos_incident_angle_fast(SG1_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omeg
  **/
 double sg1_sunset(double phi, double delta);
 
+/**
+ * @param[in]  phi geocentric phi in radians (latitude)
+ * @param[in]  delta sun declination in radians
+ * @return     gamma sun
+ **/
+double sg1_gamma_sun(double phi, double delta, double omega);
+
 
 /**
  * The procedure "Day_Angle" expresses the integer day number as an angle (in radians)
