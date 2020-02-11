@@ -39,44 +39,45 @@ extern "C" {
 #endif
 
 #define SG1_PI_LOW_PRECISION  3.141592654
-#define SG1_I0  1367.0		/* solar constant in W/m2 */
-#define SG1_DAY_LENGTH  24.0		/* average value for the length of the day in decimal hours */
+#define SG1_I0  1367.0 /* solar constant in W/m2 */
+#define SG1_DAY_LENGTH  24.0 /* average value for the length of the day in decimal hours */
 
-/*************/
-/* NOTATIONS */
-/*************/
-/* phi_g  : geographic latitude of the site, positive to North */
-/* phi    : geocentric latitude of the site, positive to North */
-/* lambda : longitude of the site, positive to East */
-/* delta  : solar declination angle */
-/* omega  : solar hour angle */
-/* gamma  : solar altitude (or elevation) angle */
-/* theta  : solar incidence (or zenithal) angle (ESRA --> zeta) */
-/* alpha  : solar azimuthal angle (or psi) */
-/* t   : solar time = true solar time (TST) = local apparent time (LAT) */
-/* LAT : local apparent time or solar time or true solar time (TST)
- --> this system of time offers the advantage of symmetry of the solar
- geometry about the north-south line */
-/* LMT : local mean time or clock time */
-/* UT  : Universal Time, is GMT measured from Greenwich mean midnight */
-/* omega_sr : sunrise hour angle */
-/* omega_ss : sunset hour angle */
-/* t_sr     : time of astronomical sunrise */
-/* t_ss     : time of astronomical sunset */
-/* omega1 : solar hour angle at beginning of the time period */
-/* omega2 : solar hour angle at end of the time period */
-
-/* S0  : astronomical daylength or astronomical sunshine duration */
-/* I0  : solar constant = annual mean value of extraterrestrial direct solar
- irradiance G0 (1367.0 W/m2) */
-/* G0  : extraterrestrial global solar irradiation (on an horizontal plane)
- =B0 */
-/* G0h : hourly extraterrestrial solar irradiation (on an horizontal plane) */
-/* G0d : daily extraterrestrial solar irradiation (on an horizontal plane) */
-
-/* NB : All angles are computed in radians as a standard.
- The basic trigonometric calculations on the position of the sun are
- carried out in LAT. */
+/**
+ * NOTATIONS
+ * =========
+ *
+ * phi_g: geographic latitude of the site, positive to North
+ * phi: geocentric latitude of the site, positive to North
+ * lambda: longitude of the site, positive to East
+ * delta: solar declination angle
+ * omega: solar hour angle
+ * gamma: solar altitude (or elevation) angle
+ * theta: solar incidence (or zenithal) angle (ESRA --> zeta)
+ * alpha: solar azimuthal angle (or psi)
+ * t: solar time = true solar time (TST) = local apparent time (LAT)
+ * LAT: local apparent time or solar time or true solar time (TST)
+ *       --> this system of time offers the advantage of symmetry of the solar
+ *       geometry about the north-south line
+ * LMT: local mean time or clock time
+ * UT: Universal Time, is GMT measured from Greenwich mean midnight
+ * omega_sr: sunrise hour angle
+ * omega_ss: sunset hour angle
+ * t_sr: time of astronomical sunrise
+ * t_ss: time of astronomical sunset
+ * omega1: solar hour angle at beginning of the time period
+ * omega2: solar hour angle at end of the time period
+ * S0: astronomical daylength or astronomical sunshine duration
+ * I0: solar constant = annual mean value of extraterrestrial direct solar
+ *     irradiance G0 (1367.0 W/m2)
+ * G0: extraterrestrial global solar irradiation (on an horizontal plane) =B0
+ * G0h: hourly extraterrestrial solar irradiation (on an horizontal plane)
+ * G0d: daily extraterrestrial solar irradiation (on an horizontal plane)
+ *
+ * Remarks:
+ *  - All angles are computed in radians as a standard.
+ *  - The basic trigonometric calculations on the position of the sun are
+ *    carried out in LAT.
+ **/
 
 /*********************************************
  *                                           *
@@ -90,16 +91,17 @@ extern "C" {
  * BASIC PARAMETERS *
  ********************/
 
-/* Source : */
-/* Inputs :
- year  : year number (4 digits)
- month : month number (1..12)
- day_of_month : day of the month (1..31) */
-/* Outputs :
- day_of_year : integer day number of the year (1..366)
- */
-/* The procedure "make_julian_day" converts a day given in day, month and year
- into a julian day. Returns 0 if OK, 1 otherwise. */
+
+/**
+ * The procedure "make_julian_day" converts a day given in day, month and year
+ * into a day of year.
+ *
+ * @param[in]  year year number ussually 4 digits
+ * @param[in]  month month number in [1,12]
+ * @param[in]  day_of_month day of the month in [1,31]
+ * @param[out] day_of_year integer day number of the year in [1,366]
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_ymd_to_day_of_year(int year, int month, int day_of_month,
         int * const day_of_year);
 
