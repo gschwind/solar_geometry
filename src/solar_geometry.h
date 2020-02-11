@@ -603,15 +603,6 @@ int sg1_intervals_omega_tilted_plane(double phi_g, double delta, double omega_ss
  */
 int sg1_ymd_to_julian_day(int year, int month, int day_of_month);
 
-/**
- * Compute year-month-day value from a given julian day
- *
- * @param[in]  jd the julian day
- * @param[out] year the year number usually 4 digits
- * @param[out] month the month number in [1,12]
- * @param[out] day_of_month the day number within the month in [1,31]
- **/
-void sg1_julian_day_to_ymd(int jd, int & year, int & month, int & day_of_month);
 
 /***************************************/
 /* POSITION OF THE SUN IN THE SKY FAST */
@@ -752,6 +743,16 @@ double sg1_solar_hour_angle(double t);
  * @return solar time i.e. LAT (0..24 decimal hours)
  **/
 double sg1_omega_to_LAT(double omega);
+
+/**
+ * Compute year-month-day value from a given julian day
+ *
+ * @param[in]  jd the julian day
+ * @param[out] year the year number usually 4 digits
+ * @param[out] month the month number in [1,12]
+ * @param[out] day_of_month the day number within the month in [1,31]
+ **/
+void sg1_julian_day_to_ymd(int jd, int & year, int & month, int & day_of_month);
 
 #endif
 
