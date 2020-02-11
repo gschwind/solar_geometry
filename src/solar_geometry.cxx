@@ -582,7 +582,7 @@ int sg1_sunrise_hour_angle(double phi_g, double delta, double gamma_riset,
  **/
 double sg1_sunset(double phi, double delta)
 {
-  return atan2(-1.0 * sin (phi) * sin (delta), cos (phi) * cos (delta));
+  return acos(- tan(phi) * tan(delta));
 }
 
 
