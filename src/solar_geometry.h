@@ -179,17 +179,21 @@ int sg1_day_angle(int day_of_year, double *day_angle);
 int sg1_declination_sun(int year, int day_of_year, double lambda,
         double *delta);
 
-/* Source : Gruter (Ed.) (1984) */
-/* Inputs :
- month_number : month number (1..12) */
-/* Outputs :
- delta_month : solar declination angle (in radians) */
-/* The procedure "declination_sun_month" computes the noon solar declination
- (in radians) in solar time, with a simplified form, in two cases:
- type_use=0 : for estimating monthly mean global solar radiation
- type_use=1 : for estimating monthly mean maximum global solar radiation
- The integer day number to be selected in each case for the computations is
- given by two tables. Returns 0 if OK, 1 otherwise. */
+
+/**
+ * The procedure "declination_sun_month" computes the noon solar declination
+ * (in radians) in solar time, with a simplified form, in two cases:
+ * type_use=0 : for estimating monthly mean global solar radiation
+ * type_use=1 : for estimating monthly mean maximum global solar radiation
+ * The integer day number to be selected in each case for the computations is
+ * given by two tables.
+ *
+ * Source : Gruter (Ed.) (1984)
+ *
+ * @param[in]  month_number month number in [1,12]
+ * @param[out] delta_month solar declination angle (in radians)
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_declination_sun_month(int month_number, int type_use, double *delta_month);
 
 /**
@@ -202,96 +206,115 @@ int sg1_declination_sun_month(int month_number, int type_use, double *delta_mont
  **/
 int sg1_solar_hour_angle(double t, double *omega);
 
-/* Source : */
-/* Inputs :
- omega : solar hour angle (in radians) */
-/* Outputs :
- t : solar time i.e. LAT (0..24 decimal hours) */
-/* The procedure "omega_to_LAT" does the reverse operation of the procedure
- "solar_hour_angle" i.e. computes the solar time (in decimal hours) from the
- solar hour angle (in radians). Returns 0 if OK, 1 otherwise. */
+
+/**
+ * The procedure "omega_to_LAT" does the reverse operation of the procedure
+ * "solar_hour_angle" i.e. computes the solar time (in decimal hours) from the
+ * solar hour angle (in radians).
+ *
+ * @param[in]  omega solar hour angle (in radians)
+ * @param[out] t solar time i.e. LAT decimal hours in [0,24]
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_omega_to_LAT(double omega, double *t);
 
+/**
+ * Convert geograpique latitude to geocentrique one
+ *
+ * @param[in]  phi_g latitude geographic in radian
+ * @return     latitude geocentric in radian
+ **/
 double sg1_geogr_to_geoce(double phi_g);
 
-/* Source : */
-/* Inputs :
- phi_g : latitude (in radians, positive to North)
- delta : solar declination angle (in radians)
- t     : solar time i.e. LAT (0..24 decimal hours) */
-/* Outputs :
- omega : solar hour angle (in radians) */
-/* The procedure "solar_hour_angle_h" supplies an average value of the solar
- hour angle (in radians) for a whole solar hour, taking into account only the
- portion of the solar hour with the sun standing above the horizon. Returns 0
- if OK, 1 otherwise. */
+
+/**
+ * The procedure "solar_hour_angle_h" supplies an average value of the solar
+ * hour angle (in radians) for a whole solar hour, taking into account only the
+ * portion of the solar hour with the sun standing above the horizon.
+ *
+ * @param[in]  phi_g latitude geographic in radians, positive to North
+ * @param[in]  delta solar declination angle in radians
+ * @param[in]  t solar time i.e. LAT decimal hours in [0,24]
+ * @param[out] omega solar hour angle in radians
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_solar_hour_angle_h(double phi_g, double delta, double t, double *omega);
 
-/*********************************/
-/* SUNRISE, SUNSET AND DAYLENGTH */
-/*********************************/
 
-/* Source : */
-/* Inputs :
- phi_g       : latitude of site (in radians, positive to North)
- delta       : solar declination angle (in radians)
- gamma_riset : solar elevation near sunrise/sunset:
- - set to  0.0 for astronomical sunrise/sunset
- - set to -1.0 for refraction corrected sunrise/sunset. */
-/* Outputs :
- omega_sr : sunrise solar hour angle (in radians)
- omega_ss : sunset solar hour angle (in radians) */
-/* The procedure "sunrise_hour_angle" supplies the sunrise and sunset hour
- angles (in radians). Due to the dimension of the solar disk and the effect
- of the atmospheric refraction, the edge of the solar disk will just appear
- (disappear) at the horizon at sunrise (at sunset) when the calculated
- astronomical elevation is 50'. Returns 0 if OK, 1 otherwise. */
+/*********************************
+ * SUNRISE, SUNSET AND DAYLENGTH *
+ *********************************/
+
+
+/**
+ * The procedure "sunrise_hour_angle" supplies the sunrise and sunset hour
+ * angles (in radians). Due to the dimension of the solar disk and the effect
+ * of the atmospheric refraction, the edge of the solar disk will just appear
+ * (disappear) at the horizon at sunrise (at sunset) when the calculated
+ * astronomical elevation is 50'.
+ *
+ * @param[in]  phi_g latitude geographic in radians, positive to North
+ * @param[in]  delta solar declination angle in radians
+ * @param[in]  gamma_riset solar elevation near sunrise/sunset:
+ *               - set to  0.0 for astronomical sunrise/sunset
+ *               - set to -1.0 for refraction corrected sunrise/sunset.
+ * @param[out] omega_sr sunrise solar hour angle in radians
+ * @param[out] omega_ss sunset solar hour angle in radians
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_sunrise_hour_angle(double phi_g, double delta, double gamma_riset,
         double *omega_sr, double *omega_ss);
 
 /**
- * @param[in]  phi: geocentric phi in radians (latitude)
- * @param[in]  delta: sun declination in radians
+ * Compute the astronomical sunset
+ *
+ * @param[in]  phi geocentric phi in radians (latitude)
+ * @param[in]  delta sun declination in radians
  * @return omega at sunset
  **/
 double sg1_sunset(double phi, double delta);
 
-/* Source : */
-/* Inputs :
- omega_sr : sunrise hour angle (in radians)
- omega_ss : sunset hour angle (in radians) */
-/* Outputs :
- t_sr : time of astronomical sunrise (in decimal hours)
- t_ss : time of astronomical sunset (in decimal hours)
- S0   : astronomical daylength (in decimal hours) */
-/* The procedure "timerise_daylength" supplies the times of astronomical
- sunrise and sunset, and the astronomical daylength, all in LAT decimal
- hours. Returns 0 if OK, 1 otherwise. */
+
+/**
+ * The procedure "timerise_daylength" supplies the times of astronomical
+ * sunrise and sunset, and the astronomical daylength, all in LAT decimal
+ * hours.
+ *
+ * @param[in]  omega_sr sunrise hour angle in radians
+ * @param[in]  omega_ss sunset hour angle in radians
+ * @param[out] t_sr time of astronomical sunrise in decimal hours
+ * @param[out] t_ss time of astronomical sunset in decimal hours
+ * @param[out] S0 astronomical daylength in decimal hours
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_timerise_daylength(double omega_sr, double omega_ss, double *t_sr,
         double *t_ss, double *S0);
 
-/****************************/
-/* CHANGING THE TIME SYSTEM */
-/****************************/
+/****************************
+ * CHANGING THE TIME SYSTEM *
+ ****************************/
 
-/* Source : Gruter (ed.) (1984) */
-/* Inputs :
- day_angle   : day angle (in radians)
- lambda      : longitude of the site (in radians, positive to East)
- lambda_ref  : reference longitude of the time zone (in radians)
- summer_corr : correction for summer time (integer hours) */
-/* Outputs :
- dt : Offset between local mean time (LMT) and local apparent time (LAT) (in
- decimal hours) */
-/* The procedure "LMT_to_LAT computes the difference (in decimal hours) between
- the LAT (local apparent time) and the LMT (local mean time or clock time)
- systems at solar noon. Two stages:
- - the first stage calculates the equation of time, ET, wich allows for
- perturbations in the rotational and angular orbital speed of the Earth.
- - the second stage handles the difference between the longitude of the site
- under consideration and the reference time zone longitude for the site. A
- summer time correction must be added for some countries.
- Returns 0 if OK, 1 otherwise. */
+
+/**
+ * The procedure "LMT_to_LAT computes the difference (in decimal hours) between
+ * the LAT (local apparent time) and the LMT (local mean time or clock time)
+ * systems at solar noon. Two stages:
+ *   - the first stage calculates the equation of time, ET, wich allows for
+ *     perturbations in the rotational and angular orbital speed of the Earth.
+ *   - the second stage handles the difference between the longitude of the site
+ *     under consideration and the reference time zone longitude for the site. A
+ *     summer time correction must be added for some countries.
+ *
+ * Source : Gruter (ed.) (1984)
+ *
+ * @param[in]  day_angle day angle in radians
+ * @param[in]  lambda longitude of the site in radians, positive to East
+ * @param[in]  lambda_ref reference longitude of the time zone in radians
+ * @param[in]  summer_corr correction for summer time in integral hours
+ * @param[out] dt Offset between local mean time (LMT) and local apparent time
+ *             (LAT) in decimal hours
+ * @return     Returns 0 if OK, 1 otherwise.
+ */
 int sg1_LMT_to_LAT(double day_angle, double lambda, double lambda_ref,
         int summer_corr, double *dt);
 
