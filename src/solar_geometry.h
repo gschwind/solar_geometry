@@ -758,6 +758,6 @@ double sg1_omega_to_LAT(double omega);
  **/
 std::tuple<int,int,int> sg1_julian_day_to_ymd(int jd);
 
-#endif
+#endif // C++ API
 
 #endif // __H_solar_geometry
