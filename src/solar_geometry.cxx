@@ -40,6 +40,19 @@
 
 #define SG1_PI_2     1.57079632679489661923
 
+/* convert degree to radian, using SG1_PI_LOW_PRECISION */
+inline static constexpr double RAD_LOW_PRECISSION(double a)
+{
+	return a * SG1_PI_LOW_PRECISION / 180.0;
+}
+
+/* convert radian to degree, using SG1_PI_LOW_PRECISION */
+inline static constexpr double DEG_LOW_PRECISSION(double a)
+{
+	return a * 180.0 / SG1_PI_LOW_PRECISION;
+}
+
+
 /*************/
 /* NOTATIONS */
 /*************/
@@ -104,7 +117,7 @@ static int SG1_DAYS_PER_MONTH[12] = {
         31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 };
 
-static double const SG1_DELTA_MAX = 23.45 * SG1_PI_LOW_PRECISION / 180.0;
+static double const SG1_DELTA_MAX = RAD_LOW_PRECISSION(23.45);
 
 
 inline static int is_leap_year(int const year) {
@@ -347,7 +360,6 @@ int sg1_declination_sun(int year, int day_of_year, double lambda,
 int sg1_declination_sun_month(int month_number, int type_use,
         double *delta_month)
 {
-  const double deg_rad = (SG1_PI_LOW_PRECISION / 180.0);	/* converts decimal degrees into radians */
   int tab_julian_day[12] =
     { 17, 46, 75, 105, 135, 162, 198, 228, 259, 289, 319, 345 };
   int tab_julian_day_max[12] =
@@ -371,9 +383,9 @@ int sg1_declination_sun_month(int month_number, int type_use,
 
   jm = day_angle;
   c1 = 0.3978;
-  c2 = 80.2 * deg_rad;		/* 1.4000 in SSA manual */
-  c3 = 1.92 * deg_rad;		/* 0.0355 in SSA manual */
-  c4 = 2.80 * deg_rad;		/* 0.0489 in SSA manual */
+  c2 = RAD_LOW_PRECISSION(80.2);		/* 1.4000 in SSA manual */
+  c3 = RAD_LOW_PRECISSION(1.92);		/* 0.0355 in SSA manual */
+  c4 = RAD_LOW_PRECISSION(2.80);		/* 0.0489 in SSA manual */
 
   *delta_month = asin (c1 * sin (jm - c2 + c3 * sin (jm - c4)));
   return (ier);
@@ -528,7 +540,6 @@ int sg1_solar_hour_angle_h(double phi_g, double delta, double t,
 int sg1_sunrise_hour_angle(double phi_g, double delta, double gamma_riset,
         double *omega_sr, double *omega_ss)
 {
-   double deg_rad = (SG1_PI_LOW_PRECISION / 180.0);	/* converts decimal degrees into radians */
   int ier;
   double horizon, cos_omegas, omegas;
   double phi;
@@ -536,7 +547,7 @@ int sg1_sunrise_hour_angle(double phi_g, double delta, double gamma_riset,
   ier = 1;
   if ((gamma_riset == 0.0) || (gamma_riset == -1.0))
     ier = 0;
-  horizon = (-50.0 / 60.0) * deg_rad;	/* horizon, -50' in radians */
+  horizon = RAD_LOW_PRECISSION(-50.0 / 60.0);	/* horizon, -50' in radians */
   if (gamma_riset >= horizon)
     horizon = gamma_riset;
 
@@ -617,8 +628,8 @@ inline static double sg1_compute_ET(double day_angle)
 {
     double const a1 = -0.128;
     double const a2 = -0.165;
-    double const a3 = 2.80 * SG1_PI_LOW_PRECISION / 180.0;
-    double const a4 = 19.70 * SG1_PI_LOW_PRECISION / 180.0;
+    double const a3 = RAD_LOW_PRECISSION(2.80);
+    double const a4 = RAD_LOW_PRECISSION(19.70);
     return a1 * sin (day_angle - a3) + a2 * sin (2.0 * day_angle + a4);
 }
 
@@ -833,8 +844,7 @@ int sg1_azimuth_sun(double phi_g, double delta, double omega, double gamma,
  **/
 double sg1_corr_distance(double day_angle)
 {
-    double const deg_rad = (SG1_PI_LOW_PRECISION / 180.0); /* converts decimal degrees into radians */
-    double const a = 2.80 * deg_rad;
+    double const a = RAD_LOW_PRECISSION(2.80);
     return 1.0 + 0.03344 * cos(day_angle - a);
 }
 
