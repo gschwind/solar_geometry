@@ -318,143 +318,164 @@ int sg1_timerise_daylength(double omega_sr, double omega_ss, double *t_sr,
 int sg1_LMT_to_LAT(double day_angle, double lambda, double lambda_ref,
         int summer_corr, double *dt);
 
-/* Source : */
-/* Inputs :
- UT          : Universal Time (in decimal hours)
- day_angle   : day angle (in radians)
- lambda      : longitude of the site (in radians, positive to East) */
-/* Outputs :
- LAT : local apparent time or solar time or true solar time (TST) (in decimal
- hours) */
-/* The procedure "UT_to_LAT computes the conversion of the UT (Universal time)
- into the LAT (local apparent time) systems at solar noon (in decimal hours).
- First, the equation of time, ET, is computed (in decimal hours), wich allows
- for perturbations in the rotational and angular orbital speed of the Earth.
- Returns 0 if OK, 1 otherwise. */
+
+/**
+ * The procedure "UT_to_LAT computes the conversion of the UT (Universal time)
+ * into the LAT (local apparent time) systems at solar noon (in decimal hours).
+ * First, the equation of time, ET, is computed (in decimal hours), wich allows
+ * for perturbations in the rotational and angular orbital speed of the Earth.
+ *
+ * @param[in]  UT hours Universal Time
+ * @param[in]  day_angle day angle in radians
+ * @param[in]  lambda longitude of the site in radians, positive to East
+ * @param[out] LAT local apparent time or solar time or true solar time (TST)
+ *             in decimal hours
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_UT_to_LAT(double UT, double day_angle, double lambda, double *LAT);
 
-/**********************************/
-/* POSITION OF THE SUN IN THE SKY */
-/**********************************/
+/**********************************
+ * POSITION OF THE SUN IN THE SKY *
+ **********************************/
 
-/* Source : */
-/* Inputs :
- phi_g : latitude of site (in radians, positive to North)
- delta : solar declination angle (in radians)
- omega : solar hour angle (in radians) */
-/* Outputs :
- gamma : solar altitude angle (in radians)
- theta : solar zenithal angle (in radians) */
-/* The procedure "elevation_zenith_sun" computes the solar elevation (or
- altitude) angle and the solar zenithal (or incidence) angle. These two
- angles are complementary. Returns 0 if OK, 1 otherwise. */
+
+/**
+ * The procedure "elevation_zenith_sun" computes the solar elevation (or
+ * altitude) angle and the solar zenithal (or incidence) angle. These two
+ * angles are complementary.
+ *
+ * @param[in]  phi_g latitude geographic of site in radians, positive to North
+ * @param[in]  delta solar declination angle in radians
+ * @param[in]  omega solar hour angle in radians
+ * @param[out] gamma solar altitude angle in radians
+ * @param[out] theta solar zenithal angle in radians
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_elevation_zenith_sun(double phi_g, double delta, double omega,
         double *gamma, double *theta);
 
-/* Source : */
-/* Inputs :
- phi_g : latitude of site (in radians, positive to North)
- delta : solar declination angle (in radians)
- omega : solar hour angle (in radians)
- gamma : solar altitude angle (in radians) */
-/* Outputs :
- alpha : solar azimuthal angle (in radians) */
-/* The procedure "azimuth_sun" computes the solar azimuth angle in the Northern
- hemisphere. The azimuth angle has a positive value when the sun is to the
- west of South, i.e. during the afternoon in solar time. For the Southern
- hemisphere, the azimuth angle is measured from North. Returns 0 if OK, 1
- otherwise. */
+
+/**
+ * The procedure "azimuth_sun" computes the solar azimuth angle in the Northern
+ * hemisphere. The azimuth angle has a positive value when the sun is to the
+ * west of South, i.e. during the afternoon in solar time. For the Southern
+ * hemisphere, the azimuth angle is measured from North. Returns 0 if OK, 1
+ * otherwise.
+ *
+ * @param[in]  phi_g latitude geographic of site in radians, positive to North
+ * @param[in]  delta solar declination angle in radians
+ * @param[in]  omega solar hour angle in radians
+ * @param[in]  gamma solar altitude angle in radians
+ * @param[out] alpha : solar azimuthal angle in radians
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_azimuth_sun(double phi_g, double delta, double omega, double gamma,
         double *alpha);
 
-/********************************/
-/* EXTRATERRESTRIAL IRRADIATION */
-/********************************/
+/********************************
+ * EXTRATERRESTRIAL IRRADIATION *
+ ********************************/
 
-/* Source : Gruter (ed.) (1984) */
-/* Inputs :
- day_angle : day angle (in radians) */
-/* Outputs :
- eccentricity : correction for Earth orbit eccentricity */
-/* The procedure "corr_distance" computes the correction for the variation of
- sun-earth distance from its mean value (also known as eccentricity). It is a
- fucntion of time, but a single (average) value per day is enough for
- practical calculations. Returns 0 if OK, 1 otherwise. */
+
+/**
+ * The procedure "corr_distance" computes the correction for the variation of
+ * sun-earth distance from its mean value (also known as eccentricity). It is a
+ * fucntion of time, but a single (average) value per day is enough for
+ * practical calculations.
+ *
+ * Source : Gruter (ed.) (1984)
+ *
+ * @param[in]  day_angle day angle in radians
+ * @param[out] eccentricity correction for Earth orbit eccentricity
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_corr_distance(double day_angle, double *eccentricity);
 
-/* Source : */
-/* Inputs :
- IOj : extraterrestrial solar irradiance normal to beam for day j; I0j=I0*fj
- theta : solar incidence angle or solar zenithal angle */
-/* Outputs :
- G0 : extraterrestrial global solar irradiation (in Wh/m2) */
-/* The procedure "G0_normal" delivers the extraterrestrial solar irradiance
- normal to beam for day j. Returns 0 if OK, 1 otherwise. */
+
+/**
+ * The procedure "G0_normal" delivers the extraterrestrial solar irradiance
+ * normal to beam for day j.
+ *
+ * @param[in]  IOj extraterrestrial solar irradiance normal to beam for day j;
+ *                 I0j=I0*fj
+ * @param[in]  theta solar incidence angle or solar zenithal angle
+ * @param[out] G0 extraterrestrial global solar irradiation in Wh/m2
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_G0_normal(double I0j, double theta, double *G0);
 
-/* Source : */
-/* Inputs :
- phi_g        : latitude of site (in radians, positive to North)
- eccentricity : correction for Earth orbit eccentricity
- delta        : solar declination angle (in radians)
- omega1       : solar hour angle at beginning of the period (in radians)
- omega2       : solar hour angle at end of the period (in radians) */
-/* Outputs :
- G0_12 : extraterrestrial solar irradiation (in Wh/m2) */
-/* The procedure "G0_general" delivers the extraterrestrial solar irradiation
- incident on an horizontal surface in the general case (in Wh/m2). Returns 0
- if OK, 1 otherwise */
+
+/**
+ * The procedure "G0_general" delivers the extraterrestrial solar irradiation
+ * incident on an horizontal surface in the general case in Wh/m2.
+ *
+ * @param[in]  phi_g latitude geographic of site in radians, positive to North
+ * @param[in]  eccentricity correction for Earth orbit eccentricity
+ * @param[in]  delta solar declination angle in radians
+ * @param[in]  omega1 solar hour angle at beginning of the period in radians
+ * @param[in]  omega2 solar hour angle at end of the period in radians
+ * @param[out] G0_12 : extraterrestrial solar irradiation in Wh/m2
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_G0_general(double phi_g, double eccentricity, double delta, double omega1,
         double omega2, double *G0_12);
 
-/* Source : */
-/* Inputs :
- phi_g        : latitude of site (in radians, positive to North)
- eccentricity : correction for Earth orbit eccentricity
- delta        : solar declination angle (in radians) */
-/* Outputs :
- G0d : daily extraterrestrial solar irradiation (in Wh/m2) */
-/* The procedure "G0_day" delivers the extraterrestrial solar irradiation
- incident on an horizontal surface in case of daily values (in Wh/m2), i.e.
- omega1 = omega_sr = -omega_ss  et omega2 = omega_ss. Returns 0 if OK, 1
- otherwise.
- REMARK: It is a special case of G0_general with the sunrise and sunset
- angles as integration limits. */
+
+/**
+ * The procedure "G0_day" delivers the extraterrestrial solar irradiation
+ * incident on an horizontal surface in case of daily values (in Wh/m2), i.e.
+ * omega1 = omega_sr = -omega_ss  et omega2 = omega_ss.
+ *
+ * REMARK: It is a special case of G0_general with the sunrise and sunset
+ * angles as integration limits.
+ *
+ * @param[in]  phi_g latitude geographic of site in radians, positive to North
+ * @param[in]  eccentricity correction for Earth orbit eccentricity
+ * @param[in]  delta solar declination angle in radians
+ * @param[out] G0d : daily extraterrestrial solar irradiation in Wh/m2
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_G0_day(double phi_g, double eccentricity, double delta, double *G0d);
 
-/* Source : */
-/* Inputs :
- phi_g        : latitude of site (in radians, positive to North)
- eccentricity : correction for Earth orbit eccentricity
- delta        : solar declination (in radians) */
-/* Outputs :
- G0h[1..24] : 24 hourly extraterrestrial solar irradiation (in Wh/m2) */
-/* The procedure "G0_hours_profile" delivers the extraterrestrial solar
- irradiation incident on an horizontal surface in case of hourly values, for
- the 24 integral hours in a given day (in Wh/m2), i.e. |omega1-omega2| =
- Pi/12. Returns 0 if OK, 1 otherwise */
+
+/**
+ * The procedure "G0_hours_profile" delivers the extraterrestrial solar
+ * irradiation incident on an horizontal surface in case of hourly values, for
+ * the 24 integral hours in a given day in Wh/m2, i.e. |omega1-omega2| =
+ * Pi/12.
+ *
+ * @param[in]  phi_g latitude geographic of site in radians, positive to North
+ * @param[in]  eccentricity correction for Earth orbit eccentricity
+ * @param[in]  delta solar declination angle in radians
+ * @param[out] G0h[24] 24 hourly extraterrestrial solar irradiation in Wh/m2
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_G0_hours_profile(double phi_g, double eccentricity, double delta,
         double *G0h);
 
-/* Source : */
-/* Inputs :
- phi_g        : latitude of site (in radians, positive to North)
- eccentricity : correction for Earth orbit eccentricity
- delta        : solar declination (in radians)
- t            : solar time i.e. LAT (0..24 decimal hours) */
-/* Outputs :
- G0h : hourly extraterrestrial solar irradiation (in Wh/m2) */
-/* The procedure "G0_hour" delivers the extraterrestrial solar irradiation
- incident on an horizontal surface for a specific hour in a given day (in
- Wh/m2), i.e. |omega1-omega2| = Pi/12. t is taken as the mid hour for
- computation of the hourly value of extraterrestrial solar irradiation.
- Returns 0 if OK, 1 otherwise */
+
+/**
+ * The procedure "G0_hour" delivers the extraterrestrial solar irradiation
+ * incident on an horizontal surface for a specific hour in a given day in
+ * Wh/m2, i.e. |omega1-omega2| = Pi/12. t is taken as the mid hour for
+ * computation of the hourly value of extraterrestrial solar irradiation.
+ *
+ * @param[in]  phi_g latitude geographic of site in radians, positive to North
+ * @param[in]  eccentricity correction for Earth orbit eccentricity
+ * @param[in]  delta solar declination angle in radians
+ * @param[in]  t solar time i.e. LAT (0..24 decimal hours)
+ * @param[out] G0h hourly extraterrestrial solar irradiation in Wh/m2
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_G0_hour(double phi_g, double eccentricity, double delta, double t,
         double *G0h);
 
-/***********************************************/
-/* MONTHLY AVERAGES OF SOLAR INPUTS PARAMETERS */
-/***********************************************/
+
+/***********************************************
+ * MONTHLY AVERAGES OF SOLAR INPUTS PARAMETERS *
+ ***********************************************/
+
+
 /* Source : */
 /* Inputs :
  month_number : month number (1..12)
