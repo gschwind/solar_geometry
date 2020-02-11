@@ -1918,18 +1918,46 @@ int sg1_intervals_omega_tilted_plane(double phi_g, double delta,
 
 }
 
-
-double sg1_ymd_to_julian_day(int year, int month, int day_of_month)
+/* return the julian day at 12h */
+int sg1_ymd_to_julian_day(int year, int month, int day_of_month)
 {
-       if (month <= 2) {
-               month = month + 12;
-               year = year - 1;
-       }
-       return 1721028.0 + day_of_month + floor((153 * month - 2) / 5) + 365 * year + floor(year / 4)
-                   - floor(year / 100) + floor(year / 400) + 12.0 / 24.0 - 0.5;
+	int k;
+	double Y, M, D, H;
+
+	Y = year;
+	M = month;
+	D = day_of_month;
+	if (M < 3) {
+		M += 12;
+		Y -= 1;
+	}
+
+	return 1721028.0 + D + floor((153.0 * M - 2.0) / 5.0) + 365.0 * Y
+			+ floor(Y / 4.0) - floor(Y / 100.0) + floor(Y / 400.0);
+
 }
 
+void sg1_julian_day_to_ymd(int jd, int & year, int & month, int & day_of_month)
+{
+	double H, L, N, I, J, K;
 
+	L = jd + 68569.0;
+	N = floor(4 * L / 146097.0);
+	L = L - floor((146097.0 * N + 3.0) / 4.0);
+	I = floor(4000 * (L + 1) / 1461001.0);
+	L = L - floor(1461.0 * I / 4.0) + 31.0;
+
+	J = floor(80.0 * L / 2447.0);
+	K = L - floor(2447.0 * J / 80.0);
+	L = floor(J / 11.0);
+	J = J + 2.0 - 12.0 * L;
+	I = 100.0 * (N - 49.0) + I + L;
+
+	year = I;
+	month = J;
+	day_of_month = K;
+
+}
 
 /***************************************/
 /* POSITION OF THE SUN IN THE SKY FAST */
