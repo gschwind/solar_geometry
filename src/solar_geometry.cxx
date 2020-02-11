@@ -135,7 +135,7 @@ int sg1_ymd_to_day_of_year(int year, int month, int day_of_month,
     if ((month < 1) || (month > 12))
         return 1;
 
-    /* technicaly this is not required */
+    /* Technically this is not required */
     if ((day_of_month < 1) || (day_of_month > 31))
         return 1;
 

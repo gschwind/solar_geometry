@@ -78,17 +78,17 @@ extern "C" {
  The basic trigonometric calculations on the position of the sun are
  carried out in LAT. */
 
-/*********************************************/
-/*                                           */
-/* G E O M E T R Y  O F  S O L A R  B E A M, */
-/*                                           */
-/* A  N E A R  P O I N T  S O U R C E        */
-/*                                           */
-/*********************************************/
+/*********************************************
+ *                                           *
+ * G E O M E T R Y  O F  S O L A R  B E A M, *
+ *                                           *
+ * A  N E A R  P O I N T  S O U R C E        *
+ *                                           *
+ *********************************************/
 
-/********************/
-/* BASIC PARAMETERS */
-/********************/
+/********************
+ * BASIC PARAMETERS *
+ ********************/
 
 /* Source : */
 /* Inputs :
@@ -103,50 +103,58 @@ extern "C" {
 int sg1_ymd_to_day_of_year(int year, int month, int day_of_month,
         int * const day_of_year);
 
-/* Source : MA in /u2/tm/src/srcgeo/julian_lib/ */
-/* Inputs :
- year : year number (4 digits)
- day_of_year  : integer day number or julian day (1..366)
- */
-/* Outputs :
- day_of_month : day of the month (1..31)
- month_number : month number (1..12) */
-/* The procedure "julian_to_date" does the reverse operation of the procedure
- "make_julian_day" i.e. computes the month number and the respective day of
- month from the information on year and integer day number. Returns 0 if OK,
- 1 otherwise. */
+
+/**
+ * The procedure "julian_to_date" does the reverse operation of the procedure
+ * "make_julian_day" i.e. computes the month number and the respective day of
+ * month from the information on year and integer day number.
+ *
+ * Source : M. Albuison
+ *
+ * @param[in]  year year number (4 digits)
+ * @param[in]  day_of_year integer day number of the year in [1,366]
+ * @param[out] month_number month number in [1,12]
+ * @param[out] day_of_month day of the month in [1,31]
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_day_of_year_to_ymd(int year, int day_of_year, int *month_number,
         int *day_of_month);
 
-/* Source : */
-/* Inputs :
- year  : year number (4 digits)
- month : month number (1..12) */
-/* Outputs :
- number_days_of_month : number of days in a month */
-/* The procedure "nbdays_month" gives the number of days in a month, useful for
- monthly calculations. Returns 0 if OK, 1 otherwise. */
+
+/**
+ * The procedure "nbdays_month" gives the number of days in a month, useful for
+ * monthly calculations. Returns 0 if OK, 1 otherwise.
+ *
+ * @param[in]  year year number (4 digits)
+ * @param[in]  month month number in [1,12]
+ * @param[out] number_days_of_month number of days in a month in [28,31]
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_nbdays_month(int year, int month, int *number_days_of_month);
 
-/* Source : */
-/* Inputs :
- month_number : month number (1..12)
- month_name   : name of month (3 characters only, jan..dec) */
-/* Outputs :
- month_name : name of the month abbreviated with 3 characters (jan..dec) */
-/* The procedure "number_to_name_month" converts the month number into the
- corresponding month name. Returns 0 if OK, 1 otherwise. */
+
+/**
+ * The procedure "number_to_name_month" converts the month number into the
+ * corresponding month name.
+ *
+ * @param[in]  month month number in [1,12]
+ * @param[out] month_name French name of month (3 characters only, jan..dec)
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_number_to_name_month(int month_number, char *month_name);
+
 
 /**
  * The procedure "Day_Angle" expresses the integer day number as an angle (in radians)
  * from 12:00 hours on the day 31st December. A year length of 365.2422 days is used.
  * Returns 0 if OK, 1 otherwise.
  *
- * @input day_of_year: the day number within the year in [1,366]
- * @return Day_Angle
+ * @param[in]  day_of_year the day number within the year in [1,366]
+ * @param[out] day_angle
+ * @return     Returns 0 if OK, 1 otherwise.
  **/
 int sg1_day_angle(int day_of_year, double *day_angle);
+
 
 /**
  * The procedure "declination_sun" computes the solar declination at noon in solar time
@@ -163,10 +171,10 @@ int sg1_day_angle(int day_of_year, double *day_angle);
  * Beckman, W.A., 1980. Solar Engineering of Thermal Processes. Wiley-Interscience, New
  * York.
  *
- * @input year: the year number usualy 4 digits
- * @input day_of_year: the number of the day within year
- * @input lambda: the lingitude of the cite in radians
- * @return declination of the sun in radians
+ * @param[in]  year the year number usualy 4 digits
+ * @param[in]  day_of_year the number of the day within year
+ * @param[in]  lambda the longitude of the cite in radians
+ * @return     declination of the sun in radians
  **/
 int sg1_declination_sun(int year, int day_of_year, double lambda,
         double *delta);
@@ -188,8 +196,8 @@ int sg1_declination_sun_month(int month_number, int type_use, double *delta_mont
  * The procedure "solar_hour_angle" supplies the solar hour angle (in radians). By
  * convention the hour angle is negative before noon and positive after noon.
  *
- * @input t: solar time i.e. LAT (0..24 decimal hours)
- * @output omega: solar hour angle in radians.
+ * @param[in]  t: solar time i.e. LAT (0..24 decimal hours)
+ * @param[out] omega: solar hour angle in radians.
  * @return 0 if everything is OK, otherwise return 1.
  **/
 int sg1_solar_hour_angle(double t, double *omega);
@@ -242,8 +250,8 @@ int sg1_sunrise_hour_angle(double phi_g, double delta, double gamma_riset,
         double *omega_sr, double *omega_ss);
 
 /**
- * @input phi: geocentric phi in radians (latitude)
- * @input delta: sun declination in radians
+ * @param[in]  phi: geocentric phi in radians (latitude)
+ * @param[in]  delta: sun declination in radians
  * @return omega at sunset
  **/
 double sg1_sunset(double phi, double delta);
@@ -658,8 +666,8 @@ void sg1_cos_incident_angle_fast(SG1_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omeg
  */
 
 /**
- * @input phi: geocentric phi in radians (latitude)
- * @input delta: sun declination in radians
+ * @param[in]  phi: geocentric phi in radians (latitude)
+ * @param[in]  delta: sun declination in radians
  * @return omega at sunset
  **/
 double sg1_sunset(double phi, double delta);
@@ -669,7 +677,7 @@ double sg1_sunset(double phi, double delta);
  * from 12:00 hours on the day 31st December. A year length of 365.2422 days is used.
  * Returns 0 if OK, 1 otherwise.
  *
- * @input day_of_year: the day number within the year in [1,366]
+ * @param[in]  day_of_year: the day number within the year in [1,366]
  * @return Day_Angle
  **/
 double sg1_day_angle(int day_of_year);
@@ -682,7 +690,7 @@ double sg1_day_angle(int day_of_year);
  *
  * Source : Gruter (ed.) (1984)
  *
- * @input day_angle: Day_Angle in radians
+ * @param[in]  day_angle: Day_Angle in radians
  * @return eccentricity
  **/
 double sg1_corr_distance(double day_angle);
@@ -691,8 +699,8 @@ double sg1_corr_distance(double day_angle);
  * The procedure "nbdays_month" gives the number of days in a month, useful for monthly
  * calculations.
  *
- * @input year: the year number usualy in 4 digits
- * @input month: the number of the month
+ * @param[in]  year: the year number usualy in 4 digits
+ * @param[in]  month: the number of the month
  **/
 int sg1_nbdays_month(int year, int month);
 
@@ -711,9 +719,9 @@ int sg1_nbdays_month(int year, int month);
  * Beckman, W.A., 1980. Solar Engineering of Thermal Processes. Wiley-Interscience, New
  * York.
  *
- * @input year: the year number usualy 4 digits
- * @input day_of_year: the number of the day within year
- * @input lambda: the lingitude of the cite in radians
+ * @param[in]  year: the year number usualy 4 digits
+ * @param[in]  day_of_year: the number of the day within year
+ * @param[in]  lambda: the lingitude of the cite in radians
  * @return declination of the sun in radians
  **/
 double sg1_declination_sun(int year, int day_of_year, double lambda);
@@ -722,7 +730,7 @@ double sg1_declination_sun(int year, int day_of_year, double lambda);
  * The procedure "solar_hour_angle" supplies the solar hour angle (in radians). By
  * convention the hour angle is negative before noon and positive after noon.
  *
- * @input t: solar time i.e. LAT (0..24 decimal hours)
+ * @param[in]  t: solar time i.e. LAT (0..24 decimal hours)
  * @return solar_hour_angle in radians.
  **/
 double sg1_solar_hour_angle(double t);
@@ -730,7 +738,7 @@ double sg1_solar_hour_angle(double t);
 /**
  * Supplies the solar time in hours in [0,24].
  *
- * @input omega: solar_hour_angle in radians
+ * @param[in]  omega: solar_hour_angle in radians
  * @return solar time i.e. LAT (0..24 decimal hours)
  **/
 double sg1_omega_to_LAT(double omega);
