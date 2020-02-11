@@ -1,0 +1,8 @@
+
+The library was writen by Lucien Wald and Olivier Bauer in February 1997 then
+Updated by Lucien Wald in 2004. Afterward Philippe Blanc added POSITION OF THE
+SUN IN THE SKY FAST.
+
+In 2019 Benoit Gschwind updated the library to C++ and updated the API.
+
+The Current maintener is Benoit Gschwind.
