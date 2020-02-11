@@ -666,6 +666,8 @@ void sg1_cos_incident_angle_fast(SG1_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omeg
  *
  */
 
+#include <tuple>
+
 /**
  * @param[in]  phi: geocentric phi in radians (latitude)
  * @param[in]  delta: sun declination in radians
@@ -748,11 +750,13 @@ double sg1_omega_to_LAT(double omega);
  * Compute year-month-day value from a given julian day
  *
  * @param[in]  jd the julian day
- * @param[out] year the year number usually 4 digits
- * @param[out] month the month number in [1,12]
- * @param[out] day_of_month the day number within the month in [1,31]
+ * @return year, month, day_of_month tuple.
+ *         year the year number usually 4 digits
+ *         month the month number in [1,12]
+ *         day_of_month the day number within the month in [1,31]
+ *         Tips: use std::tie(year, month, day)
  **/
-void sg1_julian_day_to_ymd(int jd, int & year, int & month, int & day_of_month);
+std::tuple<int,int,int> sg1_julian_day_to_ymd(int jd);
 
 #endif
 
