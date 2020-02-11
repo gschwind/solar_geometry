@@ -476,175 +476,190 @@ int sg1_G0_hour(double phi_g, double eccentricity, double delta, double t,
  ***********************************************/
 
 
-/* Source : */
-/* Inputs :
- month_number : month number (1..12)
- year_number  : year number (4 digits)
- phi_g        : latitude of site (in radians, positive to North)
- lambda       : longitude of site (in radians, positive to East)
- gamma_riset  : solar elevation near sunrise/sunset:
- - set to  0.0 for astronomical sunrise/sunset
- - set to -1.0 for refraction corrected sunrise/sunset. */
-/* Outputs :        monthly average of...
- day_angle_m    : ... day angle (in radians)
- delta_m        : ... solar declination angle (in radians)
- omega_ss_m     : ... sunset hour angle (in radians)
- S0_m           : ... astronomical daylength (in decimal hours)
- eccentricity_m : ... eccentricity
- G0d_m          : ... daily extraterrestrial irradiation (in Wh/m2)
- G0h_m[1..24]   : ... 24 hourly extraterrestrial solar irradiation (in Wh/m2)
- */
-/* The procedure "monthly_averages" computes directly the monthly average
- values of solar parameters : day angle (in radians), eccentricity,
- declination (in radians), sunset hour angle (in radians), daylength (in
- decimal hours), daily extraterrestrial irradiation (in Wh/m2) and the 24
- hourly extraterrestrial solar irradiation (in Wh/m2) . Returns 0 if OK, 1
- otherwise */
+/**
+ * The procedure "monthly_averages" computes directly the monthly average
+ * values of solar parameters : day angle (in radians), eccentricity,
+ * declination (in radians), sunset hour angle (in radians), daylength (in
+ * decimal hours), daily extraterrestrial irradiation (in Wh/m2) and the 24
+ * hourly extraterrestrial solar irradiation (in Wh/m2).
+ *
+ * @param[in]  month_number month number in [1,12]
+ * @param[in]  year_number year number ussually 4 digits
+ * @param[in]  phi_g latitude of site in radians, positive to North
+ * @param[in]  lambda longitude of site in radians, positive to East
+ * @param[in]  gamma_riset solar elevation near sunrise/sunset:
+ *               - set to  0.0 for astronomical sunrise/sunset
+ *               - set to -1.0 for refraction corrected sunrise/sunset.
+ * @param[out] day_angle_m day angle in radians
+ * @param[out] delta_m solar declination angle in radians
+ * @param[out] omega_ss_m sunset hour angle in radians
+ * @param[out] S0_m astronomical daylength in decimal hours
+ * @param[out] eccentricity_m eccentricity
+ * @param[out] G0d_m daily extraterrestrial irradiation in Wh/m2
+ * @param[out] G0h_m[24] 24 hourly extraterrestrial solar irradiation in Wh/m2
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_monthly_averages(int month_number, int year_number, double phi_g,
         double lambda, double gamma_riset, double *day_angle_m, double *delta_m,
         double *omega_ss_m, double *S0_m, double *eccentricity_m, double *G0d_m,
         double *G0h_m);
 
-/****************************************************/
-/* YEARLY AVERAGES OF MONTHLY SOLAR PARAMETERS      */
-/* (LONG TERM MEANS OF MONTHLY MEANS OF DAILY SUMS) */
-/****************************************************/
-/* Source : */
-/* Inputs :
- month_number : month number (1..12)
- year_start   : starting year of the considered period (4 digits)
- year_end     : ending year of the considered period (4 digits)
- phi_g        : latitude of site (in radians, positive to North)
- lambda       : longitude of site (in radians, positive to East)
- gamma_riset  : solar elevation near sunrise/sunset:
- - set to  0.0 for astronomical sunrise/sunset
- - set to -1.0 for refraction corrected sunrise/sunset. */
-/* Outputs :        yearly average of...
- day_angle_y    : ... day angle (in radians)
- delta_y        : ... solar declination angle (in radians)
- omega_ss_y     : ... sunset hour angle (in radians)
- S0_y           : ... astronomical daylength (in decimal hours)
- eccentricity_y : ... eccentricity
- G0d_y          : ... daily extraterrestrial irradiation (in Wh/m2)
- G0h_y[1..24]   : ... 24 hourly extraterrestrial solar irradiation (in Wh/m2)
- */
-/* The procedure "yearly_averages" computes directly the yearly average over a
- defined period of years of monthly average values of solar parameters : day
- angle (in radians), eccentricity, declination (in radians), sunset hour
- angle (in radians), daylength (in decimal hours), daily extraterrestrial
- irradiation (in Wh/m2) and 24 hourly extraterrestrial solar irradiation
- (in Wh/m2). Returns 0 if OK, 1 otherwise */
+
+/****************************************************
+ * YEARLY AVERAGES OF MONTHLY SOLAR PARAMETERS      *
+ * (LONG TERM MEANS OF MONTHLY MEANS OF DAILY SUMS) *
+ ****************************************************/
+
+
+/**
+ * The procedure "yearly_averages" computes directly the yearly average over a
+ * defined period of years of monthly average values of solar parameters : day
+ * angle in radians, eccentricity, declination in radians, sunset hour
+ * angle in radians, daylength in decimal hours, daily extraterrestrial
+ * irradiation in Wh/m2 and 24 hourly extraterrestrial solar irradiation
+ * in Wh/m2.
+ *
+ * @param[in]  month_number month number in [1,12]
+ * @param[in]  year_start starting year of the considered period ussually 4 digits
+ * @param[in]  year_end ending year of the considered period ussually 4 digits
+ * @param[in]  phi_g latitude of site in radians, positive to North
+ * @param[in]  lambda longitude of site in radians, positive to East
+ * @param[in]  gamma_riset solar elevation near sunrise/sunset:
+ *               - set to  0.0 for astronomical sunrise/sunset
+ *               - set to -1.0 for refraction corrected sunrise/sunset.
+ * @param[out] day_angle_y day angle in radians
+ * @param[out] delta_y solar declination angle in radians
+ * @param[out] omega_ss_y sunset hour angle in radians
+ * @param[out] S0_y astronomical daylength in decimal hours
+ * @param[out] eccentricity_y eccentricity
+ * @param[out] G0d_y daily extraterrestrial irradiation in Wh/m2
+ * @param[out] G0h_y[24] 24 hourly extraterrestrial solar irradiation in Wh/m2
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_yearly_averages(int month_number, int year_start, int year_end,
         double phi_g, double lambda, double gamma_riset, double *day_angle_y,
         double *delta_y, double *omega_ss_y, double *S0_y,
         double *eccentricity_y, double *G0d_y, double *G0h_y);
 
-/*********************************************/
-/* SOLAR INPUTS PARAMETERS FOR A CERTAIN DAY */
-/*********************************************/
-/* Source : */
-/* Inputs :
- day_of_month : day of the month (1..31)
- month_number : month number (1..12)
- year_number  : year number (4 digits)
- phi_g        : latitude of site (in radians, positive to North)
- lambda       : longitude of site (in radians, positive to East)
- gamma_riset  : solar elevation near sunrise/sunset:
- - set to  0.0 for astronomical sunrise/sunset
- - set to -1.0 for refraction corrected sunrise/sunset. */
-/* Outputs :
- day_angle    : day angle (in radians)
- delta        : solar declination angle (in radians)
- omega_ss     : sunset hour angle (in radians)
- S0           : astronomical daylength (in decimal hours)
- eccentricity : eccentricity
- G0d          : daily extraterrestrial irradiation (in Wh/m2)
- G0h[1..24]   : 24 hourly extraterrestrial solar irradiation (in Wh/m2)
- */
-/* The procedure "solar_parameters_day" computes the solar geometry related
- values for a certain day : day angle (in radians), eccentricity,
- declination (in radians), sunset hour angle (in radians), daylength (in
- decimal hours), daily extraterrestrial irradiation (in Wh/m2) and the 24
- hourly extraterrestrial solar irradiation (in Wh/m2). Returns 0 if OK, 1
- otherwise.
- REMARK: gamma_riset set to 0.0 in the original procedure by Aguiar. */
+
+/*********************************************
+ * SOLAR INPUTS PARAMETERS FOR A CERTAIN DAY *
+ *********************************************/
+
+
+/**
+ * The procedure "solar_parameters_day" computes the solar geometry related
+ * values for a certain day : day angle (in radians), eccentricity,
+ * declination (in radians), sunset hour angle (in radians), daylength (in
+ * decimal hours), daily extraterrestrial irradiation (in Wh/m2) and the 24
+ * hourly extraterrestrial solar irradiation (in Wh/m2).
+ *
+ * REMARK: gamma_riset set to 0.0 in the original procedure by Aguiar.
+ *
+ * @param[in]  day_of_month day of the month in [1,31]
+ * @param[in]  month_number month number in [1,12]
+ * @param[in]  year_number year number  ussually 4 digits
+ * @param[in]  phi_g latitude of site in radians, positive to North
+ * @param[in]  lambda longitude of site in radians, positive to East
+ * @param[in]  gamma_riset solar elevation near sunrise/sunset:
+ *               - set to  0.0 for astronomical sunrise/sunset
+ *               - set to -1.0 for refraction corrected sunrise/sunset.
+ * @param[out] day_angle day angle in radians
+ * @param[out] delta solar declination angle in radians
+ * @param[out] omega_ss sunset hour angle in radians
+ * @param[out] S0 astronomical daylength in decimal hours
+ * @param[out] eccentricity eccentricity
+ * @param[out] G0d daily extraterrestrial irradiation in Wh/m2
+ * @param[out] G0h[24] 24 hourly extraterrestrial solar irradiation in Wh/m2
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_solar_parameters_day(int day_of_month, int month_number, int year_number,
         double phi_g, double lambda, double gamma_riset, double *day_angle,
         double *delta, double *omega_ss, double *S0, double *eccentricity,
         double *G0d, double *G0h);
 
-/******************************************************************/
-/* SOLAR INPUTS PARAMETERS FOR MONTHLY AVERAGE IRRADIATION MODELS */
-/******************************************************************/
-/* Source : */
-/* Inputs :
- month_number : month number (1..12)
- phi_g        : latitude of site (in radians, positive to North)
- gamma_riset  : solar elevation near sunrise/sunset:
- - set to  0.0 for astronomical sunrise/sunset
- - set to -1.0 for refraction corrected sunrise/sunset. */
-/* Outputs :        average ... for the given month
- day_angle_avg    : day angle (in radians)
- delta_avg        : solar declination angle (in radians)
- omega_ss_avg     : sunset hour angle (in radians)
- S0_avg           : astronomical daylength (in decimal hours)
- eccentricity_avg : eccentricity
- G0d_avg          : daily extraterrestrial irradiation (in Wh/m2)
- G0h_avg[1..24]   : 24 hourly extraterrestrial solar irradiation (in Wh/m2)
- */
-/* The procedure "solar_parameters_acg" computes the solar geometry related
- values for monthly average irradiation models : day angle (in radians),
- eccentricity, declination (in radians), sunset hour angle (in radians),
- daylength (in decimal hours), daily extraterrestrial irradiation (in Wh/m2)
- and the 24 hourly extraterrestrial solar irradiation (in Wh/m2). Returns 0
- if OK, 1 otherwise.
- REMARK: gamma_riset set to 0.0 in the original procedure by Aguiar. */
+
+/******************************************************************
+ * SOLAR INPUTS PARAMETERS FOR MONTHLY AVERAGE IRRADIATION MODELS *
+ ******************************************************************/
+
+
+/**
+ * The procedure "solar_parameters_avg" computes the solar geometry related
+ * values for monthly average irradiation models : day angle (in radians),
+ * eccentricity, declination (in radians), sunset hour angle (in radians),
+ * daylength (in decimal hours), daily extraterrestrial irradiation (in Wh/m2)
+ * and the 24 hourly extraterrestrial solar irradiation (in Wh/m2).
+ *
+ * REMARK: gamma_riset set to 0.0 in the original procedure by Aguiar.
+ *
+ * @param[in]  month_number month number in [1,12]
+ * @param[in]  phi_g latitude of site in radians, positive to North
+ * @param[in]  gamma_riset solar elevation near sunrise/sunset:
+ *               - set to  0.0 for astronomical sunrise/sunset
+ *               - set to -1.0 for refraction corrected sunrise/sunset.
+ * @param[out] day_angle_avg day angle in radians
+ * @param[out] delta_avg solar declination angle in radians
+ * @param[out] omega_ss_avg sunset hour angle in radians
+ * @param[out] S0_avg astronomical daylength in decimal hours
+ * @param[out] eccentricity_avg eccentricity
+ * @param[out] G0d_avg daily extraterrestrial irradiation in Wh/m2
+ * @param[out] G0h_avg[24] 24 hourly extraterrestrial solar irradiation in Wh/m2
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_solar_parameters_avg(int month_number, double phi_g, double gamma_riset,
         double *day_angle_avg, double *delta_avg, double *omega_ss_avg,
         double *S0_avg, double *eccentricity_avg, double *G0d_avg,
         double *G0h_avg);
 
-/******************************************************************/
-/* SOLAR INPUTS PARAMETERS FOR MONTHLY MAXIMUM IRRADIATION MODELS */
-/******************************************************************/
-/* Source : */
-/* Inputs :
- month_number : month number (1..12)
- phi_g        : latitude of site (in radians, positive to North)
- gamma_riset  : solar elevation near sunrise/sunset:
- - set to  0.0 for astronomical sunrise/sunset
- - set to -1.0 for refraction corrected sunrise/sunset. */
-/* Outputs :        average ... for the given month
- day_angle_max    : day angle (in radians)
- delta_max        : solar declination angle (in radians)
- omega_ss_max     : sunset hour angle (in radians)
- S0_max           : astronomical daylength (in decimal hours)
- eccentricity_max : eccentricity
- G0d_max          : daily extraterrestrial irradiation (in Wh/m2)
- G0h_max[1..24]   : 24 hourly extraterrestrial solar irradiation (in Wh/m2)
- */
-/* The procedure "solar_parameters_acg" computes the solar geometry related
- values for monthly average irradiation models : day angle (in radians),
- eccentricity, declination (in radians), sunset hour angle (in radians),
- daylength (in decimal hours), daily extraterrestrial irradiation (in Wh/m2)
- and the 24 hourly extraterrestrial solar irradiation (in Wh/m2). Returns 0
- if OK, 1 otherwise.
- REMARK: gamma_riset set to 0.0 in the original procedure by Aguiar. */
+
+/******************************************************************
+ * SOLAR INPUTS PARAMETERS FOR MONTHLY MAXIMUM IRRADIATION MODELS *
+ ******************************************************************/
+
+
+/**
+ * The procedure "solar_parameters_max" computes the solar geometry related
+ * values for monthly average irradiation models : day angle (in radians),
+ * eccentricity, declination (in radians), sunset hour angle (in radians),
+ * daylength (in decimal hours), daily extraterrestrial irradiation (in Wh/m2)
+ * and the 24 hourly extraterrestrial solar irradiation (in Wh/m2).
+ *
+ * REMARK: gamma_riset set to 0.0 in the original procedure by Aguiar.
+ *
+ * @param[in]  month_number month number in [1,12]
+ * @param[in]  phi_g latitude of site in radians, positive to North
+ * @param[in]  gamma_riset solar elevation near sunrise/sunset:
+ *               - set to  0.0 for astronomical sunrise/sunset
+ *               - set to -1.0 for refraction corrected sunrise/sunset.
+ * @param[out] day_angle_max day angle in radians
+ * @param[out] delta_max solar declination angle in radians
+ * @param[out] omega_ss_max sunset hour angle in radians
+ * @param[out] S0_max astronomical daylength in decimal hours
+ * @param[out] eccentricity_max eccentricity
+ * @param[out] G0d_max daily extraterrestrial irradiation in Wh/m2
+ * @param[out] G0h_max[24] 24 hourly extraterrestrial solar irradiation in Wh/m2
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
 int sg1_solar_parameters_max(int month_number, double phi_g, double gamma_riset,
         double *day_angle_max, double *delta_max, double *omega_ss_max,
         double *S0_max, double *eccentricity_max, double *G0d_max,
         double *G0h_max);
 
+/**
+ * TODO: documentation
+ **/
 int sg1_intervals_omega_tilted_plane(double phi_g, double delta, double omega_ss,
         double beta, double alpha, double *v_om, int *p_nb);
 
 /**
  * Convert y-m-d date to julian day (number of day from -4713
- * @param year
- * @param month
- * @param day_of_month
- * @return julian day a 12h
- */
+ *
+ * @param[in]  year
+ * @param[in]  month
+ * @param[in]  day_of_month
+ * @return     julian day a 12h
+ **/
 int sg1_ymd_to_julian_day(int year, int month, int day_of_month);
 
 
@@ -676,8 +691,8 @@ typedef struct sg1_sgf {
 
     /* For computation of the cosinus of the incident angle */
 
-    double alpha;
-    double beta;
+    double alpha; //< tilted plan azimuth
+    double beta; //< tilted plan tilt, or inclination
 
     double cos_alpha;
     double sin_alpha;
@@ -722,35 +737,37 @@ void sg1_cos_incident_angle_fast(SG1_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omeg
 
 #include <tuple>
 
+
 /**
- * @param[in]  phi: geocentric phi in radians (latitude)
- * @param[in]  delta: sun declination in radians
- * @return omega at sunset
+ * @param[in]  phi geocentric phi in radians (latitude)
+ * @param[in]  delta sun declination in radians
+ * @return     omega at sunset
  **/
 double sg1_sunset(double phi, double delta);
+
 
 /**
  * The procedure "Day_Angle" expresses the integer day number as an angle (in radians)
  * from 12:00 hours on the day 31st December. A year length of 365.2422 days is used.
- * Returns 0 if OK, 1 otherwise.
  *
- * @param[in]  day_of_year: the day number within the year in [1,366]
+ * @param[in]  day_of_year the day number within the year in [1,366]
  * @return Day_Angle
  **/
 double sg1_day_angle(int day_of_year);
 
+
 /**
  * The procedure "corr_distance" computes the correction for the variation of sun-earth
  * distance from its mean value (also known as eccentricity). It is a fucntion of time,
- * but a single (average) value per day is enough for practical calculations. Returns 0
- * if OK, 1 otherwise.
+ * but a single (average) value per day is enough for practical calculations.
  *
  * Source : Gruter (ed.) (1984)
  *
- * @param[in]  day_angle: Day_Angle in radians
- * @return eccentricity
+ * @param[in]  day_angle Day_Angle in radians
+ * @return     eccentricity
  **/
 double sg1_corr_distance(double day_angle);
+
 
 /**
  * The procedure "nbdays_month" gives the number of days in a month, useful for monthly
@@ -761,13 +778,13 @@ double sg1_corr_distance(double day_angle);
  **/
 int sg1_nbdays_month(int year, int month);
 
+
 /**
  * The procedure "declination_sun" computes the solar declination at noon in solar time
  * (in radians). A single (average) value per day -at noon- is adequate for pratical
  * calculations. The noon declination depends on longitude, as noon occurs earlier if
  * longitude is East of Greenwi²ch, and later if it is West. The chosen algorithm uses
  * 1957 as base year; it is basically a truncated Fourier series with six harmonics.
- * Returns 0 if OK, 1 otherwise.
  *
  * Sources : Bourges, B., 1985. Improvement in solar declination computation. Solar
  * Energy, 35 (4), 367-369. Carvalho, M.J. and Bourges, B., 1986. Program Eufrad 2.0 -
@@ -776,39 +793,42 @@ int sg1_nbdays_month(int year, int month);
  * Beckman, W.A., 1980. Solar Engineering of Thermal Processes. Wiley-Interscience, New
  * York.
  *
- * @param[in]  year: the year number usualy 4 digits
- * @param[in]  day_of_year: the number of the day within year
- * @param[in]  lambda: the lingitude of the cite in radians
- * @return declination of the sun in radians
+ * @param[in]  year the year number usualy 4 digits
+ * @param[in]  day_of_year the number of the day within year
+ * @param[in]  lambda the lingitude of the cite in radians
+ * @return     declination of the sun in radians
  **/
 double sg1_declination_sun(int year, int day_of_year, double lambda);
+
 
 /**
  * The procedure "solar_hour_angle" supplies the solar hour angle (in radians). By
  * convention the hour angle is negative before noon and positive after noon.
  *
- * @param[in]  t: solar time i.e. LAT (0..24 decimal hours)
- * @return solar_hour_angle in radians.
+ * @param[in]  t solar time i.e. LAT (0..24 decimal hours)
+ * @return     solar_hour_angle in radians.
  **/
 double sg1_solar_hour_angle(double t);
+
 
 /**
  * Supplies the solar time in hours in [0,24].
  *
- * @param[in]  omega: solar_hour_angle in radians
- * @return solar time i.e. LAT (0..24 decimal hours)
+ * @param[in]  omega solar_hour_angle in radians
+ * @return     solar time i.e. LAT (0..24 decimal hours)
  **/
 double sg1_omega_to_LAT(double omega);
+
 
 /**
  * Compute year-month-day value from a given julian day
  *
  * @param[in]  jd the julian day
- * @return year, month, day_of_month tuple.
- *         year the year number usually 4 digits
- *         month the month number in [1,12]
- *         day_of_month the day number within the month in [1,31]
- *         Tips: use std::tie(year, month, day)
+ * @return     year, month, day_of_month tuple.
+ *             year the year number usually 4 digits
+ *             month the month number in [1,12]
+ *             day_of_month the day number within the month in [1,31]
+ *             Tips: use std::tie(year, month, day)
  **/
 std::tuple<int,int,int> sg1_julian_day_to_ymd(int jd);
 
