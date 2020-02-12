@@ -739,19 +739,21 @@ static constexpr double const SG1_PI_LOW_PRECISION = 3.141592654;
 static constexpr double const SG1_I0 = 1367.0; /* solar constant in W/m2 */
 static constexpr double const SG1_DAY_LENGTH = 24.0; /* average value for the length of the day in decimal hours */
 
+namespace sg1 {
+
 /**
  * @param[in]  phi geocentric phi in radians (latitude)
  * @param[in]  delta sun declination in radians
  * @return     omega at sunset
  **/
-double sg1_sunset(double phi, double delta);
+double sunset(double phi, double delta);
 
 /**
  * @param[in]  phi geocentric phi in radians (latitude)
  * @param[in]  delta sun declination in radians
  * @return     gamma sun
  **/
-double sg1_gamma_sun(double phi, double delta, double omega);
+double gamma_sun(double phi, double delta, double omega);
 
 
 /**
@@ -761,7 +763,7 @@ double sg1_gamma_sun(double phi, double delta, double omega);
  * @param[in]  day_of_year the day number within the year in [1,366]
  * @return Day_Angle
  **/
-double sg1_day_angle(int day_of_year);
+double day_angle(int day_of_year);
 
 
 /**
@@ -774,7 +776,7 @@ double sg1_day_angle(int day_of_year);
  * @param[in]  day_angle Day_Angle in radians
  * @return     eccentricity
  **/
-double sg1_corr_distance(double day_angle);
+double corr_distance(double day_angle);
 
 
 /**
@@ -784,7 +786,7 @@ double sg1_corr_distance(double day_angle);
  * @param[in]  year: the year number usualy in 4 digits
  * @param[in]  month: the number of the month
  **/
-int sg1_nbdays_month(int year, int month);
+int nbdays_month(int year, int month);
 
 
 /**
@@ -806,7 +808,7 @@ int sg1_nbdays_month(int year, int month);
  * @param[in]  lambda the lingitude of the cite in radians
  * @return     declination of the sun in radians
  **/
-double sg1_declination_sun(int year, int day_of_year, double lambda);
+double declination_sun(int year, int day_of_year, double lambda);
 
 
 /**
@@ -816,7 +818,7 @@ double sg1_declination_sun(int year, int day_of_year, double lambda);
  * @param[in]  t solar time i.e. LAT (0..24 decimal hours)
  * @return     solar_hour_angle in radians.
  **/
-double sg1_solar_hour_angle(double t);
+double solar_hour_angle(double t);
 
 
 /**
@@ -825,7 +827,7 @@ double sg1_solar_hour_angle(double t);
  * @param[in]  omega solar_hour_angle in radians
  * @return     solar time i.e. LAT (0..24 decimal hours)
  **/
-double sg1_omega_to_LAT(double omega);
+double omega_to_LAT(double omega);
 
 
 /**
@@ -838,7 +840,9 @@ double sg1_omega_to_LAT(double omega);
  *             day_of_month the day number within the month in [1,31]
  *             Tips: use std::tie(year, month, day)
  **/
-std::tuple<int,int,int> sg1_julian_day_to_ymd(int jd);
+std::tuple<int,int,int> julian_day_to_ymd(int jd);
+
+} // namespace sg1
 
 #endif // C++ API
 
