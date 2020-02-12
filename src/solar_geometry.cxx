@@ -183,6 +183,18 @@ inline static double compute_ET(double day_angle)
     return a1 * sin (day_angle - a3) + a2 * sin (2.0 * day_angle + a4);
 }
 
+
+double azimuth_sun(double phi, double delta, double omega, double gamma)
+{
+    double cos_as = sin(phi) * sin(gamma) - sin(delta);
+    double sin_as = cos(delta) * sin(omega) * cos(phi);
+    /* Check hemisphere and swap the azimuth if needed */
+    if (phi < 0.0)
+        cos_as = -cos_as;
+    return atan2(sin_as, cos_as);
+}
+
+
 } // namespace sg1
 
 int sg1_ymd_to_day_of_year(int year, int month, int day_of_month,
@@ -473,17 +485,6 @@ int sg1_elevation_zenith_sun(double phi_g, double delta, double omega,
     *theta = (sg1::PI_LOW_PRECISION / 2.0) - *gamma;
 
     return 0;
-}
-
-
-double sg1_azimuth_sun(double phi, double delta, double omega, double gamma)
-{
-    double cos_as = sin(phi) * sin(gamma) - sin(delta);
-    double sin_as = cos(delta) * sin(omega) * cos(phi);
-    /* Check hemisphere and swap the azimuth if needed */
-    if (phi < 0.0)
-        cos_as = -cos_as;
-    return atan2(sin_as, cos_as);
 }
 
 
