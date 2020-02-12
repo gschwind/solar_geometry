@@ -173,6 +173,16 @@ double corr_distance(double day_angle)
     return 1.0 + 0.03344 * cos(day_angle - a);
 }
 
+
+inline static double compute_ET(double day_angle)
+{
+    double const a1 = -0.128;
+    double const a2 = -0.165;
+    double const a3 = sg1::RAD_LOW_PRECISSION(2.80);
+    double const a4 = sg1::RAD_LOW_PRECISSION(19.70);
+    return a1 * sin (day_angle - a3) + a2 * sin (2.0 * day_angle + a4);
+}
+
 } // namespace sg1
 
 int sg1_ymd_to_day_of_year(int year, int month, int day_of_month,
@@ -404,16 +414,6 @@ int sg1_timerise_daylength(double omega_sr, double omega_ss, double *t_sr,
 }
 
 
-inline static double sg1_compute_ET(double day_angle)
-{
-    double const a1 = -0.128;
-    double const a2 = -0.165;
-    double const a3 = sg1::RAD_LOW_PRECISSION(2.80);
-    double const a4 = sg1::RAD_LOW_PRECISSION(19.70);
-    return a1 * sin (day_angle - a3) + a2 * sin (2.0 * day_angle + a4);
-}
-
-
 int sg1_LMT_to_LAT(double day_angle, double lambda, double lambda_ref,
         int summer_corr, double *dt)
 {
@@ -423,7 +423,7 @@ int sg1_LMT_to_LAT(double day_angle, double lambda, double lambda_ref,
         return 1;
     if (fabs(lambda_ref) > sg1::PI_LOW_PRECISION)
         return 1;
-    double ET = sg1_compute_ET(day_angle);
+    double ET = sg1::compute_ET(day_angle);
     *dt = ET + ((lambda - lambda_ref) * 12.0 / sg1::PI_LOW_PRECISION)
             - summer_corr;
     return 0;
@@ -439,7 +439,7 @@ int sg1_UT_to_LAT(double UT, double day_angle, double lambda, double *LAT)
     if (fabs(lambda) > sg1::PI_LOW_PRECISION)
         return 1;
 
-    double ET = sg1_compute_ET(day_angle);
+    double ET = sg1::compute_ET(day_angle);
     *LAT = UT + ET + (lambda * 12.0 / sg1::PI_LOW_PRECISION);
     if (*LAT < 0.0)
         *LAT += 24.0;
