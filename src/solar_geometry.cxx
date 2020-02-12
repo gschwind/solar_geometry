@@ -71,6 +71,107 @@ inline static int is_leap_year(int const year) {
     return (((year % 4) == 0) && ((year % 100) != 0)) || ((year % 400) == 0);
 }
 
+namespace sg1 {
+
+int nbdays_month(int year, int month)
+{
+    int number_days_of_month = SG1_DAYS_PER_MONTH[month - 1];
+    if (is_leap_year(year)&&(month==2))
+        number_days_of_month += 1;
+    return number_days_of_month;
+}
+
+
+double day_angle(int day_of_year) {
+    return day_of_year * 2.0 * sg1::PI_LOW_PRECISION / 365.2422;
+}
+
+
+double declination_sun(int year, int day_of_year, double lambda)
+{
+    double const b1 = 0.0064979;
+    double const b2 = 0.4059059;
+    double const b3 = 0.0020054;
+    double const b4 = -0.0029880;
+    double const b5 = -0.0132296;
+    double const b6 = 0.0063809;
+    double const b7 = 0.0003508;
+
+    /*
+     * n0 : spring-equinox time expressed in days from the beginning of the year i.e.
+     * the time in decimal days elapsing from 00:00 hours Jan 1st to the spring equinox
+     * at Greenwich in a given year
+     * t1 : time in days, from the spring equinox
+     * 0.5 represents the decimal day number at noon on Jan 1st at Greenwich
+     */
+    double n0 = 78.8946 + 0.2422 * (year - 1957) - floor(0.25 * (year - 1957));
+    double t1 = -0.5 - lambda / (2 * sg1::PI_LOW_PRECISION) - n0;
+    double w0 = 2 * sg1::PI_LOW_PRECISION / 365.2422;
+    double wt = w0 * (day_of_year + t1);
+
+    return b1 + b2 * sin(wt) + b3 * sin(2 * wt) + b4 * sin(3 * wt)
+            + b5 * cos(wt) + b6 * cos(2 * wt) + b7 * cos(3 * wt);
+}
+
+
+double solar_hour_angle(double t)
+{
+    return (t - 12.0) * sg1::PI_LOW_PRECISION / 12.0;
+}
+
+
+/**
+ * Supplies the solar time in hours in [0,24].
+ *
+ * @input omega: solar_hour_angle in radians
+ * @return solar time i.e. LAT (0..24 decimal hours)
+ **/
+double omega_to_LAT(double omega)
+{
+    return 12.0 + omega * 12.0 / sg1::PI_LOW_PRECISION;
+}
+
+
+double sunset(double phi, double delta)
+{
+  return acos(- tan(phi) * tan(delta));
+}
+
+
+std::tuple<int,int,int> julian_day_to_ymd(int jd)
+{
+	double H, L, N, I, J, K;
+
+	L = jd + 68569.0;
+	N = floor(4 * L / 146097.0);
+	L = L - floor((146097.0 * N + 3.0) / 4.0);
+	I = floor(4000 * (L + 1) / 1461001.0);
+	L = L - floor(1461.0 * I / 4.0) + 31.0;
+
+	J = floor(80.0 * L / 2447.0);
+	K = L - floor(2447.0 * J / 80.0);
+	L = floor(J / 11.0);
+	J = J + 2.0 - 12.0 * L;
+	I = 100.0 * (N - 49.0) + I + L;
+
+	return std::tuple<int,int,int>(I,J,K);
+
+}
+
+
+double gamma_sun(double phi, double delta, double omega)
+{
+    return asin (sin (phi) * sin (delta) + cos (phi) * cos (delta) * cos (omega));
+}
+
+
+double corr_distance(double day_angle)
+{
+    double const a = RAD_LOW_PRECISSION(2.80);
+    return 1.0 + 0.03344 * cos(day_angle - a);
+}
+
+} // namespace sg1
 
 int sg1_ymd_to_day_of_year(int year, int month, int day_of_month,
         int * const day_of_year)
@@ -121,18 +222,6 @@ int sg1_day_of_year_to_ymd(int year, int day_of_year, int *month,
 
 }
 
-namespace sg1 {
-
-int nbdays_month(int year, int month)
-{
-    int number_days_of_month = SG1_DAYS_PER_MONTH[month - 1];
-    if (is_leap_year(year)&&(month==2))
-        number_days_of_month += 1;
-    return number_days_of_month;
-}
-
-}
-
 int sg1_nbdays_month(int year, int month, int *number_days_of_month)
 {
     if (year <= 0)
@@ -144,13 +233,6 @@ int sg1_nbdays_month(int year, int month, int *number_days_of_month)
     return 0;
 }
 
-namespace sg1 {
-
-double day_angle(int day_of_year) {
-    return day_of_year * 2.0 * sg1::PI_LOW_PRECISION / 365.2422;
-}
-
-}
 
 int sg1_day_angle(int day_of_year, double *day_angle)
 {
@@ -160,35 +242,6 @@ int sg1_day_angle(int day_of_year, double *day_angle)
     return 0;
 }
 
-namespace sg1 {
-
-double declination_sun(int year, int day_of_year, double lambda)
-{
-    double const b1 = 0.0064979;
-    double const b2 = 0.4059059;
-    double const b3 = 0.0020054;
-    double const b4 = -0.0029880;
-    double const b5 = -0.0132296;
-    double const b6 = 0.0063809;
-    double const b7 = 0.0003508;
-
-    /*
-     * n0 : spring-equinox time expressed in days from the beginning of the year i.e.
-     * the time in decimal days elapsing from 00:00 hours Jan 1st to the spring equinox
-     * at Greenwich in a given year
-     * t1 : time in days, from the spring equinox
-     * 0.5 represents the decimal day number at noon on Jan 1st at Greenwich
-     */
-    double n0 = 78.8946 + 0.2422 * (year - 1957) - floor(0.25 * (year - 1957));
-    double t1 = -0.5 - lambda / (2 * sg1::PI_LOW_PRECISION) - n0;
-    double w0 = 2 * sg1::PI_LOW_PRECISION / 365.2422;
-    double wt = w0 * (day_of_year + t1);
-
-    return b1 + b2 * sin(wt) + b3 * sin(2 * wt) + b4 * sin(3 * wt)
-            + b5 * cos(wt) + b6 * cos(2 * wt) + b7 * cos(3 * wt);
-}
-
-}
 
 int sg1_declination_sun(int year, int day_of_year, double lambda,
         double *delta)
@@ -234,29 +287,7 @@ int sg1_declination_sun_month(int month_number, int type_use,
   return (ier);
 }
 
-namespace sg1 {
 
-double solar_hour_angle(double t)
-{
-    return (t - 12.0) * sg1::PI_LOW_PRECISION / 12.0;
-}
-
-}
-
-namespace sg1 {
-
-/**
- * Supplies the solar time in hours in [0,24].
- *
- * @input omega: solar_hour_angle in radians
- * @return solar time i.e. LAT (0..24 decimal hours)
- **/
-double omega_to_LAT(double omega)
-{
-    return 12.0 + omega * 12.0 / sg1::PI_LOW_PRECISION;
-}
-
-}
 
 int sg1_solar_hour_angle(double t, double *omega)
 {
@@ -355,14 +386,7 @@ int sg1_sunrise_hour_angle(double phi_g, double delta, double gamma_riset,
   return (ier);
 }
 
-namespace sg1 {
 
-double sunset(double phi, double delta)
-{
-  return acos(- tan(phi) * tan(delta));
-}
-
-}
 
 int sg1_timerise_daylength(double omega_sr, double omega_ss, double *t_sr,
         double *t_ss, double *S0)
@@ -422,14 +446,7 @@ int sg1_UT_to_LAT(double UT, double day_angle, double lambda, double *LAT)
     return 0;
 }
 
-namespace sg1 {
 
-double gamma_sun(double phi, double delta, double omega)
-{
-    return asin (sin (phi) * sin (delta) + cos (phi) * cos (delta) * cos (omega));
-}
-
-}
 
 
 int sg1_elevation_zenith_sun(double phi_g, double delta, double omega,
@@ -498,16 +515,6 @@ int sg1_azimuth_sun(double phi_g, double delta, double omega, double gamma,
     *alpha = -x;
 
   return (ier);
-}
-
-namespace sg1 {
-
-double corr_distance(double day_angle)
-{
-    double const a = RAD_LOW_PRECISSION(2.80);
-    return 1.0 + 0.03344 * cos(day_angle - a);
-}
-
 }
 
 int sg1_corr_distance(double day_angle, double *eccentricity)
@@ -1359,29 +1366,7 @@ void sg1_julian_day_to_ymd(int jd, int * year, int * month, int * day_of_month)
 	std::tie(*year,*month,*day_of_month) = sg1::julian_day_to_ymd(jd);
 }
 
-namespace sg1 {
 
-std::tuple<int,int,int> julian_day_to_ymd(int jd)
-{
-	double H, L, N, I, J, K;
-
-	L = jd + 68569.0;
-	N = floor(4 * L / 146097.0);
-	L = L - floor((146097.0 * N + 3.0) / 4.0);
-	I = floor(4000 * (L + 1) / 1461001.0);
-	L = L - floor(1461.0 * I / 4.0) + 31.0;
-
-	J = floor(80.0 * L / 2447.0);
-	K = L - floor(2447.0 * J / 80.0);
-	L = floor(J / 11.0);
-	J = J + 2.0 - 12.0 * L;
-	I = 100.0 * (N - 49.0) + I + L;
-
-	return std::tuple<int,int,int>(I,J,K);
-
-}
-
-}
 
 void sg1_init_solar_geometry_fast(SG1_SOLAR_GEOMETRY_FAST *p_sgf, double phi_g, double delta)
 {
