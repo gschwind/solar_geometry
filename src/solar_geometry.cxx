@@ -38,7 +38,7 @@
 #include <cmath>
 #include <algorithm>
 
-#define SG1_PI_2     1.57079632679489661923
+static constexpr double const SG1_PI_2 = 1.57079632679489661923;
 
 /* convert degree to radian, using SG1_PI_LOW_PRECISION */
 inline static constexpr double RAD_LOW_PRECISSION(double a)
