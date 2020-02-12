@@ -38,6 +38,10 @@
 #include <cmath>
 #include <algorithm>
 
+
+
+namespace sg1 {
+
 /* convert degree to radian, using SG1_PI_LOW_PRECISION */
 inline static constexpr double RAD_LOW_PRECISSION(double a)
 {
@@ -51,31 +55,29 @@ inline static constexpr double DEG_LOW_PRECISSION(double a)
 }
 
 /* the last value is used for sg1_day_of_year_to_ymd */
-static int const SG1_MONTHLY_DAY_OF_YEAR_OFFSET[13] = {
+static int const MONTHLY_DAY_OF_YEAR_OFFSET[13] = {
         0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365
 };
 
 /* the last value is used for sg1_day_of_year_to_ymd */
-static int const SG1_MONTHLY_DAY_OF_YEAR_OFFSET_LEAP_YEAR[13] = {
+static int const MONTHLY_DAY_OF_YEAR_OFFSET_LEAP_YEAR[13] = {
         0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366
 };
 
-static int SG1_DAYS_PER_MONTH[12] = {
+static int DAYS_PER_MONTH[12] = {
         31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 };
 
-static double const SG1_DELTA_MAX = RAD_LOW_PRECISSION(23.45);
+static constexpr double const DELTA_MAX = RAD_LOW_PRECISSION(23.45);
 
 
 inline static int is_leap_year(int const year) {
     return (((year % 4) == 0) && ((year % 100) != 0)) || ((year % 400) == 0);
 }
 
-namespace sg1 {
-
 int nbdays_month(int year, int month)
 {
-    int number_days_of_month = SG1_DAYS_PER_MONTH[month - 1];
+    int number_days_of_month = DAYS_PER_MONTH[month - 1];
     if (is_leap_year(year)&&(month==2))
         number_days_of_month += 1;
     return number_days_of_month;
@@ -187,8 +189,8 @@ int sg1_ymd_to_day_of_year(int year, int month, int day_of_month,
     if ((day_of_month < 1) || (day_of_month > 31))
         return 1;
 
-    *day_of_year = day_of_month + SG1_MONTHLY_DAY_OF_YEAR_OFFSET[month - 1];
-    if (is_leap_year(year) && (month > 2))
+    *day_of_year = day_of_month + sg1::MONTHLY_DAY_OF_YEAR_OFFSET[month - 1];
+    if (sg1::is_leap_year(year) && (month > 2))
         *day_of_year += 1;
     return 0;
 }
@@ -204,10 +206,10 @@ int sg1_day_of_year_to_ymd(int year, int day_of_year, int *month,
 
     int const * day_of_year_offset;
 
-    if (is_leap_year(year)) {
-        day_of_year_offset = SG1_MONTHLY_DAY_OF_YEAR_OFFSET_LEAP_YEAR;
+    if (sg1::is_leap_year(year)) {
+        day_of_year_offset = sg1::MONTHLY_DAY_OF_YEAR_OFFSET_LEAP_YEAR;
     } else {
-        day_of_year_offset = SG1_MONTHLY_DAY_OF_YEAR_OFFSET;
+        day_of_year_offset = sg1::MONTHLY_DAY_OF_YEAR_OFFSET;
     }
 
     if (day_of_year > day_of_year_offset[12])
@@ -279,9 +281,9 @@ int sg1_declination_sun_month(int month_number, int type_use,
 
   jm = day_angle;
   c1 = 0.3978;
-  c2 = RAD_LOW_PRECISSION(80.2);		/* 1.4000 in SSA manual */
-  c3 = RAD_LOW_PRECISSION(1.92);		/* 0.0355 in SSA manual */
-  c4 = RAD_LOW_PRECISSION(2.80);		/* 0.0489 in SSA manual */
+  c2 = sg1::RAD_LOW_PRECISSION(80.2);		/* 1.4000 in SSA manual */
+  c3 = sg1::RAD_LOW_PRECISSION(1.92);		/* 0.0355 in SSA manual */
+  c4 = sg1::RAD_LOW_PRECISSION(2.80);		/* 0.0489 in SSA manual */
 
   *delta_month = asin (c1 * sin (jm - c2 + c3 * sin (jm - c4)));
   return (ier);
@@ -359,13 +361,13 @@ int sg1_sunrise_hour_angle(double phi_g, double delta, double gamma_riset,
   ier = 1;
   if ((gamma_riset == 0.0) || (gamma_riset == -1.0))
     ier = 0;
-  horizon = RAD_LOW_PRECISSION(-50.0 / 60.0);	/* horizon, -50' in radians */
+  horizon = sg1::RAD_LOW_PRECISSION(-50.0 / 60.0);	/* horizon, -50' in radians */
   if (gamma_riset >= horizon)
     horizon = gamma_riset;
 
   phi = sg1_geogr_to_geoce (phi_g);
 
-  if ((fabs (phi) < (sg1::PI_LOW_PRECISION / 2.0)) && (fabs (delta) <= SG1_DELTA_MAX) && (ier == 0))
+  if ((fabs (phi) < (sg1::PI_LOW_PRECISION / 2.0)) && (fabs (delta) <= sg1::DELTA_MAX) && (ier == 0))
     {
       cos_omegas =
 	(sin (horizon) - (sin (phi) * sin (delta))) / (cos (phi) * cos (delta));
@@ -406,8 +408,8 @@ inline static double sg1_compute_ET(double day_angle)
 {
     double const a1 = -0.128;
     double const a2 = -0.165;
-    double const a3 = RAD_LOW_PRECISSION(2.80);
-    double const a4 = RAD_LOW_PRECISSION(19.70);
+    double const a3 = sg1::RAD_LOW_PRECISSION(2.80);
+    double const a4 = sg1::RAD_LOW_PRECISSION(19.70);
     return a1 * sin (day_angle - a3) + a2 * sin (2.0 * day_angle + a4);
 }
 
@@ -452,7 +454,7 @@ int sg1_UT_to_LAT(double UT, double day_angle, double lambda, double *LAT)
 int sg1_elevation_zenith_sun(double phi_g, double delta, double omega,
         double *gamma, double *theta)
 {
-    if (fabs(delta) > SG1_DELTA_MAX)
+    if (fabs(delta) > sg1::DELTA_MAX)
         return 1;
 
     double phi = sg1_geogr_to_geoce(phi_g);
