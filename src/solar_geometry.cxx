@@ -195,6 +195,22 @@ double azimuth_sun(double phi, double delta, double omega, double gamma)
 }
 
 
+double geogr_to_geoce(double phi_g)
+{
+    /**
+     * Correction factor for converting geographic
+     * into geocentric latitude. CC=(Rpole/Requator)**2
+     * with Rpole=6356.752, Requator=6378.137
+     **/
+    double const CC = 0.99330552;
+
+    if (fabs(phi_g) <= (sg1::PI_LOW_PRECISION / 2.0 - 0.0002)) {
+        return atan(tan(phi_g) * CC);
+    } else {
+        return phi_g;
+    }
+}
+
 } // namespace sg1
 
 int sg1_ymd_to_day_of_year(int year, int month, int day_of_month,
@@ -328,23 +344,6 @@ int sg1_omega_to_LAT(double omega, double *t)
         return 1;
     *t = sg1::omega_to_LAT(omega);
     return 0;
-}
-
-
-double sg1_geogr_to_geoce(double phi_g)
-{
-    /**
-     * Correction factor for converting geographic
-     * into geocentric latitude. CC=(Rpole/Requator)**2
-     * with Rpole=6356.752, Requator=6378.137
-     **/
-    double const CC = 0.99330552;
-
-    if (fabs(phi_g) <= (sg1::PI_LOW_PRECISION / 2.0 - 0.0002)) {
-        return atan(tan(phi_g) * CC);
-    } else {
-        return phi_g;
-    }
 }
 
 
