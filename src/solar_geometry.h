@@ -735,11 +735,13 @@ void sg1_cos_incident_angle_fast(SG1_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omeg
 
 #include <tuple>
 
-static constexpr double const SG1_PI_LOW_PRECISION = 3.141592654;
-static constexpr double const SG1_I0 = 1367.0; /* solar constant in W/m2 */
-static constexpr double const SG1_DAY_LENGTH = 24.0; /* average value for the length of the day in decimal hours */
-
 namespace sg1 {
+
+static constexpr double const PI_LOW_PRECISION = 3.141592654;
+static constexpr double const I0 = 1367.0; /* solar constant in W/m2 */
+static constexpr double const DAY_LENGTH = 24.0; /* average value for the length of the day in decimal hours */
+static constexpr double const PI_2 = 1.57079632679489661923;
+
 
 /**
  * @param[in]  phi geocentric phi in radians (latitude)
