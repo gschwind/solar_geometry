@@ -287,39 +287,48 @@ int sg1_declination_sun(int year, int day_of_year, double lambda,
   return 0;
 }
 
+static inline double _declination_sun_month(double day_angle)
+{
+	double const c1 = 0.3978;
+	double const c2 = sg1::RAD_LOW_PRECISSION(80.2); /* 1.4000 in SSA manual */
+	double const c3 = sg1::RAD_LOW_PRECISSION(1.92); /* 0.0355 in SSA manual */
+	double const c4 = sg1::RAD_LOW_PRECISSION(2.80); /* 0.0489 in SSA manual */
+
+	return asin(c1 * sin(day_angle - c2 + c3 * sin(day_angle - c4)));
+}
 
 int sg1_declination_sun_month(int month_number, int type_use,
-        double *delta_month)
+		double *delta_month)
 {
-  int tab_julian_day[12] =
-    { 17, 46, 75, 105, 135, 162, 198, 228, 259, 289, 319, 345 };
-  int tab_julian_day_max[12] =
-    { 29, 57, 89, 119, 150, 173, 186, 217, 248, 278, 309, 339 };
-  int ier, julian_day;
-  double day_angle, jm, c1, c2, c3, c4;
+	int const DAY_OF_YEAR_FOR_MONTHLY_MEAN_ESTIMATION[12] = {
+			17, 46, 75, 105, 135, 162, 198, 228, 259, 289, 319, 345
+	};
 
-  ier = 1;
-  if ((type_use >= 0) && (type_use < 2))
-    {
-      if (type_use == 0)
-	julian_day = tab_julian_day[month_number - 1];
-      if (type_use == 1)
-	julian_day = tab_julian_day_max[month_number - 1];
-      ier = 0;
-    }
+	int const DAY_OF_YEAR_FOR_MONTHLY_MAX_ESTIMATION[12] = {
+			29, 57, 89, 119, 150, 173, 186, 217, 248, 278, 309, 339
+	};
 
-  ier = sg1_day_angle (julian_day, &day_angle);
-  if (ier != 0)
-    return (ier);
+	int day_of_year;
+	switch(type_use) {
+	case 0:
+		day_of_year =
+				DAY_OF_YEAR_FOR_MONTHLY_MEAN_ESTIMATION[month_number - 1];
+		break;
+	case 1:
+		day_of_year =
+				DAY_OF_YEAR_FOR_MONTHLY_MAX_ESTIMATION[month_number - 1];
+		break;
+	default:
+		return 1;
+	}
 
-  jm = day_angle;
-  c1 = 0.3978;
-  c2 = sg1::RAD_LOW_PRECISSION(80.2);		/* 1.4000 in SSA manual */
-  c3 = sg1::RAD_LOW_PRECISSION(1.92);		/* 0.0355 in SSA manual */
-  c4 = sg1::RAD_LOW_PRECISSION(2.80);		/* 0.0489 in SSA manual */
+	double day_angle;
 
-  *delta_month = asin (c1 * sin (jm - c2 + c3 * sin (jm - c4)));
-  return (ier);
+	if (sg1_day_angle(day_of_year, &day_angle) != 0)
+		return 1;
+
+	*delta_month = _declination_sun_month(day_angle);
+	return 0;
 }
 
 
