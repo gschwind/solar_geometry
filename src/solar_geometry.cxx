@@ -875,9 +875,10 @@ int sg1_solar_parameters_avg(int month_number, double phi_g, double gamma_riset,
 	int const DAY_OF_YEAR_FOR_MONTHLY_MEAN_ESTIMATION[12] = { 17, 46, 75, 105,
 			135, 162, 198, 228, 259, 289, 319, 345 };
 
-	int ier = 1;
+	int day_of_year =
+			DAY_OF_YEAR_FOR_MONTHLY_MEAN_ESTIMATION[month_number - 1];
 
-	int day_of_year = DAY_OF_YEAR_FOR_MONTHLY_MEAN_ESTIMATION[month_number - 1];
+	int ier = 0;
 	if (ier == 0)
 		ier = sg1_day_angle(day_of_year, day_angle_avg);
 	if (ier == 0)
