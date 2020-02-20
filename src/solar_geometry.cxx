@@ -64,7 +64,7 @@ static int const MONTHLY_DAY_OF_YEAR_OFFSET_LEAP_YEAR[13] = {
         0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366
 };
 
-static int DAYS_PER_MONTH[12] = {
+static int const DAYS_PER_MONTH[12] = {
         31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 };
 
