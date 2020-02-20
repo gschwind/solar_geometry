@@ -856,6 +856,21 @@ double omega_to_LAT(double omega);
  **/
 std::tuple<int,int,int> julian_day_to_ymd(int jd);
 
+
+/**
+ * The procedure "day_of_year_to_ymd" does the reverse operation of the procedure
+ * "ymd_to_day_of_year" i.e. computes the month number and the respective day of
+ * month from the information on year and integer day number.
+ *
+ * @param[in]  year year number (4 digits)
+ * @param[in]  day_of_year integer day number of the year in [1,366]
+ * @return     month, day_of_month tuple.
+ *             month the month number in [1,12]
+ *             day_of_month the day number within the month in [1,31]
+ *             Tips: use std::tie(month, day_of_month)
+ **/
+std::tuple<int, int> day_of_year_to_ymd(int year, int day_of_year);
+
 } // namespace sg1
 
 #endif // C++ API

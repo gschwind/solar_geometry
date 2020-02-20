@@ -232,6 +232,20 @@ int ymd_to_day_of_year(int year, int month, int day_of_month)
     return day_of_year;
 }
 
+std::tuple<int, int> day_of_year_to_ymd(int year, int day_of_year)
+{
+    int const * day_of_year_offset = (sg1::is_leap_year(year))?
+        day_of_year_offset = sg1::MONTHLY_DAY_OF_YEAR_OFFSET_LEAP_YEAR:
+        day_of_year_offset = sg1::MONTHLY_DAY_OF_YEAR_OFFSET;
+    /* month guess, can be the month before or the correct month */
+    int month_guess = day_of_year/31;
+    if (day_of_year < day_of_year_offset[month_guess+1])
+    	return {month_guess+1, day_of_year-day_of_year_offset[month_guess]};
+    else
+    	return {month_guess+2, day_of_year-day_of_year_offset[month_guess+1]};
+
+}
+
 } // namespace sg1
 
 int sg1_ymd_to_day_of_year(int year, int month, int day_of_month,
@@ -259,25 +273,14 @@ int sg1_day_of_year_to_ymd(int year, int day_of_year, int *month,
         return 1;
     if (day_of_year < 1)
         return 1;
-
-    int const * day_of_year_offset;
-
-    if (sg1::is_leap_year(year)) {
-        day_of_year_offset = sg1::MONTHLY_DAY_OF_YEAR_OFFSET_LEAP_YEAR;
-    } else {
-        day_of_year_offset = sg1::MONTHLY_DAY_OF_YEAR_OFFSET;
-    }
-
-    if (day_of_year > day_of_year_offset[12])
+    if (day_of_year > 366)
+        return 1;
+    if (day_of_year > 365 and not sg1::is_leap_year(year))
         return 1;
 
-    int m = 12;
-    while(day_of_year <= day_of_year_offset[--m]);
-
-    *month = m+1;
-    *day_of_month = day_of_year - day_of_year_offset[m];
+    std::tie(*month, *day_of_month) =
+            sg1::day_of_year_to_ymd(year, day_of_year);
     return 0;
-
 }
 
 int sg1_nbdays_month(int year, int month, int *number_days_of_month)
