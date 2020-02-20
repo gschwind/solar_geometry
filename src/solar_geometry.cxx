@@ -223,25 +223,31 @@ double geogr_to_geoce(double phi_g)
     return atan2(sin(phi_g)*CC, cos(phi_g));
 }
 
+
+int ymd_to_day_of_year(int year, int month, int day_of_month)
+{
+    int day_of_year = day_of_month + sg1::MONTHLY_DAY_OF_YEAR_OFFSET[month - 1];
+    if (sg1::is_leap_year(year) and (month > 2))
+        day_of_year += 1;
+    return day_of_year;
+}
+
 } // namespace sg1
 
 int sg1_ymd_to_day_of_year(int year, int month, int day_of_month,
         int * const day_of_year)
 {
-    int julien;
-
     if (year <= 0)
         return 1;
-    if ((month < 1) || (month > 12))
+    if (month < 1)
         return 1;
-
-    /* Technically this is not required */
-    if ((day_of_month < 1) || (day_of_month > 31))
+    if (month > 12)
         return 1;
-
-    *day_of_year = day_of_month + sg1::MONTHLY_DAY_OF_YEAR_OFFSET[month - 1];
-    if (sg1::is_leap_year(year) && (month > 2))
-        *day_of_year += 1;
+    if (day_of_month < 1)
+        return 1;
+    if (day_of_month > 31)
+        return 1;
+    *day_of_year = sg1::ymd_to_day_of_year(year, month, day_of_month);
     return 0;
 }
 
