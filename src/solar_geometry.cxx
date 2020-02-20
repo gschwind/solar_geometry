@@ -42,13 +42,13 @@
 
 namespace sg1 {
 
-/* convert degree to radian, using SG1_PI_LOW_PRECISION */
+/* convert degree to radians, using SG1_PI_LOW_PRECISION */
 inline static constexpr double RAD_LOW_PRECISSION(double a)
 {
 	return a * sg1::PI_LOW_PRECISION / 180.0;
 }
 
-/* convert radian to degree, using SG1_PI_LOW_PRECISION */
+/* convert radians to degree, using SG1_PI_LOW_PRECISION */
 inline static constexpr double DEG_LOW_PRECISSION(double a)
 {
 	return a * 180.0 / sg1::PI_LOW_PRECISION;
