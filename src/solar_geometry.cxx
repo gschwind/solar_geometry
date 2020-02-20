@@ -68,6 +68,23 @@ static int DAYS_PER_MONTH[12] = {
         31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 };
 
+/*
+ * recommended values of day number for estimating monthly mean global solar
+ * radiation
+ */
+static int const DAY_OF_YEAR_FOR_MONTHLY_MEAN_ESTIMATION[12] = {
+		17, 46, 75, 105, 135, 162, 198, 228, 259, 289, 319, 345
+};
+
+/*
+ * recommended values of day number for estimating monthly mean maximum global solar
+ * radiation
+ */
+static int const DAY_OF_YEAR_FOR_MONTHLY_MAX_ESTIMATION[12] = {
+		29, 57, 89, 119, 150, 173, 186, 217, 248, 278, 309, 339
+};
+
+
 static constexpr double const DELTA_MAX = RAD_LOW_PRECISSION(23.45);
 
 
@@ -300,23 +317,17 @@ static inline double _declination_sun_month(double day_angle)
 int sg1_declination_sun_month(int month_number, int type_use,
 		double *delta_month)
 {
-	int const DAY_OF_YEAR_FOR_MONTHLY_MEAN_ESTIMATION[12] = {
-			17, 46, 75, 105, 135, 162, 198, 228, 259, 289, 319, 345
-	};
 
-	int const DAY_OF_YEAR_FOR_MONTHLY_MAX_ESTIMATION[12] = {
-			29, 57, 89, 119, 150, 173, 186, 217, 248, 278, 309, 339
-	};
 
 	int day_of_year;
 	switch(type_use) {
 	case 0:
 		day_of_year =
-				DAY_OF_YEAR_FOR_MONTHLY_MEAN_ESTIMATION[month_number - 1];
+				sg1::DAY_OF_YEAR_FOR_MONTHLY_MEAN_ESTIMATION[month_number - 1];
 		break;
 	case 1:
 		day_of_year =
-				DAY_OF_YEAR_FOR_MONTHLY_MAX_ESTIMATION[month_number - 1];
+				sg1::DAY_OF_YEAR_FOR_MONTHLY_MAX_ESTIMATION[month_number - 1];
 		break;
 	default:
 		return 1;
@@ -877,15 +888,9 @@ int sg1_solar_parameters_avg(int month_number, double phi_g, double gamma_riset,
 {
 	double omega_sr, t_sr, t_ss;
 
-	/*
-	 * recommended values of day number for estimating monthly mean global solar
-	 * radiation
-	 */
-	int const DAY_OF_YEAR_FOR_MONTHLY_MEAN_ESTIMATION[12] = { 17, 46, 75, 105,
-			135, 162, 198, 228, 259, 289, 319, 345 };
 
 	int day_of_year =
-			DAY_OF_YEAR_FOR_MONTHLY_MEAN_ESTIMATION[month_number - 1];
+			sg1::DAY_OF_YEAR_FOR_MONTHLY_MEAN_ESTIMATION[month_number - 1];
 
 	int ier = 0;
 	if (ier == 0)
@@ -918,12 +923,7 @@ int sg1_solar_parameters_max(int month_number, double phi_g, double gamma_riset,
   int ier, julian_day;
   double omega_sr, t_sr, t_ss;
 
-  /*
-   * recommended values of day number for estimating monthly mean maximum global solar 
-   * radiation 
-   */
-  int tab_julian_day_max[12] =
-    { 29, 57, 89, 119, 150, 173, 186, 217, 248, 278, 309, 339 };
+
   int type_use;
 
   ier = 1;
@@ -932,7 +932,7 @@ int sg1_solar_parameters_max(int month_number, double phi_g, double gamma_riset,
   if ((type_use >= 0) && (type_use < 2))
     {
       if (type_use == 1)
-	julian_day = tab_julian_day_max[month_number - 1];
+	julian_day = sg1::DAY_OF_YEAR_FOR_MONTHLY_MAX_ESTIMATION[month_number - 1];
       ier = 0;
     }
   if (ier == 0)
