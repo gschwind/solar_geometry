@@ -915,43 +915,35 @@ int sg1_solar_parameters_avg(int month_number, double phi_g, double gamma_riset,
 
 
 int sg1_solar_parameters_max(int month_number, double phi_g, double gamma_riset,
-        double *day_angle_max, double *delta_max, double *omega_ss_max,
-        double *S0_max, double *eccentricity_max, double *G0d_max,
-        double *G0h_max)
+		double *day_angle_max, double *delta_max, double *omega_ss_max,
+		double *S0_max, double *eccentricity_max, double *G0d_max,
+		double *G0h_max)
 {
-  int ier, julian_day;
-  double omega_sr, t_sr, t_ss;
+	double omega_sr, t_sr, t_ss;
 
+	int day_of_year =
+			sg1::DAY_OF_YEAR_FOR_MONTHLY_MAX_ESTIMATION[month_number - 1];
 
-  int type_use;
+	int ier = 0;
+	if (ier == 0)
+		ier = sg1_day_angle(day_of_year, day_angle_max);
+	if (ier == 0)
+		ier = sg1_declination_sun_month_max(month_number, delta_max);
+	if (ier == 0)
+		ier = sg1_sunrise_hour_angle(phi_g, *delta_max, gamma_riset, &omega_sr,
+				omega_ss_max);
+	if (ier == 0)
+		ier = sg1_timerise_daylength(omega_sr, *omega_ss_max, &t_sr, &t_ss,
+				S0_max);
+	if (ier == 0)
+		ier = sg1_corr_distance(*day_angle_max, eccentricity_max);
+	if (ier == 0)
+		ier = sg1_G0_day(phi_g, *eccentricity_max, *delta_max, G0d_max);
+	if (ier == 0)
+		ier = sg1_G0_hours_profile(phi_g, *eccentricity_max, *delta_max,
+				G0h_max);
 
-  ier = 1;
-  type_use = 1;			/* for estimating monthly mean global solar radiation */
-
-  if ((type_use >= 0) && (type_use < 2))
-    {
-      if (type_use == 1)
-	julian_day = sg1::DAY_OF_YEAR_FOR_MONTHLY_MAX_ESTIMATION[month_number - 1];
-      ier = 0;
-    }
-  if (ier == 0)
-    ier = sg1_day_angle (julian_day, day_angle_max);
-  if (ier == 0)
-    ier = sg1_declination_sun_month_max(month_number, delta_max);
-  if (ier == 0)
-    ier =
-      sg1_sunrise_hour_angle (phi_g, *delta_max, gamma_riset, &omega_sr,
-			  omega_ss_max);
-  if (ier == 0)
-    ier = sg1_timerise_daylength (omega_sr, *omega_ss_max, &t_sr, &t_ss, S0_max);
-  if (ier == 0)
-    ier = sg1_corr_distance (*day_angle_max, eccentricity_max);
-  if (ier == 0)
-    ier = sg1_G0_day (phi_g, *eccentricity_max, *delta_max, G0d_max);
-  if (ier == 0)
-    ier = sg1_G0_hours_profile (phi_g, *eccentricity_max, *delta_max, G0h_max);
-
-  return (ier);
+	return ier;
 }
 
 
