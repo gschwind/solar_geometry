@@ -862,48 +862,41 @@ int sg1_solar_parameters_day(int day_of_month, int month_number,
 
 
 int sg1_solar_parameters_avg(int month_number, double phi_g, double gamma_riset,
-        double *day_angle_avg, double *delta_avg, double *omega_ss_avg,
-        double *S0_avg, double *eccentricity_avg, double *G0d_avg,
-        double *G0h_avg)
+		double *day_angle_avg, double *delta_avg, double *omega_ss_avg,
+		double *S0_avg, double *eccentricity_avg, double *G0d_avg,
+		double *G0h_avg)
 {
-  int ier, julian_day;
-  double omega_sr, t_sr, t_ss;
+	double omega_sr, t_sr, t_ss;
 
-  /*
-   * recommended values of day number for estimating monthly mean global solar
-   * radiation 
-   */
-  int tab_julian_day[12] =
-    { 17, 46, 75, 105, 135, 162, 198, 228, 259, 289, 319, 345 };
-  int type_use;
+	/*
+	 * recommended values of day number for estimating monthly mean global solar
+	 * radiation
+	 */
+	int const DAY_OF_YEAR_FOR_MONTHLY_MEAN_ESTIMATION[12] = { 17, 46, 75, 105,
+			135, 162, 198, 228, 259, 289, 319, 345 };
 
-  ier = 1;
-  type_use = 0;			/* for estimating monthly mean global solar radiation */
+	int ier = 1;
 
-  if ((type_use >= 0) && (type_use < 2))
-    {
-      if (type_use == 0)
-	julian_day = tab_julian_day[month_number - 1];
-      ier = 0;
-    }
-  if (ier == 0)
-    ier = sg1_day_angle (julian_day, day_angle_avg);
-  if (ier == 0)
-    ier = sg1_declination_sun_month (month_number, type_use, delta_avg);
-  if (ier == 0)
-    ier =
-      sg1_sunrise_hour_angle (phi_g, *delta_avg, gamma_riset, &omega_sr,
-			  omega_ss_avg);
-  if (ier == 0)
-    ier = sg1_timerise_daylength (omega_sr, *omega_ss_avg, &t_sr, &t_ss, S0_avg);
-  if (ier == 0)
-    ier = sg1_corr_distance (*day_angle_avg, eccentricity_avg);
-  if (ier == 0)
-    ier = sg1_G0_day (phi_g, *eccentricity_avg, *delta_avg, G0d_avg);
-  if (ier == 0)
-    ier = sg1_G0_hours_profile (phi_g, *eccentricity_avg, *delta_avg, G0h_avg);
+	int day_of_year = DAY_OF_YEAR_FOR_MONTHLY_MEAN_ESTIMATION[month_number - 1];
+	if (ier == 0)
+		ier = sg1_day_angle(day_of_year, day_angle_avg);
+	if (ier == 0)
+		ier = sg1_declination_sun_month(month_number, 0, delta_avg);
+	if (ier == 0)
+		ier = sg1_sunrise_hour_angle(phi_g, *delta_avg, gamma_riset, &omega_sr,
+				omega_ss_avg);
+	if (ier == 0)
+		ier = sg1_timerise_daylength(omega_sr, *omega_ss_avg, &t_sr, &t_ss,
+				S0_avg);
+	if (ier == 0)
+		ier = sg1_corr_distance(*day_angle_avg, eccentricity_avg);
+	if (ier == 0)
+		ier = sg1_G0_day(phi_g, *eccentricity_avg, *delta_avg, G0d_avg);
+	if (ier == 0)
+		ier = sg1_G0_hours_profile(phi_g, *eccentricity_avg, *delta_avg,
+				G0h_avg);
 
-  return (ier);
+	return ier;
 }
 
 
