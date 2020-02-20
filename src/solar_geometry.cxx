@@ -314,24 +314,10 @@ static inline double _declination_sun_month(double day_angle)
 	return asin(c1 * sin(day_angle - c2 + c3 * sin(day_angle - c4)));
 }
 
-int sg1_declination_sun_month(int month_number, int type_use,
-		double *delta_month)
+int sg1_declination_sun_month_avg(int month_number, double *delta_month)
 {
-
-
-	int day_of_year;
-	switch(type_use) {
-	case 0:
-		day_of_year =
-				sg1::DAY_OF_YEAR_FOR_MONTHLY_MEAN_ESTIMATION[month_number - 1];
-		break;
-	case 1:
-		day_of_year =
-				sg1::DAY_OF_YEAR_FOR_MONTHLY_MAX_ESTIMATION[month_number - 1];
-		break;
-	default:
-		return 1;
-	}
+	double day_of_year =
+			sg1::DAY_OF_YEAR_FOR_MONTHLY_MEAN_ESTIMATION[month_number - 1];
 
 	double day_angle;
 
@@ -343,6 +329,19 @@ int sg1_declination_sun_month(int month_number, int type_use,
 }
 
 
+int sg1_declination_sun_month_max(int month_number, double *delta_month)
+{
+	double day_of_year =
+			sg1::DAY_OF_YEAR_FOR_MONTHLY_MAX_ESTIMATION[month_number - 1];
+
+	double day_angle;
+
+	if (sg1_day_angle(day_of_year, &day_angle) != 0)
+		return 1;
+
+	*delta_month = _declination_sun_month(day_angle);
+	return 0;
+}
 
 int sg1_solar_hour_angle(double t, double *omega)
 {
@@ -896,7 +895,7 @@ int sg1_solar_parameters_avg(int month_number, double phi_g, double gamma_riset,
 	if (ier == 0)
 		ier = sg1_day_angle(day_of_year, day_angle_avg);
 	if (ier == 0)
-		ier = sg1_declination_sun_month(month_number, 0, delta_avg);
+		ier = sg1_declination_sun_month_avg(month_number, delta_avg);
 	if (ier == 0)
 		ier = sg1_sunrise_hour_angle(phi_g, *delta_avg, gamma_riset, &omega_sr,
 				omega_ss_avg);
@@ -938,7 +937,7 @@ int sg1_solar_parameters_max(int month_number, double phi_g, double gamma_riset,
   if (ier == 0)
     ier = sg1_day_angle (julian_day, day_angle_max);
   if (ier == 0)
-    ier = sg1_declination_sun_month (month_number, type_use, delta_max);
+    ier = sg1_declination_sun_month_max(month_number, delta_max);
   if (ier == 0)
     ier =
       sg1_sunrise_hour_angle (phi_g, *delta_max, gamma_riset, &omega_sr,

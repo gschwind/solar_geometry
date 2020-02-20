@@ -180,11 +180,8 @@ int sg1_declination_sun(int year, int day_of_year, double lambda,
 
 /**
  * The procedure "declination_sun_month" computes the noon solar declination
- * (in radians) in solar time, with a simplified form, in two cases:
- * type_use=0 : for estimating monthly mean global solar radiation
- * type_use=1 : for estimating monthly mean maximum global solar radiation
- * The integer day number to be selected in each case for the computations is
- * given by two tables.
+ * (in radians) in solar time, with a simplified form for estimating monthly
+ * mean global solar radiation.
  *
  * Source : Gruter (Ed.) (1984)
  *
@@ -192,7 +189,22 @@ int sg1_declination_sun(int year, int day_of_year, double lambda,
  * @param[out] delta_month solar declination angle (in radians)
  * @return     Returns 0 if OK, 1 otherwise.
  **/
-int sg1_declination_sun_month(int month_number, int type_use, double *delta_month);
+int sg1_declination_sun_month_avg(int month_number, double *delta_month);
+
+
+/**
+ * The procedure "declination_sun_month" computes the noon solar declination
+ * (in radians) in solar time, with a simplified form for estimating monthly
+ * mean maximum global solar radiation.
+ *
+ * Source : Gruter (Ed.) (1984)
+ *
+ * @param[in]  month_number month number in [1,12]
+ * @param[out] delta_month solar declination angle (in radians)
+ * @return     Returns 0 if OK, 1 otherwise.
+ **/
+int sg1_declination_sun_month_max(int month_number, double *delta_month);
+
 
 /**
  * The procedure "solar_hour_angle" supplies the solar hour angle (in radians). By
