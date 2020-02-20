@@ -203,12 +203,7 @@ double geogr_to_geoce(double phi_g)
      * with Rpole=6356.752, Requator=6378.137
      **/
     double const CC = 0.99330552;
-
-    if (fabs(phi_g) <= (sg1::PI_LOW_PRECISION / 2.0 - 0.0002)) {
-        return atan(tan(phi_g) * CC);
-    } else {
-        return phi_g;
-    }
+    return atan2(sin(phi_g)*CC, cos(phi_g));
 }
 
 } // namespace sg1
