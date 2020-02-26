@@ -240,9 +240,9 @@ std::tuple<int, int> day_of_year_to_ymd(int year, int day_of_year)
     /* month guess, can be the month before or the correct month */
     int month_guess = day_of_year/31;
     if (day_of_year < day_of_year_offset[month_guess+1])
-    	return {month_guess+1, day_of_year-day_of_year_offset[month_guess]};
+        return std::tuple<int, int>{month_guess+1, day_of_year-day_of_year_offset[month_guess]};
     else
-    	return {month_guess+2, day_of_year-day_of_year_offset[month_guess+1]};
+        return std::tuple<int, int>{month_guess+2, day_of_year-day_of_year_offset[month_guess+1]};
 
 }
 
