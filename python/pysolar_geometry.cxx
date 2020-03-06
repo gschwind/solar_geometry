@@ -28,45 +28,136 @@ static inline T & _getarg(PyArrayObject ** arr, int const i, int const arg)
 	return reinterpret_cast<T*>(PyArray_DATA(arr[arg]))[i];
 };
 
-static PyObject * py_sunset(PyObject * self, PyObject * args)
+template<typename>
+struct _python_bind_type_info;
+
+template<>
+struct _python_bind_type_info<double> {
+	enum : int { npy_type = NPY_DOUBLE };
+};
+
+template<>
+struct _python_bind_type_info<float> {
+	enum : int { npy_type = NPY_FLOAT };
+};
+
+template<>
+struct _python_bind_type_info<int> {
+	enum : int { npy_type = NPY_INT };
+};
+
+template<>
+struct _python_bind_type_info<char> {
+	enum : int { npy_type = NPY_INT8 };
+};
+
+
+template<typename T>
+struct handle_numpy_1d_array {
+	PyArrayObject * _arr;
+	handle_numpy_1d_array(PyObject * arr) : _arr{nullptr}
+	{
+		_arr = _as<PyArrayObject>(PyArray_FROM_OTF(arr, _python_bind_type_info<T>::npy_type, NPY_ARRAY_IN_ARRAY));
+	}
+
+	T const & operator[](int i) const
+	{
+		return reinterpret_cast<T*>(PyArray_DATA(_arr))[i];
+	};
+
+	T & operator[](int i)
+	{
+		return reinterpret_cast<T*>(PyArray_DATA(_arr))[i];
+	};
+
+	int size() const
+	{
+		return PyArray_SIZE(_arr);
+	}
+
+};
+
+template<typename>
+struct _function_signature;
+
+template<typename R, typename ... ARGS>
+struct _function_signature<R(ARGS...)> {
+	using return_type = R;
+};
+
+// T0, TN expected to be handle_numpy_1d_array<X>
+template<typename F, typename T0, typename ... TN>
+static PyObject * _final_vectorized_call (F * func, T0 && args0,  TN && ... args)
 {
-	int const PHI = 0, DELTA = 1, MAXARGS = 2;
+	using return_type = typename _function_signature<F>::return_type;
 
-	PyObject * arg[MAXARGS] = {NULL};
-	PyArrayObject * arr[MAXARGS] = {NULL};
-
-	if (PyTuple_GET_SIZE(args) != MAXARGS)
-		return NULL;
-
-	for (int i = 0; i < MAXARGS; ++i) {
-		arg[i] = PyTuple_GET_ITEM(args, i);
-	}
-
-	for (int i = 0; i < MAXARGS; ++i) {
-		arr[i] = _as<PyArrayObject>(PyArray_FROM_OTF(arg[i], NPY_DOUBLE, NPY_ARRAY_IN_ARRAY));
-		if (arr[i] == NULL)
-			return NULL;
-	}
-
-	auto nd = PyArray_SIZE(arr[0]);
-
-	for (int i = 1; i < MAXARGS; ++i) {
-		if (PyArray_SIZE(arr[i]) != nd)
-			return NULL;
-	}
-
+	int nd = args0.size();
 	npy_intp out_dims[] = {nd};
-	PyArrayObject * out_arr = reinterpret_cast<PyArrayObject*>(PyArray_SimpleNew(1, out_dims, NPY_DOUBLE));
+	PyArrayObject * out_arr = reinterpret_cast<PyArrayObject*>(PyArray_SimpleNew(1, out_dims,
+			_python_bind_type_info<return_type>::npy_type));
 
 	for (int i = 0; i < nd; ++i) {
-		*_as<int>(PyArray_GETPTR1(out_arr,i)) = sg1::sunset(
-				_getarg<double>(arr, i, PHI),
-				_getarg<double>(arr, i, DELTA)
-				);
+		*_as<return_type>(PyArray_GETPTR1(out_arr,i)) = func(args0[i], args[i]...);
 	}
 
 	return _as<PyObject>(out_arr);
+}
 
+template<typename, int, typename ...>
+struct _build_vectorized_function_call_pass1;
+
+template<typename R, typename ... ARGS, int I, typename HEAD, typename ... TAIL>
+struct _build_vectorized_function_call_pass1<R(ARGS...), I, HEAD, TAIL...>
+{
+	using func_type = R(ARGS...);
+	template<typename ...XARGS>
+	static PyObject * call (func_type * func, PyObject * args, XARGS && ... xargs)
+	{
+		return _build_vectorized_function_call_pass1<R(ARGS...), I+1, TAIL...>::call(func, args,
+				handle_numpy_1d_array<HEAD>(PyTuple_GET_ITEM(args, I)), xargs...);
+	}
+};
+
+template<typename F, int I>
+struct _build_vectorized_function_call_pass1<F, I>
+{
+	template<typename ...ARGS>
+	static PyObject * call (F * func, PyObject * args, ARGS && ... xargs)
+	{
+		/* check for length of argument */
+		if (PyTuple_GET_SIZE(args) != I)
+			return NULL;
+		return _final_vectorized_call(func, xargs...);
+	}
+};
+
+template<typename>
+struct _build_vectorized_function_call_pass0;
+
+template<typename R, typename ... ARGS>
+struct _build_vectorized_function_call_pass0<R(ARGS...)>
+{
+	using func_type = R(ARGS...);
+	static PyObject * call (func_type * func, PyObject * self, PyObject * args)
+	{
+		return _build_vectorized_function_call_pass1<R(ARGS...), 0, ARGS...>::call(func, args);
+	}
+};
+
+
+/**
+ * This function use fonction argment type to build the corresponging vectorized function.
+ **/
+template<typename F>
+PyObject * call_vectorized_function_with_python_args(F * func, PyObject * self, PyObject * args)
+{
+	return _build_vectorized_function_call_pass0<F>::call(func, self, args);
+}
+
+
+static PyObject * py_sunset(PyObject * self, PyObject * args)
+{
+	return call_vectorized_function_with_python_args(sg1::sunset, self, args);
 }
 
 #define TPL_FUNCTION(name) {#name, py_##name, METH_VARARGS, "Not documented"}
