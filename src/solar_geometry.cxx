@@ -254,6 +254,11 @@ double sg1_sunset(double phi, double delta)
   return sg1::sunset(phi, delta);
 }
 
+double sg1_geogr_to_geoce(double phi_g)
+{
+  return sg1::geogr_to_geoce(phi_g);
+}
+
 int sg1_ymd_to_day_of_year(int year, int month, int day_of_month,
         int * const day_of_year)
 {
