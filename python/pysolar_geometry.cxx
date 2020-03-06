@@ -154,10 +154,44 @@ PyObject * call_vectorized_function_with_python_args(F * func, PyObject * self, 
 	return _build_vectorized_function_call_pass0<F>::call(func, self, args);
 }
 
-
 static PyObject * py_sunset(PyObject * self, PyObject * args)
 {
 	return call_vectorized_function_with_python_args(sg1::sunset, self, args);
+}
+
+static PyObject * py_gamma_sun(PyObject * self, PyObject * args)
+{
+	return call_vectorized_function_with_python_args(sg1::gamma_sun, self, args);
+}
+
+static PyObject * py_day_angle(PyObject * self, PyObject * args)
+{
+	return call_vectorized_function_with_python_args(sg1::day_angle, self, args);
+}
+
+static PyObject * py_corr_distance(PyObject * self, PyObject * args)
+{
+	return call_vectorized_function_with_python_args(sg1::corr_distance, self, args);
+}
+
+static PyObject * py_nbdays_month(PyObject * self, PyObject * args)
+{
+	return call_vectorized_function_with_python_args(sg1::nbdays_month, self, args);
+}
+
+static PyObject * py_declination_sun(PyObject * self, PyObject * args)
+{
+	return call_vectorized_function_with_python_args(sg1::declination_sun, self, args);
+}
+
+static PyObject * py_solar_hour_angle(PyObject * self, PyObject * args)
+{
+	return call_vectorized_function_with_python_args(sg1::solar_hour_angle, self, args);
+}
+
+static PyObject * py_omega_to_LAT(PyObject * self, PyObject * args)
+{
+	return call_vectorized_function_with_python_args(sg1::omega_to_LAT, self, args);
 }
 
 #define TPL_FUNCTION(name) {#name, py_##name, METH_VARARGS, "Not documented"}
@@ -165,6 +199,13 @@ static PyObject * py_sunset(PyObject * self, PyObject * args)
 static PyMethodDef methods[] =
 {
 	TPL_FUNCTION(sunset),
+	TPL_FUNCTION(gamma_sun),
+	TPL_FUNCTION(day_angle),
+	TPL_FUNCTION(corr_distance),
+	TPL_FUNCTION(nbdays_month),
+	TPL_FUNCTION(declination_sun),
+	TPL_FUNCTION(solar_hour_angle),
+	TPL_FUNCTION(omega_to_LAT),
 	{NULL, NULL, 0, NULL}
 };
 
