@@ -248,6 +248,12 @@ std::tuple<int, int> day_of_year_to_ymd(int year, int day_of_year)
 
 } // namespace sg1
 
+
+double sg1_sunset(double phi, double delta)
+{
+  return sg1::sunset(phi, delta);
+}
+
 int sg1_ymd_to_day_of_year(int year, int month, int day_of_month,
         int * const day_of_year)
 {
