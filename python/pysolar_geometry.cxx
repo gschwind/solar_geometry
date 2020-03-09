@@ -19,17 +19,6 @@
 //#include <iostream>
 #include <string>
 
-// short cut for reinterpret_cast
-template<typename T>
-static inline T * _as(void * x) {
-	return reinterpret_cast<T*>(x);
-}
-
-template<typename T>
-static inline T & _getarg(PyArrayObject ** arr, int const i, int const arg)
-{
-	return reinterpret_cast<T*>(PyArray_DATA(arr[arg]))[i];
-};
 
 // convenient function for debuging.
 static std::string _python_repr(PyObject *obj)
@@ -56,6 +45,22 @@ static std::string _python_str(PyObject *obj)
 template<typename>
 struct _python_bind_type_info;
 
+template<typename T>
+static PyObject * _int_format()
+{
+	switch(sizeof(T)) {
+	case 1:
+		return Py_BuildValue("s", "i1");
+	case 2:
+		return Py_BuildValue("s", "i2");
+	case 4:
+		return Py_BuildValue("s", "i4");
+	case 8:
+		return Py_BuildValue("s", "i8");
+
+	}
+}
+
 template<>
 struct _python_bind_type_info<double> {
 	enum : int { npy_type = NPY_DOUBLE };
@@ -73,22 +78,6 @@ struct _python_bind_type_info<float> {
 		return Py_BuildValue("s", "f8");
 	}
 };
-
-template<typename T>
-static PyObject * _int_format()
-{
-	switch(sizeof(T)) {
-	case 1:
-		return Py_BuildValue("s", "i1");
-	case 2:
-		return Py_BuildValue("s", "i2");
-	case 4:
-		return Py_BuildValue("s", "i4");
-	case 8:
-		return Py_BuildValue("s", "i8");
-
-	}
-}
 
 template<>
 struct _python_bind_type_info<int> {
@@ -111,7 +100,7 @@ struct handle_numpy_1d_array {
 	PyArrayObject * _arr;
 	handle_numpy_1d_array(PyObject * arr) : _arr{nullptr}
 	{
-		_arr = _as<PyArrayObject>(PyArray_FROM_OTF(arr, _python_bind_type_info<T>::npy_type, NPY_ARRAY_IN_ARRAY));
+		_arr = reinterpret_cast<PyArrayObject*>(PyArray_FROM_OTF(arr, _python_bind_type_info<T>::npy_type, NPY_ARRAY_IN_ARRAY));
 	}
 
 	T const & operator[](int i) const
@@ -131,88 +120,6 @@ struct handle_numpy_1d_array {
 
 };
 
-template<typename>
-struct _function_signature;
-
-template<typename R, typename ... ARGS>
-struct _function_signature<R(ARGS...)> {
-	using return_type = R;
-};
-
-template<typename T, int I>
-static inline ptrdiff_t get_field_offset() {
-	return reinterpret_cast<char*>(&std::get<I>(*reinterpret_cast<T*>(0)))-reinterpret_cast<char*>(0);
-}
-
-template<typename, int, typename...>
-struct _create_desc_for_tuple;
-
-template<typename T, typename HEAD, int I>
-void _update_items(PyObject * names, PyObject * formats, PyObject * offsets)
-{
-	PyList_SetItem(formats, I, _python_bind_type_info<HEAD>::format());
-	PyList_SetItem(offsets, I, PyLong_FromLong(get_field_offset<T, I>()));
-}
-
-template<typename T, int I, typename HEAD, typename ... TAIL>
-struct _create_desc_for_tuple<T, I, HEAD, TAIL...> {
-	static void update(PyObject * names, PyObject * formats, PyObject * offsets)
-	{
-		_update_items<T, HEAD, I>(names, formats, offsets);
-		_create_desc_for_tuple<T, I+1, TAIL...>::update(names, formats, offsets);
-
-	}
-};
-
-template<typename T, int I, typename HEAD>
-struct _create_desc_for_tuple<T, I, HEAD> {
-	static void update(PyObject * names, PyObject * formats, PyObject * offsets)
-	{
-		_update_items<T, HEAD, I>(names, formats, offsets);
-	}
-};
-
-template<typename>
-struct _create_desc_for_tuple_pass0;
-
-template<typename ... ARGS>
-struct _create_desc_for_tuple_pass0<std::tuple<ARGS...>> {
-	static void update(PyObject * names, PyObject * formats, PyObject * offsets) {
-		_create_desc_for_tuple<std::tuple<ARGS...>, 0, ARGS...>::update(names, formats, offsets);
-	}
-};
-
-template<typename T>
-static inline PyArray_Descr * create_desc(std::array<std::string, std::tuple_size<T>::value> const & field_names) {
-	static auto const tsize = std::tuple_size<T>::value;
-	auto spec = PyDict_New();
-	auto names = PyList_New(tsize);
-	auto formats = PyList_New(tsize);
-	auto offsets = PyList_New(tsize);
-
-	PyDict_SetItemString(spec, "names", names);
-	PyDict_SetItemString(spec, "formats", formats);
-	PyDict_SetItemString(spec, "offsets", offsets);
-
-	_create_desc_for_tuple_pass0<T>::update(names, formats, offsets);
-
-	/* must be handled by spec */
-	Py_DECREF(names);
-	Py_DECREF(formats);
-	Py_DECREF(offsets);
-
-	for (int i = 0; i < std::tuple_size<T>::value; ++i) {
-			PyList_SetItem(names, i, Py_BuildValue("s", field_names[i].c_str()));
-	}
-
-	PyArray_Descr * final_desc;
-	if (PyArray_DescrConverter(spec, &final_desc) != NPY_SUCCEED)
-		throw std::runtime_error("SHOULD NEVER APPEND");
-
-	Py_DECREF(spec);
-	return final_desc;
-
-}
 
 template<typename F, F &FUNC>
 struct _my_build_vectorized_function;
@@ -278,6 +185,8 @@ struct _my_build_vectorized_function<R(ARGS...), FUNC> {
 
 };
 
+
+
 // If return type is a tuple
 template<typename ... TARGS, typename ... ARGS, std::tuple<TARGS...>(&FUNC)(ARGS...)>
 struct _my_build_vectorized_function<std::tuple<TARGS...>(ARGS...), FUNC>
@@ -285,6 +194,60 @@ struct _my_build_vectorized_function<std::tuple<TARGS...>(ARGS...), FUNC>
 	using R = std::tuple<TARGS...>;
 	using func_type = R(ARGS...);
 	using field_name_type = std::array<std::string, sizeof...(TARGS)>;
+
+	template<int I>
+	static inline ptrdiff_t get_field_offset() {
+		return reinterpret_cast<char*>(&std::get<I>(*reinterpret_cast<R*>(0)))-reinterpret_cast<char*>(0);
+	}
+
+	template<int, typename...>
+	struct _create_desc_for_tuple;
+
+	template<int I, typename HEAD, typename ... TAIL>
+	struct _create_desc_for_tuple<I, HEAD, TAIL...> {
+		static void update(PyObject * names, PyObject * formats, PyObject * offsets)
+		{
+			PyList_SetItem(formats, I, _python_bind_type_info<HEAD>::format());
+			PyList_SetItem(offsets, I, PyLong_FromLong(get_field_offset<I>()));
+			_create_desc_for_tuple<I+1, TAIL...>::update(names, formats, offsets);
+		}
+	};
+
+	template<int I>
+	struct _create_desc_for_tuple<I> {
+		static void update(PyObject * names, PyObject * formats, PyObject * offsets) { }
+	};
+
+	static inline PyArray_Descr * create_desc(field_name_type const & field_names) {
+		static auto const tsize = sizeof...(TARGS);
+		auto spec = PyDict_New();
+		auto names = PyList_New(tsize);
+		auto formats = PyList_New(tsize);
+		auto offsets = PyList_New(tsize);
+
+		PyDict_SetItemString(spec, "names", names);
+		PyDict_SetItemString(spec, "formats", formats);
+		PyDict_SetItemString(spec, "offsets", offsets);
+
+		_create_desc_for_tuple<0, TARGS...>::update(names, formats, offsets);
+
+		/* must be handled by spec */
+		Py_DECREF(names);
+		Py_DECREF(formats);
+		Py_DECREF(offsets);
+
+		for (int i = 0; i < sizeof...(TARGS); ++i) {
+				PyList_SetItem(names, i, Py_BuildValue("s", field_names[i].c_str()));
+		}
+
+		PyArray_Descr * final_desc;
+		if (PyArray_DescrConverter(spec, &final_desc) != NPY_SUCCEED)
+			throw std::runtime_error("SHOULD NEVER APPEND");
+
+		Py_DECREF(spec);
+		return final_desc;
+
+	}
 
 	template<typename...>
 	struct _final;
@@ -308,7 +271,7 @@ struct _my_build_vectorized_function<std::tuple<TARGS...>(ARGS...), FUNC>
 			npy_intp out_dims[] = {nd};
 			npy_intp strides[] = {sizeof(R)};
 
-			auto desc = create_desc<R>(field_names);
+			auto desc = create_desc(field_names);
 
 			PyArrayObject * out_arr = reinterpret_cast<PyArrayObject*>(PyArray_NewFromDescr(
 					&PyArray_Type, desc, 1, out_dims, strides, output_array_data, 0, nullptr));
