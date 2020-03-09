@@ -16,8 +16,90 @@
 #include <numpy/arrayobject.h>
 #include <numpy/npy_common.h>
 
-//#include <iostream>
+#include <iostream>
 #include <string>
+
+struct buffer {
+	virtual ~buffer() { }
+};
+
+template<typename T>
+struct buffer_impl : public buffer {
+	T * data;
+
+	buffer_impl(size_t n) {
+		data = new T[n];
+	}
+
+	virtual ~buffer_impl() override
+	{
+		delete[] data;
+	}
+};
+
+struct buffer_pyobject {
+    PyObject_HEAD
+	buffer * data;
+};
+
+static void buffer_dealloc(buffer_pyobject * ths)
+{
+	delete ths->data;
+	Py_TYPE(ths)->tp_free((PyObject*)ths);
+}
+
+static PyObject * buffer_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
+	buffer_pyobject * ths = (buffer_pyobject*)type->tp_alloc(type, 0);
+	return (PyObject*)ths;
+}
+
+static int buffer_init(buffer_pyobject * ths, PyObject *args, PyObject *kwds) {
+	ths->data = nullptr;
+	return 0;
+}
+
+static PyTypeObject buffer_pytypeobject = {
+	    PyVarObject_HEAD_INIT(NULL, 0)
+	    "solar_geometry._data_buffer", /*tp_name*/
+	    sizeof(buffer_pyobject), /*tp_basicsize*/
+	    0,                         /*tp_itemsize*/
+	    (destructor)buffer_dealloc,  /*tp_dealloc*/
+	    0,                         /*tp_print*/
+	    0,                         /*tp_getattr*/
+	    0,                         /*tp_setattr*/
+	    0,                         /*tp_reserved*/
+	    0,                         /*tp_repr*/
+	    0,                         /*tp_as_number*/
+	    0,                         /*tp_as_sequence*/
+	    0,                         /*tp_as_mapping*/
+	    0,                         /*tp_hash */
+	    0,                         /*tp_call*/
+	    0,                         /*tp_str*/
+	    0,                         /*tp_getattro*/
+	    0,                         /*tp_setattro*/
+	    0,                         /*tp_as_buffer*/
+	    Py_TPFLAGS_DEFAULT,        /*tp_flags*/
+	    "Buffer for internal use only", /* tp_doc */
+	    0,		               /* tp_traverse */
+	    0,		               /* tp_clear */
+	    0,		               /* tp_richcompare */
+	    0,		               /* tp_weaklistoffset */
+	    0,		               /* tp_iter */
+	    0,		               /* tp_iternext */
+		0,   /* tp_methods */
+		0,   /* tp_members */
+	    0,                         /* tp_getset */
+	    0,                         /* tp_base */
+	    0,                         /* tp_dict */
+	    0,                         /* tp_descr_get */
+	    0,                         /* tp_descr_set */
+	    0,                         /* tp_dictoffset */
+	    (initproc)buffer_init, /* tp_init */
+	    0,                         /* tp_alloc */
+		buffer_new,              /* tp_new */
+};
+
+
 
 
 // convenient function for debuging.
@@ -259,9 +341,8 @@ struct _my_build_vectorized_function<std::tuple<TARGS...>(ARGS...), FUNC>
 		{
 			int nd = args0.size();
 
-			/* create the output */
-			PyObject * buffer = PyByteArray_FromStringAndSize(nullptr, nd*sizeof(R));
-			auto output_array_data = reinterpret_cast<R*>(PyByteArray_AsString(buffer));
+			auto buffer = new buffer_impl<R>(nd);
+			auto output_array_data = buffer->data;
 
 			for (int i = 0; i < nd; ++i) {
 				new (&output_array_data[i]) R; // call tuple inplace constructor
@@ -273,8 +354,16 @@ struct _my_build_vectorized_function<std::tuple<TARGS...>(ARGS...), FUNC>
 
 			auto desc = create_desc(field_names);
 
+			/* create the output */
+			PyObject *argList = Py_BuildValue("()");
+			auto pybuffer = PyObject_CallObject(reinterpret_cast<PyObject*>(&buffer_pytypeobject), argList);
+			if (pybuffer == nullptr)
+				return nullptr;
+			reinterpret_cast<buffer_pyobject*>(pybuffer)->data = buffer;
+
 			PyArrayObject * out_arr = reinterpret_cast<PyArrayObject*>(PyArray_NewFromDescr(
 					&PyArray_Type, desc, 1, out_dims, strides, output_array_data, 0, nullptr));
+			PyArray_SetBaseObject(out_arr, pybuffer);
 
 			return reinterpret_cast<PyObject*>(out_arr);
 		}
@@ -405,6 +494,10 @@ PyInit_solar_geometry(void)
 	state->Error = PyErr_NewException("solar_geometry.error", NULL, NULL);
 	Py_INCREF(state->Error);
 	PyModule_AddObject(m, "error", state->Error);
+
+	if (PyType_Ready(&buffer_pytypeobject) != 0)
+		return NULL;
+	Py_INCREF(&buffer_pytypeobject);
 
 	/** init numpy **/
 	import_array();
