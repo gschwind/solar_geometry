@@ -106,7 +106,6 @@ struct _python_bind_type_info<char> {
 	}
 };
 
-
 template<typename T>
 struct handle_numpy_1d_array {
 	PyArrayObject * _arr;
@@ -141,7 +140,7 @@ struct _function_signature<R(ARGS...)> {
 };
 
 template<typename T, int I>
-inline ptrdiff_t get_field_offset() {
+static inline ptrdiff_t get_field_offset() {
 	return reinterpret_cast<char*>(&std::get<I>(*reinterpret_cast<T*>(0)))-reinterpret_cast<char*>(0);
 }
 
@@ -186,7 +185,7 @@ struct _create_desc_for_tuple_pass0<std::tuple<ARGS...>> {
 
 
 template<typename T>
-PyArray_Descr * create_desc(std::array<std::string, std::tuple_size<T>::value> const & field_names) {
+static inline PyArray_Descr * create_desc(std::array<std::string, std::tuple_size<T>::value> const & field_names) {
 	static auto const tsize = std::tuple_size<T>::value;
 	auto spec = PyDict_New();
 	auto names = PyList_New(tsize);
@@ -217,10 +216,8 @@ PyArray_Descr * create_desc(std::array<std::string, std::tuple_size<T>::value> c
 
 }
 
-
 template<typename, typename...>
 struct _final_vectorized;
-
 
 // T0, TN expected to be handle_numpy_1d_array<X>
 template<typename ... TARGS, typename ... ARGS, typename T0, typename ... TN>
@@ -370,13 +367,13 @@ struct _build_vectorized_function_call_pass0<std::tuple<TARGS...>(ARGS...)>
  * This function use fonction argment type to build the corresponging vectorized function.
  **/
 template<typename F>
-PyObject * call_vectorized_function_with_python_args(F * func, PyObject * self, PyObject * args)
+static inline PyObject * call_vectorized_function_with_python_args(F * func, PyObject * self, PyObject * args)
 {
 	return _build_vectorized_function_call_pass0<F>::call(func, self, args);
 }
 
 template<typename F>
-PyObject * call_vectorized_function_with_python_args(F * func, std::array<std::string, std::tuple_size<typename _function_signature<F>::return_type>::value> const & field_names, PyObject * self, PyObject * args)
+static inline PyObject * call_vectorized_function_with_python_args(F * func, std::array<std::string, std::tuple_size<typename _function_signature<F>::return_type>::value> const & field_names, PyObject * self, PyObject * args)
 {
 	return _build_vectorized_function_call_pass0<F>::call(func, field_names, self, args);
 }
