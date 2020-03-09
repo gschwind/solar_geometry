@@ -294,8 +294,8 @@ struct _build_vectorized_function_call_pass1<R(ARGS...), I, HEAD, TAIL...>
 	template<typename ...XARGS>
 	static PyObject * call (func_type * func, PyObject * args, XARGS && ... xargs)
 	{
-		return _build_vectorized_function_call_pass1<func_type, I+1, TAIL...>::call(func, args,
-				handle_numpy_1d_array<HEAD>(PyTuple_GET_ITEM(args, I)), xargs...);
+		return _build_vectorized_function_call_pass1<func_type, I+1, TAIL...>::call(func, args, xargs...,
+				handle_numpy_1d_array<HEAD>(PyTuple_GET_ITEM(args, I)));
 	}
 };
 
@@ -307,8 +307,8 @@ struct _build_vectorized_function_call_pass1<std::tuple<TARGS...>(ARGS...), I, H
 	template<typename ...XARGS>
 	static PyObject * call (func_type * func, std::array<std::string, sizeof...(TARGS)> const & field_names, PyObject * args, XARGS && ... xargs)
 	{
-		return _build_vectorized_function_call_pass1<func_type, I+1, TAIL...>::call(func, field_names, args,
-				handle_numpy_1d_array<HEAD>(PyTuple_GET_ITEM(args, I)), xargs...);
+		return _build_vectorized_function_call_pass1<func_type, I+1, TAIL...>::call(func, field_names, args, xargs...,
+				handle_numpy_1d_array<HEAD>(PyTuple_GET_ITEM(args, I)));
 	}
 };
 
