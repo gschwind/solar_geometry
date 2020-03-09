@@ -432,6 +432,20 @@ static PyObject * py_day_of_year_to_ymd(PyObject * self, PyObject * args)
 	return call_vectorized_function_with_python_args(sg1::day_of_year_to_ymd, {"month", "day_of_month"}, self, args);
 }
 
+static PyObject * py_ymd_to_day_of_year(PyObject * self, PyObject * args)
+{
+	return call_vectorized_function_with_python_args(sg1::ymd_to_day_of_year, self, args);
+}
+
+static PyObject * py_geogr_to_geoce(PyObject * self, PyObject * args)
+{
+	return call_vectorized_function_with_python_args(sg1::geogr_to_geoce, self, args);
+}
+
+static PyObject * py_azimuth_sun(PyObject * self, PyObject * args)
+{
+	return call_vectorized_function_with_python_args(sg1::azimuth_sun, self, args);
+}
 
 #define TPL_FUNCTION(name) {#name, py_##name, METH_VARARGS, "Not documented"}
 
@@ -447,6 +461,9 @@ static PyMethodDef methods[] =
 	TPL_FUNCTION(omega_to_LAT),
 	TPL_FUNCTION(julian_day_to_ymd),
 	TPL_FUNCTION(day_of_year_to_ymd),
+	TPL_FUNCTION(ymd_to_day_of_year),
+	TPL_FUNCTION(geogr_to_geoce),
+	TPL_FUNCTION(azimuth_sun),
 	{NULL, NULL, 0, NULL}
 };
 
