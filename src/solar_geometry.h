@@ -843,6 +843,10 @@ double solar_hour_angle(double t);
  **/
 double omega_to_LAT(double omega);
 
+/**
+ * TODO: Dococumentation
+ **/
+int ymd_to_day_of_year(int year, int month, int day_of_month);
 
 /**
  * Compute year-month-day value from a given julian day
@@ -870,6 +874,16 @@ std::tuple<int,int,int> julian_day_to_ymd(int jd);
  *             Tips: use std::tie(month, day_of_month)
  **/
 std::tuple<int, int> day_of_year_to_ymd(int year, int day_of_year);
+
+/**
+ * TODO: Documentation
+ **/
+double geogr_to_geoce(double phi_g);
+
+/**
+ * TODO: Documentation
+ **/
+double azimuth_sun(double phi, double delta, double omega, double gamma);
 
 } // namespace sg1
 
