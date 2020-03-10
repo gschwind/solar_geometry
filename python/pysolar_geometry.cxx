@@ -15,9 +15,14 @@
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <numpy/arrayobject.h>
 #include <numpy/npy_common.h>
+#include <numpy/ufuncobject.h>
 
 #include <iostream>
 #include <string>
+
+template<typename ... ARGS>
+void fold(ARGS && ... args) { }
+
 
 struct buffer {
 	virtual ~buffer() { }
@@ -379,6 +384,184 @@ struct _my_build_vectorized_function<std::tuple<TARGS...>(ARGS...), FUNC>
 
 };
 
+template<typename F, F &FUNC>
+struct _my_build_ufunc;
+
+// If return type is a tuple
+template<typename O_ARGS, typename ... I_ARGS, O_ARGS(&FUNC)(I_ARGS...)>
+struct _my_build_ufunc<O_ARGS(I_ARGS...), FUNC>
+{
+	char types[sizeof...(I_ARGS) + 1]; // handle function signature
+	PyUFuncGenericFunction func[1]; // handle vectorized function
+	void * data[1]; // handle extra data (not used by us currently
+
+	std::string name;
+	std::string doc;
+
+	enum : int { ISIZE = sizeof...(I_ARGS) };
+
+	using ISEQ_TYPE = make_index_sequence<ISIZE>;
+
+	template<typename T>
+	static inline T & _assign(T & dst, T && src) { return dst = src; }
+
+	template<typename>
+	struct _update_types;
+
+	template<std::size_t ... ISEQ>
+	struct _update_types<index_sequence<ISEQ...>>
+	{
+		static void update(char * types)
+		{
+			fold(_assign<char>(types[ISEQ], _python_bind_type_info<I_ARGS>::npy_type)...);
+			fold(_assign<char>(types[ISIZE], _python_bind_type_info<O_ARGS>::npy_type));
+		}
+	};
+
+	_my_build_ufunc(std::string const & name, std::string const & doc = "") :
+		data{nullptr}, func{&ufunc}, name{name}, doc{doc}
+	{
+		_update_types<ISEQ_TYPE>::update(types);
+	}
+
+	template<typename T>
+	struct data_handler {
+		char * const   _base;
+		npy_intp const _step;
+
+		data_handler(char * base, npy_intp step) : _base{base}, _step{step} { }
+
+		T & operator[](int i)
+		{
+			return *reinterpret_cast<T*>(_base+_step*i);
+		};
+	};
+
+	template<typename>
+	struct _final;
+
+	template<std::size_t ... ISEQ>
+	struct _final<index_sequence<ISEQ...>>
+	{
+		static void call(char **args, npy_intp *dimensions, npy_intp *steps, void *extra)
+		{
+		    auto inputs  = std::make_tuple(data_handler<I_ARGS>{args[ISEQ], steps[ISEQ]}...);
+		    auto outputs = data_handler<O_ARGS>{args[ISIZE], steps[ISIZE]};
+		    npy_intp const n = dimensions[0];
+		    for (int i = 0; i < n; i++) {
+				outputs[i] = FUNC(std::get<ISEQ>(inputs)[i]...);
+		     }
+		}
+	};
+
+	static void ufunc(char **args, npy_intp *dimensions, npy_intp *steps, void *extra)
+	{
+		_final<ISEQ_TYPE>::call(args, dimensions, steps, extra);
+	}
+
+	PyObject * create_ufunc()
+	{
+		return PyUFunc_FromFuncAndData(func, data, types, 1, ISIZE, 1, PyUFunc_None, name.c_str(), doc.c_str(), 0);
+	}
+
+	void register_to(PyObject * module)
+	{
+	    auto ufunc = create_ufunc();
+	    auto d = PyModule_GetDict(module);
+	    PyDict_SetItemString(d, name.c_str(), ufunc);
+	    Py_DECREF(ufunc);
+	}
+
+};
+
+// If return type is a tuple
+template<typename ... O_ARGS, typename ... I_ARGS, std::tuple<O_ARGS...>(&FUNC)(I_ARGS...)>
+struct _my_build_ufunc<std::tuple<O_ARGS...>(I_ARGS...), FUNC>
+{
+	char types[sizeof...(I_ARGS) + sizeof...(O_ARGS)]; // handle function signature
+	PyUFuncGenericFunction func[1]; // handle vectorized function
+	void * data[1]; // handle extra data (not used by us currently
+
+	std::string name;
+	std::string doc;
+
+	enum : int { ISIZE = sizeof...(I_ARGS) };
+	enum : int { OSIZE = sizeof...(O_ARGS) };
+
+	using ISEQ_TYPE = make_index_sequence<ISIZE>;
+	using OSEQ_TYPE = make_index_sequence<OSIZE>;
+
+	template<typename T>
+	static inline T & _assign(T & dst, T && src) { return dst = src; }
+
+	template<typename, typename>
+	struct _update_types;
+
+	template<std::size_t ... ISEQ, std::size_t ... OSEQ>
+	struct _update_types<index_sequence<ISEQ...>, index_sequence<OSEQ...>>
+	{
+		static void update(char * types)
+		{
+			fold(_assign<char>(types[ISEQ], _python_bind_type_info<I_ARGS>::npy_type)...);
+			fold(_assign<char>(types[ISIZE+OSEQ], _python_bind_type_info<O_ARGS>::npy_type)...);
+		}
+	};
+
+	_my_build_ufunc(std::string const & name, std::string const & doc = "") :
+		data{nullptr}, func{&ufunc}, name{name}, doc{doc}
+	{
+		_update_types<ISEQ_TYPE, OSEQ_TYPE>::update(types);
+	}
+
+	template<typename T>
+	struct data_handler {
+		char * const   _base;
+		npy_intp const _step;
+
+		data_handler(char * base, npy_intp step) : _base{base}, _step{step} { }
+
+		T & operator[](int i)
+		{
+			return *reinterpret_cast<T*>(_base+_step*i);
+		};
+	};
+
+	template<typename, typename>
+	struct _final;
+
+	template<std::size_t ... ISEQ, std::size_t ... OSEQ>
+	struct _final<index_sequence<ISEQ...>, index_sequence<OSEQ...>>
+	{
+		static void call(char **args, npy_intp *dimensions, npy_intp *steps, void *extra)
+		{
+		    auto inputs  = std::make_tuple(data_handler<I_ARGS>{args[ISEQ], steps[ISEQ]}...);
+		    auto outputs = std::make_tuple(data_handler<O_ARGS>{args[ISIZE+OSEQ], steps[ISIZE+OSEQ]}...);
+		    npy_intp const n = dimensions[0];
+		    for (int i = 0; i < n; i++) {
+				std::tie(std::get<OSEQ>(outputs)[i]...) = FUNC(std::get<ISEQ>(inputs)[i]...);
+		     }
+		}
+	};
+
+	static void ufunc(char **args, npy_intp *dimensions, npy_intp *steps, void *extra)
+	{
+		_final<ISEQ_TYPE, OSEQ_TYPE>::call(args, dimensions, steps, extra);
+	}
+
+	PyObject * create_ufunc()
+	{
+		return PyUFunc_FromFuncAndData(func, data, types, 1, ISIZE, OSIZE, PyUFunc_None, name.c_str(), doc.c_str(), 0);
+	}
+
+	void register_to(PyObject * module)
+	{
+	    auto ufunc = create_ufunc();
+	    auto d = PyModule_GetDict(module);
+	    PyDict_SetItemString(d, name.c_str(), ufunc);
+	    Py_DECREF(ufunc);
+	}
+
+};
 
 
 #define make_binding(name) \
@@ -398,6 +581,9 @@ make_binding(omega_to_LAT)
 make_binding(ymd_to_day_of_year)
 make_binding(geogr_to_geoce)
 make_binding(azimuth_sun)
+
+static _my_build_ufunc<decltype(sg1::julian_day_to_ymd), sg1::julian_day_to_ymd> ufunc_julian_day("julian_dayx");
+static _my_build_ufunc<decltype(sg1::sunset), sg1::sunset> ufunc_sunset("sunsetx");
 
 static PyObject * py_julian_day_to_ymd(PyObject * self, PyObject * args)
 {
@@ -465,6 +651,10 @@ PyInit_solar_geometry(void)
 	if (m == NULL)
 		return NULL;
 
+	/** init numpy **/
+	import_array();
+	import_umath();
+
 	module_state * state = reinterpret_cast<module_state*>(PyModule_GetState(m));
 	state->Error = PyErr_NewException("solar_geometry.error", NULL, NULL);
 	Py_INCREF(state->Error);
@@ -474,8 +664,8 @@ PyInit_solar_geometry(void)
 		return NULL;
 	Py_INCREF(&buffer_pytypeobject);
 
-	/** init numpy **/
-	import_array();
+	ufunc_julian_day.register_to(m);
+	ufunc_sunset.register_to(m);
 
 	return m;
 
