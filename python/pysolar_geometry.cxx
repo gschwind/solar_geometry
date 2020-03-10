@@ -37,7 +37,8 @@ struct buffer_impl : public buffer {
 	}
 };
 
-struct buffer_pyobject {
+struct buffer_pyobject
+{
     PyObject_HEAD
 	buffer * data;
 };
@@ -48,12 +49,14 @@ static void buffer_dealloc(buffer_pyobject * ths)
 	Py_TYPE(ths)->tp_free((PyObject*)ths);
 }
 
-static PyObject * buffer_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
+static PyObject * buffer_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
 	buffer_pyobject * ths = (buffer_pyobject*)type->tp_alloc(type, 0);
 	return (PyObject*)ths;
 }
 
-static int buffer_init(buffer_pyobject * ths, PyObject *args, PyObject *kwds) {
+static int buffer_init(buffer_pyobject * ths, PyObject *args, PyObject *kwds)
+{
 	ths->data = nullptr;
 	return 0;
 }
@@ -100,6 +103,20 @@ static PyTypeObject buffer_pytypeobject = {
 };
 
 
+template <std::size_t ...>
+struct index_sequence { };
+
+template <std::size_t N, std::size_t ... TAIL>
+struct _index_sequence : public _index_sequence<N-1, N-1, TAIL...> { };
+
+template <std::size_t ... TAIL>
+struct _index_sequence<0U, TAIL ... > {
+	using type = index_sequence<TAIL ... >;
+};
+
+
+template <std::size_t N>
+using make_index_sequence = typename _index_sequence<N>::type;
 
 
 // convenient function for debuging.
@@ -282,22 +299,16 @@ struct _my_build_vectorized_function<std::tuple<TARGS...>(ARGS...), FUNC>
 		return reinterpret_cast<char*>(&std::get<I>(*reinterpret_cast<R*>(0)))-reinterpret_cast<char*>(0);
 	}
 
-	template<int, typename...>
+	template<typename>
 	struct _create_desc_for_tuple;
 
-	template<int I, typename HEAD, typename ... TAIL>
-	struct _create_desc_for_tuple<I, HEAD, TAIL...> {
+	template<std::size_t ... I>
+	struct _create_desc_for_tuple<index_sequence<I...>> {
 		static void update(PyObject * names, PyObject * formats, PyObject * offsets)
 		{
-			PyList_SetItem(formats, I, _python_bind_type_info<HEAD>::format());
-			PyList_SetItem(offsets, I, PyLong_FromLong(get_field_offset<I>()));
-			_create_desc_for_tuple<I+1, TAIL...>::update(names, formats, offsets);
+			std::make_tuple(PyList_SetItem(formats, I, _python_bind_type_info<TARGS>::format())...);
+			std::make_tuple(PyList_SetItem(offsets, I, PyLong_FromLong(get_field_offset<I>()))...);
 		}
-	};
-
-	template<int I>
-	struct _create_desc_for_tuple<I> {
-		static void update(PyObject * names, PyObject * formats, PyObject * offsets) { }
 	};
 
 	static inline PyArray_Descr * create_desc(field_name_type const & field_names) {
@@ -311,7 +322,7 @@ struct _my_build_vectorized_function<std::tuple<TARGS...>(ARGS...), FUNC>
 		PyDict_SetItemString(spec, "formats", formats);
 		PyDict_SetItemString(spec, "offsets", offsets);
 
-		_create_desc_for_tuple<0, TARGS...>::update(names, formats, offsets);
+		_create_desc_for_tuple<make_index_sequence<sizeof...(TARGS)>>::update(names, formats, offsets);
 
 		/* must be handled by spec */
 		Py_DECREF(names);
@@ -331,75 +342,57 @@ struct _my_build_vectorized_function<std::tuple<TARGS...>(ARGS...), FUNC>
 
 	}
 
-	template<typename...>
-	struct _final;
-
 	// T0, TN expected to be handle_numpy_1d_array<X>
 	template<typename T0, typename ... TN>
-	struct _final<T0, TN...> {
-		static PyObject * call(field_name_type const & field_names, T0 args0,  TN ... args)
-		{
-			int nd = args0.size();
+	static PyObject * final_call(field_name_type const & field_names, T0 args0,  TN ... args)
+	{
+		int nd = args0.size();
 
-			auto buffer = new buffer_impl<R>(nd);
-			auto output_array_data = buffer->data;
+		auto buffer = new buffer_impl<R>(nd);
+		auto output_array_data = buffer->data;
 
-			for (int i = 0; i < nd; ++i) {
-				new (&output_array_data[i]) R; // call tuple inplace constructor
-				output_array_data[i] = FUNC(args0[i], args[i]...);
-			}
-
-			npy_intp out_dims[] = {nd};
-			npy_intp strides[] = {sizeof(R)};
-
-			auto desc = create_desc(field_names);
-
-			/* create the output */
-			PyObject *argList = Py_BuildValue("()");
-			auto pybuffer = PyObject_CallObject(reinterpret_cast<PyObject*>(&buffer_pytypeobject), argList);
-			if (pybuffer == nullptr)
-				return nullptr;
-			reinterpret_cast<buffer_pyobject*>(pybuffer)->data = buffer;
-
-			PyArrayObject * out_arr = reinterpret_cast<PyArrayObject*>(PyArray_NewFromDescr(
-					&PyArray_Type, desc, 1, out_dims, strides, output_array_data, 0, nullptr));
-			PyArray_SetBaseObject(out_arr, pybuffer);
-
-			return reinterpret_cast<PyObject*>(out_arr);
+		for (int i = 0; i < nd; ++i) {
+			new (&output_array_data[i]) R; // call tuple inplace constructor
+			output_array_data[i] = FUNC(args0[i], args[i]...);
 		}
-	};
 
-	template<int, typename ...>
+		npy_intp out_dims[] = {nd};
+		npy_intp strides[] = {sizeof(R)};
+
+		auto desc = create_desc(field_names);
+
+		/* create the output */
+		PyObject *argList = Py_BuildValue("()");
+		auto pybuffer = PyObject_CallObject(reinterpret_cast<PyObject*>(&buffer_pytypeobject), argList);
+		if (pybuffer == nullptr)
+			return nullptr;
+		reinterpret_cast<buffer_pyobject*>(pybuffer)->data = buffer;
+
+		PyArrayObject * out_arr = reinterpret_cast<PyArrayObject*>(PyArray_NewFromDescr(
+				&PyArray_Type, desc, 1, out_dims, strides, output_array_data, 0, nullptr));
+		PyArray_SetBaseObject(out_arr, pybuffer);
+
+		return reinterpret_cast<PyObject*>(out_arr);
+	}
+
+	template<typename>
 	struct _pass1;
 
-	template<int I, typename HEAD, typename ... TAIL>
-	struct _pass1<I, HEAD, TAIL...>
-	{
-		template<typename ...XARGS>
-		static PyObject * call(field_name_type const & field_names, PyObject * args, XARGS ... xargs)
-		{
-			return _pass1<I+1, TAIL...>::call(field_names, args, xargs...,
-					handle_numpy_1d_array<HEAD>(PyTuple_GET_ITEM(args, I)));
-		}
-	};
-
-	template<int I>
-	struct _pass1<I>
-	{
-		template<typename ...XARGS>
-		static PyObject * call(field_name_type const & field_names, PyObject * args, XARGS ... xargs)
+	template<std::size_t ... I>
+	struct _pass1<index_sequence<I...>> {
+		static PyObject * call(field_name_type const & field_names, PyObject * args)
 		{
 			/* check for length of argument */
-			if (PyTuple_GET_SIZE(args) != I)
+			if (PyTuple_GET_SIZE(args) != sizeof...(ARGS))
 				return NULL;
 
-			return _final<XARGS...>::call(field_names, xargs...);
+			return final_call(field_names, handle_numpy_1d_array<ARGS>(PyTuple_GET_ITEM(args, I))...);
 		}
 	};
 
 	static PyObject * call(field_name_type const & field_names, PyObject * self, PyObject * args)
 	{
-		return _pass1<0, ARGS...>::call(field_names, args);
+		return _pass1<make_index_sequence<sizeof...(ARGS)>>::call(field_names, args);
 	}
 
 };
