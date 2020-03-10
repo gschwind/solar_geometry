@@ -228,58 +228,40 @@ template<typename R, typename ... ARGS, R(&FUNC)(ARGS...)>
 struct _my_build_vectorized_function<R(ARGS...), FUNC> {
 	using func_type = R(ARGS...);
 
-	template<typename...>
-	struct _final;
-
 	// T0, TN expected to be handle_numpy_1d_array<X>
 	template<typename T0, typename ... TN>
-	struct _final<T0, TN...> {
-		static PyObject * call(T0 args0,  TN ... args)
-		{
-			int nd = args0.size();
-			npy_intp out_dims[] = {nd};
-			PyArrayObject * out_arr = reinterpret_cast<PyArrayObject*>(PyArray_SimpleNew(1, out_dims,
-					_python_bind_type_info<R>::npy_type));
+	static PyObject * _final_call(T0 args0,  TN ... args)
+	{
+		int nd = args0.size();
+		npy_intp out_dims[] = {nd};
+		PyArrayObject * out_arr = reinterpret_cast<PyArrayObject*>(PyArray_SimpleNew(1, out_dims,
+				_python_bind_type_info<R>::npy_type));
 
-			for (int i = 0; i < nd; ++i) {
-				*reinterpret_cast<R*>(PyArray_GETPTR1(out_arr,i)) = FUNC(args0[i], args[i]...);
-			}
-
-			return reinterpret_cast<PyObject *>(out_arr);
+		for (int i = 0; i < nd; ++i) {
+			*reinterpret_cast<R*>(PyArray_GETPTR1(out_arr,i)) = FUNC(args0[i], args[i]...);
 		}
-	};
 
-	template<int, typename ...>
+		return reinterpret_cast<PyObject *>(out_arr);
+	}
+
+	template<typename>
 	struct _pass1;
 
-	template<int I, typename HEAD, typename ... TAIL>
-	struct _pass1<I, HEAD, TAIL...>
+	template<std::size_t ... I>
+	struct _pass1<index_sequence<I...>>
 	{
-		template<typename ... XARGS>
-		static PyObject * call(PyObject * args, XARGS ... xargs)
-		{
-			return _pass1<I+1, TAIL...>::call(args, xargs...,
-					handle_numpy_1d_array<HEAD>(PyTuple_GET_ITEM(args, I)));
-		}
-	};
-
-	template<int I>
-	struct _pass1<I>
-	{
-		template<typename ...XARGS>
-		static PyObject * call(PyObject * args, XARGS ... xargs)
+		static PyObject * call(PyObject * args)
 		{
 			/* check for length of argument */
-			if (PyTuple_GET_SIZE(args) != I)
+			if (PyTuple_GET_SIZE(args) != sizeof...(ARGS))
 				return NULL;
-
-			return _final<XARGS...>::call(xargs...);
+			return _final_call(handle_numpy_1d_array<ARGS>(PyTuple_GET_ITEM(args, I))...);
 		}
 	};
 
 	static PyObject * call(PyObject * self, PyObject * args)
 	{
-		return _pass1<0, ARGS...>::call(args);
+		return _pass1<make_index_sequence<sizeof...(ARGS)>>::call(args);
 	}
 
 };
