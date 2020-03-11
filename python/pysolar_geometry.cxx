@@ -115,11 +115,11 @@ struct _python_bind_type_info<char> {
 };
 
 template<typename F, F &FUNC>
-struct _my_build_ufunc;
+struct _build_ufunc;
 
 // If return type is a tuple
 template<typename O_ARGS, typename ... I_ARGS, O_ARGS(&FUNC)(I_ARGS...)>
-struct _my_build_ufunc<O_ARGS(I_ARGS...), FUNC>
+struct _build_ufunc<O_ARGS(I_ARGS...), FUNC>
 {
 	char types[sizeof...(I_ARGS) + 1]; // handle function signature
 	PyUFuncGenericFunction func[1]; // handle vectorized function
@@ -148,7 +148,7 @@ struct _my_build_ufunc<O_ARGS(I_ARGS...), FUNC>
 		}
 	};
 
-	_my_build_ufunc(std::string const & name, std::string const & doc = "") :
+	_build_ufunc(std::string const & name, std::string const & doc = "") :
 		data{nullptr}, func{&ufunc}, name{name}, doc{doc}
 	{
 		_update_types<ISEQ_TYPE>::update(types);
@@ -206,7 +206,7 @@ struct _my_build_ufunc<O_ARGS(I_ARGS...), FUNC>
 
 // If return type is a tuple
 template<typename ... O_ARGS, typename ... I_ARGS, std::tuple<O_ARGS...>(&FUNC)(I_ARGS...)>
-struct _my_build_ufunc<std::tuple<O_ARGS...>(I_ARGS...), FUNC>
+struct _build_ufunc<std::tuple<O_ARGS...>(I_ARGS...), FUNC>
 {
 	char types[sizeof...(I_ARGS) + sizeof...(O_ARGS)]; // handle function signature
 	PyUFuncGenericFunction func[1]; // handle vectorized function
@@ -237,7 +237,7 @@ struct _my_build_ufunc<std::tuple<O_ARGS...>(I_ARGS...), FUNC>
 		}
 	};
 
-	_my_build_ufunc(std::string const & name, std::string const & doc = "") :
+	_build_ufunc(std::string const & name, std::string const & doc = "") :
 		data{nullptr}, func{&ufunc}, name{name}, doc{doc}
 	{
 		_update_types<ISEQ_TYPE, OSEQ_TYPE>::update(types);
@@ -295,7 +295,7 @@ struct _my_build_ufunc<std::tuple<O_ARGS...>(I_ARGS...), FUNC>
 
 
 #define make_binding(name) \
-static _my_build_ufunc<decltype(sg1::name), sg1::name> ufunc_##name(#name);
+static _build_ufunc<decltype(sg1::name), sg1::name> ufunc_##name(#name);
 
 make_binding(sunset)
 make_binding(gamma_sun)
