@@ -23,26 +23,6 @@
 #include <iostream>
 #include <string>
 
-
-
-#define make_binding(name) \
-static python_bind_helper::build_ufunc<decltype(sg1::name), sg1::name> ufunc_##name(#name);
-
-make_binding(sunset)
-make_binding(gamma_sun)
-make_binding(day_angle)
-make_binding(corr_distance)
-make_binding(nbdays_month)
-make_binding(declination_sun)
-make_binding(solar_hour_angle)
-make_binding(omega_to_LAT)
-make_binding(ymd_to_day_of_year)
-make_binding(geogr_to_geoce)
-make_binding(azimuth_sun)
-make_binding(julian_day_to_ymd)
-make_binding(day_of_year_to_ymd)
-
-
 static PyMethodDef methods[] =
 {
 	{NULL, NULL, 0, NULL}
@@ -93,21 +73,22 @@ PyInit_solar_geometry(void)
 	PyModule_AddObject(m, "error", state->Error);
 
 #define register_ufunc(name) \
-ufunc_##name.register_to(m)
+static python_bind_helper::build_ufunc<decltype(sg1::name), sg1::name> ufunc_##name(#name); \
+ufunc_##name.register_to(m);
 
-	register_ufunc(sunset);
-	register_ufunc(gamma_sun);
-	register_ufunc(day_angle);
-	register_ufunc(corr_distance);
-	register_ufunc(nbdays_month);
-	register_ufunc(declination_sun);
-	register_ufunc(solar_hour_angle);
-	register_ufunc(omega_to_LAT);
-	register_ufunc(ymd_to_day_of_year);
-	register_ufunc(geogr_to_geoce);
-	register_ufunc(azimuth_sun);
-	register_ufunc(julian_day_to_ymd);
-	register_ufunc(day_of_year_to_ymd);
+	register_ufunc(sunset)
+	register_ufunc(gamma_sun)
+	register_ufunc(day_angle)
+	register_ufunc(corr_distance)
+	register_ufunc(nbdays_month)
+	register_ufunc(declination_sun)
+	register_ufunc(solar_hour_angle)
+	register_ufunc(omega_to_LAT)
+	register_ufunc(ymd_to_day_of_year)
+	register_ufunc(geogr_to_geoce)
+	register_ufunc(azimuth_sun)
+	register_ufunc(julian_day_to_ymd)
+	register_ufunc(day_of_year_to_ymd)
 
 	return m;
 
