@@ -87,7 +87,7 @@ ufunc_##name.register_to(m);
 	register_ufunc(ymd_to_day_of_year)
 	register_ufunc(geogr_to_geoce)
 	register_ufunc(azimuth_sun)
-	register_ufunc(julian_day_to_ymd)
+	register_ufunc(julian_date_to_ymd)
 	register_ufunc(day_of_year_to_ymd)
 
 	return m;

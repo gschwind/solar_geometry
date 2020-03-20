@@ -157,7 +157,7 @@ double omega_sunset(double phi, double delta)
 }
 
 
-std::tuple<int,int,int> julian_day_to_ymd(int jd)
+std::tuple<int,int,int> julian_date_to_ymd(int jd)
 {
 	double H, L, N, I, J, K;
 
@@ -1374,7 +1374,7 @@ int sg1_ymd_to_julian_day(int year, int month, int day_of_month)
 
 void sg1_julian_day_to_ymd(int jd, int * year, int * month, int * day_of_month)
 {
-	std::tie(*year,*month,*day_of_month) = sg1::julian_day_to_ymd(jd);
+	std::tie(*year,*month,*day_of_month) = sg1::julian_date_to_ymd(jd);
 }
 
 
