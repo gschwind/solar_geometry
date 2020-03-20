@@ -858,7 +858,7 @@ int ymd_to_day_of_year(int year, int month, int day_of_month);
  *             day_of_month the day number within the month in [1,31]
  *             Tips: use std::tie(year, month, day)
  **/
-std::tuple<int,int,int> julian_day_to_ymd(int jd);
+std::tuple<int,int,int> julian_date_to_ymd(int jd);
 
 
 /**
