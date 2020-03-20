@@ -760,7 +760,7 @@ static constexpr double const PI_2 = 1.57079632679489661923;
  * @param[in]  delta sun declination in radians
  * @return     omega at sunset
  **/
-double sunset(double phi, double delta);
+double omega_sunset(double phi, double delta);
 
 /**
  * @param[in]  phi geocentric phi in radians (latitude)

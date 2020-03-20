@@ -151,7 +151,7 @@ double omega_to_LAT(double omega)
 }
 
 
-double sunset(double phi, double delta)
+double omega_sunset(double phi, double delta)
 {
   return acos(- tan(phi) * tan(delta));
 }
@@ -251,7 +251,7 @@ std::tuple<int, int> day_of_year_to_ymd(int year, int day_of_year)
 
 double sg1_sunset(double phi, double delta)
 {
-  return sg1::sunset(phi, delta);
+  return sg1::omega_sunset(phi, delta);
 }
 
 double sg1_geogr_to_geoce(double phi_g)
