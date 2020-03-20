@@ -76,7 +76,7 @@ PyInit_solar_geometry(void)
 static python_bind_helper::build_ufunc<decltype(sg1::name), sg1::name> ufunc_##name(#name); \
 ufunc_##name.register_to(m);
 
-	register_ufunc(sunset)
+	register_ufunc(omega_sunset)
 	register_ufunc(gamma_sun)
 	register_ufunc(day_angle)
 	register_ufunc(corr_distance)
