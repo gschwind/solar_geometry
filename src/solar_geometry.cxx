@@ -246,6 +246,36 @@ std::tuple<int, int> day_of_year_to_ymd(int year, int day_of_year)
 
 }
 
+
+double G0_general(double phi_g, double eccentricity, double delta,
+		double omega1, double omega2)
+{
+	double const phi = geogr_to_geoce(phi_g);
+	double const omega_ss = omega_sunset(phi, delta);
+	double const omega_sr = -omega_ss;
+
+	if (omega1 > omega2)
+		return std::nan("0");
+
+	// FIXME: issue when omega1 or omega2 are not in [-pi,pi]
+	if (omega1 > omega_ss)
+		return 0.0;
+	if (omega2 < omega_sr)
+		return 0.0;
+
+	if (omega1 < omega_sr)
+		omega1 = omega_sr;
+
+	if (omega2 > omega_ss)
+		omega2 = omega_ss;
+
+	double const a = sg1::I0 * eccentricity * sg1::DAY_LENGTH / (2.0 * sg1::PI_LOW_PRECISION);
+	double const b1 = sin(phi) * sin(delta) * (omega2 - omega1);
+	double const b2 = cos(phi) * cos(delta) * (sin(omega2) - sin(omega1));
+	return a * (b1 + b2);
+
+}
+
 } // namespace sg1
 
 

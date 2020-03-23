@@ -885,6 +885,12 @@ double geogr_to_geoce(double phi_g);
  **/
 double azimuth_sun(double phi, double delta, double omega, double gamma);
 
+/**
+ * TODO: Documentation
+ **/
+double G0_general(double phi_g, double eccentricity, double delta,
+		double omega1, double omega2);
+
 } // namespace sg1
 
 #endif // C++ API
