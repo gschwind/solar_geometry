@@ -253,7 +253,6 @@ inline double _G0_general(double phi, double eccentricity, double delta, double 
 			 + cos(phi) * cos(delta) * (sin(omega2) - sin(omega1)));
 }
 
-
 double G0_general(double phi_g, double eccentricity, double delta,
 		double omega1, double omega2)
 {
@@ -264,21 +263,10 @@ double G0_general(double phi_g, double eccentricity, double delta,
 	if (omega1 > omega2)
 		return std::nan("0");
 
-	// FIXME: issue when omega1 or omega2 are not in [-pi,pi]
-	if (omega1 > omega_ss)
-		return 0.0;
-	if (omega2 < omega_sr)
-		return 0.0;
-
-	if (omega1 < omega_sr)
-		omega1 = omega_sr;
-
-	if (omega2 > omega_ss)
-		omega2 = omega_ss;
-
-	return _G0_general(phi, eccentricity, delta, omega1, omega2);
+	return G0_general_daily_func{phi, delta, eccentricity, omega_sr, omega_ss}(omega_range{omega1, omega2});
 
 }
+
 
 } // namespace sg1
 

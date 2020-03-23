@@ -683,6 +683,7 @@ int sg1_ymd_to_julian_day(int year, int month, int day_of_month);
  **/
 void sg1_julian_day_to_ymd(int jd, int * year, int * month, int * day_of_month);
 
+
 /***************************************/
 /* POSITION OF THE SUN IN THE SKY FAST */
 /***************************************/
@@ -746,6 +747,7 @@ void sg1_cos_incident_angle_fast(SG1_SOLAR_GEOMETRY_FAST *p_sgf, double cos_omeg
  */
 
 #include <tuple>
+#include <cmath>
 
 namespace sg1 {
 
@@ -753,6 +755,106 @@ static constexpr double const PI_LOW_PRECISION = 3.141592654;
 static constexpr double const I0 = 1367.0; /* solar constant in W/m2 */
 static constexpr double const DAY_LENGTH = 24.0; /* average value for the length of the day in decimal hours */
 static constexpr double const PI_2 = 1.57079632679489661923;
+
+/* convenient precalcul of omega range to accelerate irradiation computation */
+class omega_range
+{
+	double _omega1;
+	double _omega2;
+	double _d_omega; /* = omega2 - omega1 */
+	double _d_sin_omega; /* = sin(omega2) - sin(omega1) */
+
+public:
+	omega_range() = default;
+	omega_range(omega_range const &) = default;
+	omega_range & operator=(omega_range const &) = default;
+
+	/**
+	 * This function updates the period parameters.
+	 * Inputs:
+	 *  ths : the output struct
+	 *  omega1 : hour angle at the begining of the period
+	 *  omega2 : hour angle at the end of the period
+	 *  omega1 must <= omega2.
+	 */
+	omega_range(double omega1, double omega2)
+	{
+		_omega1 = omega1;
+		_omega2 = omega2;
+		_d_omega = omega2 - omega1;
+		_d_sin_omega = sin(omega2) - sin(omega1);
+	}
+
+	double omega1() const {
+		return _omega1;
+	}
+
+	double omega2() const {
+		return _omega2;
+	}
+
+	double d_omega() const {
+		return _d_omega;
+	}
+
+	double d_sin_omega() const {
+		return _d_sin_omega;
+	}
+
+};
+
+class G0_general_daily_func
+{
+	double _omega_sr;
+	double _omega_ss;
+    double _sin_phi_x_sin_delta;
+    double _cos_phi_x_cos_delta;
+    double _dt_x_i0_x_eccentricity;
+
+    double _unsafe_exec(omega_range const & range) const {
+		return _dt_x_i0_x_eccentricity * (_sin_phi_x_sin_delta * range.d_omega() + _cos_phi_x_cos_delta * range.d_sin_omega());
+    }
+
+public:
+    G0_general_daily_func(double phi, double delta, double eccentricity, double omega_sr, double omega_ss)
+	{
+    	_omega_sr = omega_sr;
+    	_omega_ss = omega_ss;
+		_sin_phi_x_sin_delta = std::sin(phi) * std::sin(delta);
+		_cos_phi_x_cos_delta = std::cos(phi) * std::cos(delta);
+		_dt_x_i0_x_eccentricity = sg1::I0 * eccentricity * sg1::DAY_LENGTH / (2.0 * sg1::PI_LOW_PRECISION);
+	}
+
+    /**
+     * Compute the irradiation for the given omega range
+     **/
+    double operator() (omega_range const & range) const
+    {
+    	// FIXME: issue when omega1 or omega2 are not in [-pi,pi]
+    	if (range.omega2() < _omega_sr)
+    		return 0.0;
+    	if (range.omega1() > _omega_ss)
+    		return 0.0;
+    	if (range.omega1() < _omega_sr or range.omega2() > _omega_ss) {
+    		double omega1 = range.omega1() < _omega_sr ? _omega_sr : range.omega1();
+    		double omega2 = range.omega1() > _omega_ss ? _omega_ss : range.omega2();
+    		omega_range fix_range(omega1, omega2);
+    		return _unsafe_exec(fix_range);
+    	} else {
+    		return _unsafe_exec(range);
+    	}
+    }
+
+    /**
+     * Compute the irradiation for the whole day
+     * equivalent to G0_general_dayly_func(omega_range{omega_sr, omega_ss});
+     **/
+    double operator()() const
+    {
+    	return _unsafe_exec(omega_range{_omega_sr, _omega_ss});
+    }
+
+};
 
 
 /**
