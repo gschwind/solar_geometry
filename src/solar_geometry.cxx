@@ -246,6 +246,13 @@ std::tuple<int, int> day_of_year_to_ymd(int year, int day_of_year)
 
 }
 
+inline double _G0_general(double phi, double eccentricity, double delta, double omega1, double omega2)
+{
+	return sg1::I0 * eccentricity * sg1::DAY_LENGTH / (2.0 * sg1::PI_LOW_PRECISION)
+			* (sin(phi) * sin(delta) * (omega2 - omega1)
+			 + cos(phi) * cos(delta) * (sin(omega2) - sin(omega1)));
+}
+
 
 double G0_general(double phi_g, double eccentricity, double delta,
 		double omega1, double omega2)
@@ -269,10 +276,7 @@ double G0_general(double phi_g, double eccentricity, double delta,
 	if (omega2 > omega_ss)
 		omega2 = omega_ss;
 
-	double const a = sg1::I0 * eccentricity * sg1::DAY_LENGTH / (2.0 * sg1::PI_LOW_PRECISION);
-	double const b1 = sin(phi) * sin(delta) * (omega2 - omega1);
-	double const b2 = cos(phi) * cos(delta) * (sin(omega2) - sin(omega1));
-	return a * (b1 + b2);
+	return _G0_general(phi, eccentricity, delta, omega1, omega2);
 
 }
 
@@ -624,10 +628,7 @@ int sg1_G0_general(double phi_g, double eccentricity, double delta,
     *G0_12 = 0.0;
   else
     {
-      a = sg1::I0 * eccentricity * sg1::DAY_LENGTH / (2.0 * sg1::PI_LOW_PRECISION);
-      b1 = sin (phi) * sin (delta) * (omega2 - omega1);
-      b2 = cos (phi) * cos (delta) * (sin (omega2) - sin (omega1));
-      c = a * (b1 + b2);
+      c = sg1::_G0_general(phi, eccentricity, delta, omega1, omega2);
       if (c < 0.0)
 	*G0_12 = 0.0;
       else
