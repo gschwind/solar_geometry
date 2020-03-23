@@ -83,7 +83,7 @@ ufunc_##name.register_to(m);
 	register_ufunc(nbdays_month)
 	register_ufunc(declination_sun)
 	register_ufunc(solar_hour_angle)
-	register_ufunc(omega_to_LAT)
+	register_ufunc(omega_to_TST)
 	register_ufunc(ymd_to_day_of_year)
 	register_ufunc(geogr_to_geoce)
 	register_ufunc(azimuth_sun)
