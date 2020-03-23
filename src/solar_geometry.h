@@ -854,6 +854,26 @@ public:
     	return _unsafe_exec(omega_range{_omega_sr, _omega_ss});
     }
 
+    double omega_sr() const {
+    	return _omega_sr;
+    }
+
+    double omega_ss() const {
+    	return _omega_ss;
+    }
+
+    double sin_phi_x_sin_delta() const {
+    	return _sin_phi_x_sin_delta;
+    }
+
+    double cos_phi_x_cos_delta() const {
+    	return _cos_phi_x_cos_delta;
+    }
+
+    double dt_x_i0_x_eccentricity() const {
+    	return _dt_x_i0_x_eccentricity;
+    }
+
 };
 
 
