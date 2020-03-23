@@ -143,9 +143,9 @@ double solar_hour_angle(double t)
  * Supplies the solar time in hours in [0,24].
  *
  * @input omega: solar_hour_angle in radians
- * @return solar time i.e. LAT (0..24 decimal hours)
+ * @return solar time i.e. TST (0..24 decimal hours)
  **/
-double omega_to_LAT(double omega)
+double omega_to_TST(double omega)
 {
     return 12.0 + omega * 12.0 / sg1::PI_LOW_PRECISION;
 }
@@ -406,11 +406,11 @@ int sg1_solar_hour_angle(double t, double *omega)
 }
 
 
-int sg1_omega_to_LAT(double omega, double *t)
+int sg1_omega_to_TST(double omega, double *t)
 {
     if (fabs(omega) > sg1::PI_LOW_PRECISION)
         return 1;
-    *t = sg1::omega_to_LAT(omega);
+    *t = sg1::omega_to_TST(omega);
     return 0;
 }
 
@@ -486,14 +486,14 @@ int sg1_timerise_daylength(double omega_sr, double omega_ss, double *t_sr,
         return 1;
     if (omega_ss > sg1::PI_LOW_PRECISION || omega_ss < 0.0)
         return 1;
-    *t_sr = sg1::omega_to_LAT(omega_sr);
-    *t_ss = sg1::omega_to_LAT(omega_ss);
+    *t_sr = sg1::omega_to_TST(omega_sr);
+    *t_ss = sg1::omega_to_TST(omega_ss);
     *S0 = *t_ss - *t_sr;
     return 0;
 }
 
 
-int sg1_LMT_to_LAT(double day_angle, double lambda, double lambda_ref,
+int sg1_LMT_to_TST(double day_angle, double lambda, double lambda_ref,
         int summer_corr, double *dt)
 {
     if (day_angle <= 0.0 || day_angle >= (2.0 * sg1::PI_LOW_PRECISION * 1.0021))
@@ -509,7 +509,7 @@ int sg1_LMT_to_LAT(double day_angle, double lambda, double lambda_ref,
 }
 
 
-int sg1_UT_to_LAT(double UT, double day_angle, double lambda, double *LAT)
+int sg1_UT_to_TST(double UT, double day_angle, double lambda, double *TST)
 {
     if (day_angle <= 0.0 || day_angle >= (2.0 * sg1::PI_LOW_PRECISION * 1.0021))
         return 1;
@@ -519,11 +519,11 @@ int sg1_UT_to_LAT(double UT, double day_angle, double lambda, double *LAT)
         return 1;
 
     double ET = sg1::compute_ET(day_angle);
-    *LAT = UT + ET + (lambda * 12.0 / sg1::PI_LOW_PRECISION);
-    if (*LAT < 0.0)
-        *LAT += 24.0;
-    if (*LAT > 24.0)
-        *LAT -= 24.0;
+    *TST = UT + ET + (lambda * 12.0 / sg1::PI_LOW_PRECISION);
+    if (*TST < 0.0)
+        *TST += 24.0;
+    if (*TST > 24.0)
+        *TST -= 24.0;
     return 0;
 }
 

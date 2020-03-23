@@ -50,8 +50,8 @@ extern "C" {
  * gamma: solar altitude (or elevation) angle
  * theta: solar incidence (or zenithal) angle (ESRA --> zeta)
  * alpha: solar azimuthal angle (or psi)
- * t: solar time = true solar time (TST) = local apparent time (LAT)
- * LAT: local apparent time or solar time or true solar time (TST)
+ * t: solar time = true solar time (TST) = local apparent time (TST)
+ * TST: local apparent time or solar time or true solar time (TST)
  *       --> this system of time offers the advantage of symmetry of the solar
  *       geometry about the north-south line
  * LMT: local mean time or clock time
@@ -72,7 +72,7 @@ extern "C" {
  * Remarks:
  *  - All angles are computed in radians as a standard.
  *  - The basic trigonometric calculations on the position of the sun are
- *    carried out in LAT.
+ *    carried out in TST.
  **/
 
 /*********************************************
@@ -210,7 +210,7 @@ int sg1_declination_sun_month_max(int month_number, double *delta_month);
  * The procedure "solar_hour_angle" supplies the solar hour angle (in radians). By
  * convention the hour angle is negative before noon and positive after noon.
  *
- * @param[in]  t: solar time i.e. LAT (0..24 decimal hours)
+ * @param[in]  t: solar time i.e. TST (0..24 decimal hours)
  * @param[out] omega: solar hour angle in radians.
  * @return 0 if everything is OK, otherwise return 1.
  **/
@@ -218,15 +218,15 @@ int sg1_solar_hour_angle(double t, double *omega);
 
 
 /**
- * The procedure "omega_to_LAT" does the reverse operation of the procedure
+ * The procedure "omega_to_TST" does the reverse operation of the procedure
  * "solar_hour_angle" i.e. computes the solar time (in decimal hours) from the
  * solar hour angle (in radians).
  *
  * @param[in]  omega solar hour angle (in radians)
- * @param[out] t solar time i.e. LAT decimal hours in [0,24]
+ * @param[out] t solar time i.e. TST decimal hours in [0,24]
  * @return     Returns 0 if OK, 1 otherwise.
  **/
-int sg1_omega_to_LAT(double omega, double *t);
+int sg1_omega_to_TST(double omega, double *t);
 
 /**
  * Convert geograpique latitude to geocentrique one
@@ -244,7 +244,7 @@ double sg1_geogr_to_geoce(double phi_g);
  *
  * @param[in]  phi_g latitude geographic in radians, positive to North
  * @param[in]  delta solar declination angle in radians
- * @param[in]  t solar time i.e. LAT decimal hours in [0,24]
+ * @param[in]  t solar time i.e. TST decimal hours in [0,24]
  * @param[out] omega solar hour angle in radians
  * @return     Returns 0 if OK, 1 otherwise.
  **/
@@ -287,7 +287,7 @@ double sg1_sunset(double phi, double delta);
 
 /**
  * The procedure "timerise_daylength" supplies the times of astronomical
- * sunrise and sunset, and the astronomical daylength, all in LAT decimal
+ * sunrise and sunset, and the astronomical daylength, all in TST decimal
  * hours.
  *
  * @param[in]  omega_sr sunrise hour angle in radians
@@ -306,8 +306,8 @@ int sg1_timerise_daylength(double omega_sr, double omega_ss, double *t_sr,
 
 
 /**
- * The procedure "LMT_to_LAT computes the difference (in decimal hours) between
- * the LAT (local apparent time) and the LMT (local mean time or clock time)
+ * The procedure "LMT_to_TST computes the difference (in decimal hours) between
+ * the TST (true solar time) and the LMT (local mean time or clock time)
  * systems at solar noon. Two stages:
  *   - the first stage calculates the equation of time, ET, wich allows for
  *     perturbations in the rotational and angular orbital speed of the Earth.
@@ -322,27 +322,27 @@ int sg1_timerise_daylength(double omega_sr, double omega_ss, double *t_sr,
  * @param[in]  lambda_ref reference longitude of the time zone in radians
  * @param[in]  summer_corr correction for summer time in integral hours
  * @param[out] dt Offset between local mean time (LMT) and local apparent time
- *             (LAT) in decimal hours
+ *             (TST) in decimal hours
  * @return     Returns 0 if OK, 1 otherwise.
  */
-int sg1_LMT_to_LAT(double day_angle, double lambda, double lambda_ref,
+int sg1_LMT_to_TST(double day_angle, double lambda, double lambda_ref,
         int summer_corr, double *dt);
 
 
 /**
- * The procedure "UT_to_LAT computes the conversion of the UT (Universal time)
- * into the LAT (local apparent time) systems at solar noon (in decimal hours).
+ * The procedure "UT_to_TST computes the conversion of the UT (Universal time)
+ * into the TST (true solar time) systems at solar noon (in decimal hours).
  * First, the equation of time, ET, is computed (in decimal hours), wich allows
  * for perturbations in the rotational and angular orbital speed of the Earth.
  *
  * @param[in]  UT hours Universal Time
  * @param[in]  day_angle day angle in radians
  * @param[in]  lambda longitude of the site in radians, positive to East
- * @param[out] LAT local apparent time or solar time or true solar time (TST)
+ * @param[out] TST local apparent time or solar time or true solar time (TST)
  *             in decimal hours
  * @return     Returns 0 if OK, 1 otherwise.
  **/
-int sg1_UT_to_LAT(double UT, double day_angle, double lambda, double *LAT);
+int sg1_UT_to_TST(double UT, double day_angle, double lambda, double *TST);
 
 /**********************************
  * POSITION OF THE SUN IN THE SKY *
@@ -829,7 +829,7 @@ double declination_sun(int year, int day_of_year, double lambda);
  * The procedure "solar_hour_angle" supplies the solar hour angle (in radians). By
  * convention the hour angle is negative before noon and positive after noon.
  *
- * @param[in]  t solar time i.e. LAT (0..24 decimal hours)
+ * @param[in]  t solar time i.e. TST (0..24 decimal hours)
  * @return     solar_hour_angle in radians.
  **/
 double solar_hour_angle(double t);
@@ -839,9 +839,9 @@ double solar_hour_angle(double t);
  * Supplies the solar time in hours in [0,24].
  *
  * @param[in]  omega solar_hour_angle in radians
- * @return     solar time i.e. LAT (0..24 decimal hours)
+ * @return     solar time i.e. TST (0..24 decimal hours)
  **/
-double omega_to_LAT(double omega);
+double omega_to_TST(double omega);
 
 /**
  * TODO: Dococumentation
