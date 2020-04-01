@@ -754,6 +754,8 @@ namespace sg1 {
 static constexpr double const PI_LOW_PRECISION = 3.141592654;
 static constexpr double const I0 = 1367.0; /* solar constant in W/m2 */
 static constexpr double const DAY_LENGTH = 24.0; /* average value for the length of the day in decimal hours */
+
+static constexpr double const PI = std::acos(-1.0);
 static constexpr double const PI_2 = 1.57079632679489661923;
 
 /* convenient precalcul of omega range to accelerate irradiation computation */
