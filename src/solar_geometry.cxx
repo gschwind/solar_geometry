@@ -153,7 +153,8 @@ double omega_to_TST(double omega)
 
 double omega_sunset(double phi, double delta)
 {
-  if (phi-delta > PI_2) return std::nan("0");
+  if (fabs(phi-delta) > PI_2) return std::nan("0"); // full night
+  if (fabs(phi+delta) > PI_2) return PI; // full day
   return acos(- tan(phi) * tan(delta));
 }
 
