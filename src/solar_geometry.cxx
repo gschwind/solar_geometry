@@ -228,10 +228,11 @@ double geogr_to_geoce(double phi_g)
 
 int ymd_to_day_of_year(int year, int month, int day_of_month)
 {
-    int day_of_year = day_of_month + sg1::MONTHLY_DAY_OF_YEAR_OFFSET[month - 1];
-    if (sg1::is_leap_year(year) and (month > 2))
-        day_of_year += 1;
-    return day_of_year;
+	if (sg1::is_leap_year(year)) {
+		return day_of_month + sg1::MONTHLY_DAY_OF_YEAR_OFFSET_LEAP_YEAR[month - 1];
+	} else {
+		return day_of_month + sg1::MONTHLY_DAY_OF_YEAR_OFFSET[month - 1];
+	}
 }
 
 std::tuple<int, int> day_of_year_to_ymd(int year, int day_of_year)
