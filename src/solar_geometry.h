@@ -833,10 +833,15 @@ public:
     double operator() (omega_range const & range) const
     {
     	// FIXME: issue when omega1 or omega2 are not in [-pi,pi]
+    	if (std::isnan(_omega_sr))
+    		return 0.0;
+    	if (std::isnan(_omega_ss))
+    		return 0.0;
     	if (range.omega2() < _omega_sr)
     		return 0.0;
     	if (range.omega1() > _omega_ss)
     		return 0.0;
+
     	if (range.omega1() < _omega_sr or range.omega2() > _omega_ss) {
     		double omega1 = range.omega1() < _omega_sr ? _omega_sr : range.omega1();
     		double omega2 = range.omega1() > _omega_ss ? _omega_ss : range.omega2();
