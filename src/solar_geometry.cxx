@@ -270,6 +270,17 @@ double G0_general(double phi_g, double eccentricity, double delta,
 
 }
 
+double ut_to_tst(double ut, double day_angle, double lambda)
+{
+    double ET = sg1::compute_ET(day_angle);
+    double tst = ut + ET + (lambda * 12.0 / sg1::PI_LOW_PRECISION);
+    if (tst < 0.0)
+    	tst += 24.0;
+    if (tst > 24.0)
+        tst -= 24.0;
+    return tst;
+}
+
 
 } // namespace sg1
 
@@ -509,12 +520,7 @@ int sg1_UT_to_TST(double UT, double day_angle, double lambda, double *TST)
     if (fabs(lambda) > sg1::PI_LOW_PRECISION)
         return 1;
 
-    double ET = sg1::compute_ET(day_angle);
-    *TST = UT + ET + (lambda * 12.0 / sg1::PI_LOW_PRECISION);
-    if (*TST < 0.0)
-        *TST += 24.0;
-    if (*TST > 24.0)
-        *TST -= 24.0;
+    *TST = sg1::ut_to_tst(UT, day_angle, lambda);
     return 0;
 }
 
