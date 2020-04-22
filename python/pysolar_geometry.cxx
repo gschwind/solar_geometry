@@ -90,6 +90,7 @@ ufunc_##name.register_to(m);
 	register_ufunc(julian_date_to_ymd)
 	register_ufunc(day_of_year_to_ymd)
 	register_ufunc(G0_general)
+	register_ufunc(ut_to_tst)
 	return m;
 
 }

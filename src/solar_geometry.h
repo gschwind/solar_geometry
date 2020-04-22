@@ -1020,6 +1020,20 @@ double azimuth_sun(double phi, double delta, double omega, double gamma);
 double G0_general(double phi_g, double eccentricity, double delta,
 		double omega1, double omega2);
 
+/**
+ * The procedure "ut_to_tst computes the conversion of the UT (Universal time)
+ * into the TST (true solar time) systems at solar noon (in decimal hours).
+ * First, the equation of time, ET, is computed (in decimal hours), wich allows
+ * for perturbations in the rotational and angular orbital speed of the Earth.
+ *
+ * @param[in]  UT hours Universal Time
+ * @param[in]  day_angle day angle in radians
+ * @param[in]  lambda longitude of the site in radians, positive to East
+ * @return     TST local apparent time or solar time or true solar time (TST)
+ *             in decimal hours
+ **/
+double ut_to_tst(double ut, double day_angle, double lambda);
+
 } // namespace sg1
 
 #endif // C++ API
