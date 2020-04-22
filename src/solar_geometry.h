@@ -1020,6 +1020,30 @@ double azimuth_sun(double phi, double delta, double omega, double gamma);
 double G0_general(double phi_g, double eccentricity, double delta,
 		double omega1, double omega2);
 
+
+/**
+ * The procedure "LMT_to_TST computes the difference (in decimal hours) between
+ * the TST (true solar time) and the LMT (local mean time or clock time)
+ * systems at solar noon. Two stages:
+ *   - the first stage calculates the equation of time, ET, wich allows for
+ *     perturbations in the rotational and angular orbital speed of the Earth.
+ *   - the second stage handles the difference between the longitude of the site
+ *     under consideration and the reference time zone longitude for the site. A
+ *     summer time correction must be added for some countries.
+ *
+ * Source : Gruter (ed.) (1984)
+ *
+ * @param[in]  day_angle day angle in radians
+ * @param[in]  lambda longitude of the site in radians, positive to East
+ * @param[in]  lambda_ref reference longitude of the time zone in radians
+ * @param[in]  summer_corr correction for summer time in integral hours
+ * @param[out] dt Offset between local mean time (LMT) and local apparent time
+ *             (TST) in decimal hours
+ * @return     Returns 0 if OK, 1 otherwise.
+ */
+double lmt_to_tst(double day_angle, double lambda, double lambda_ref, int summer_corr);
+
+
 /**
  * The procedure "ut_to_tst computes the conversion of the UT (Universal time)
  * into the TST (true solar time) systems at solar noon (in decimal hours).

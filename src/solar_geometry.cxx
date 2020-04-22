@@ -270,6 +270,13 @@ double G0_general(double phi_g, double eccentricity, double delta,
 
 }
 
+double lmt_to_tst(double day_angle, double lambda, double lambda_ref, int summer_corr)
+{
+    double ET = sg1::compute_ET(day_angle);
+    return ET + ((lambda - lambda_ref) * 12.0 / sg1::PI_LOW_PRECISION)
+            - summer_corr;
+}
+
 double ut_to_tst(double ut, double day_angle, double lambda)
 {
     double ET = sg1::compute_ET(day_angle);
@@ -504,9 +511,7 @@ int sg1_LMT_to_TST(double day_angle, double lambda, double lambda_ref,
         return 1;
     if (fabs(lambda_ref) > sg1::PI_LOW_PRECISION)
         return 1;
-    double ET = sg1::compute_ET(day_angle);
-    *dt = ET + ((lambda - lambda_ref) * 12.0 / sg1::PI_LOW_PRECISION)
-            - summer_corr;
+    *dt = sg1::lmt_to_tst(day_angle, lambda, lambda_ref, summer_corr);
     return 0;
 }
 
