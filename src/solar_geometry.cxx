@@ -179,6 +179,19 @@ std::tuple<int,int,int> julian_date_to_ymd(int jd)
 
 }
 
+int ymd_to_julian_date(int year, int month, int day_of_month)
+{
+	if (month < 3) {
+		month += 12;
+		year -= 1;
+	}
+
+	return 1721028.0 + day_of_month
+			+ floor((153.0 * month - 2.0) / 5.0)
+			+ 365.0 * year + floor(year / 4.0) - floor(year / 100.0) + floor(year / 400.0);
+
+}
+
 
 double gamma_sun(double phi, double delta, double omega)
 {
@@ -1389,20 +1402,7 @@ int sg1_intervals_omega_tilted_plane(double phi_g, double delta,
 /* return the julian day at 12h */
 int sg1_ymd_to_julian_day(int year, int month, int day_of_month)
 {
-	int k;
-	double Y, M, D, H;
-
-	Y = year;
-	M = month;
-	D = day_of_month;
-	if (M < 3) {
-		M += 12;
-		Y -= 1;
-	}
-
-	return 1721028.0 + D + floor((153.0 * M - 2.0) / 5.0) + 365.0 * Y
-			+ floor(Y / 4.0) - floor(Y / 100.0) + floor(Y / 400.0);
-
+	return sg1::ymd_to_julian_date(year, month, day_of_month);
 }
 
 void sg1_julian_day_to_ymd(int jd, int * year, int * month, int * day_of_month)
