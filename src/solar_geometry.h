@@ -989,6 +989,15 @@ int ymd_to_day_of_year(int year, int month, int day_of_month);
  **/
 std::tuple<int,int,int> julian_date_to_ymd(int jd);
 
+/**
+ * Compute julian date from year, month, day_of_month
+ *
+ * @param[in]  year the year number usualy 4 digits
+ * @param[in]  month the month number within [1,12]
+ * @param[in]  day_of_month the day number of the month within [1,31]
+ * @return     julian date coresponding to the year, month, day_of_month provide
+ **/
+int ymd_to_julian_date(int year, int month, int day_of_month);
 
 /**
  * The procedure "day_of_year_to_ymd" does the reverse operation of the procedure
