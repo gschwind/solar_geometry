@@ -92,6 +92,8 @@ ufunc_##name.register_to(m);
 	register_ufunc(G0_general)
 	register_ufunc(ut_to_tst)
 	register_ufunc(lmt_to_tst)
+	register_ufunc(ymd_to_julian_date)
+
 	return m;
 
 }
