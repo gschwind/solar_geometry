@@ -12,6 +12,7 @@ LT_PREREQ([2.4.2])
 LT_INIT()
 
 AM_INIT_AUTOMAKE()
+AM_MAINTAINER_MODE()
 AC_CONFIG_SRCDIR([src/solar_geometry.cxx])
 
 # Checks for programs.
