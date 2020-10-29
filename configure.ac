@@ -11,7 +11,7 @@ AC_CONFIG_MACRO_DIR([m4])
 LT_PREREQ([2.4.2])
 LT_INIT()
 
-AM_INIT_AUTOMAKE()
+AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_SRCDIR([src/solar_geometry.c])
 
 # Checks for programs.
