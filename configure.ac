@@ -4,7 +4,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.59])
-AC_INIT([solar_geometry], [0.0.1])
+AC_INIT([solar_geometry], [1.0.0])
 
 AC_CONFIG_MACRO_DIR([m4])
 
