@@ -1307,7 +1307,7 @@ yearly_averages (int month_number, int year_start, int year_end,
 {
   int ier, i, year_number;
   double day_angle_m, delta_m, omega_ss_m, S0_m, eccentricity_m, G0d_m,
-    G0h_m[24];
+    G0h_m[25];
   double number_of_years;
 
   number_of_years = (double) (year_end - year_start + 1.);
